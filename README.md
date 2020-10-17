@@ -1,4 +1,6 @@
-# home_keeper
+
+# HomeKeeper
+![CI](https://github.com/MariuszBielecki288728/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/MariuszBielecki288728/HomeKeeper/branch/main/graph/badge.svg?token=UD9DGKCODS)](undefined)  
 
 A new Flutter project.
 
