@@ -1,8 +1,8 @@
 
 # HomeKeeper
-![CI](https://github.com/MariuszBielecki288728/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/MariuszBielecki288728/HomeKeeper/branch/main/graph/badge.svg?token=UD9DGKCODS)](undefined)  
+![CI](https://github.com/MariuszBielecki288728/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/MariuszBielecki288728/HomeKeeper/branch/main/graph/badge.svg?token=UD9DGKCODS)](undefined)
 
-A new Flutter project.
+HomeKeeper is an open-source housework management application for families and cotenants.
 
 ## Getting Started
 
