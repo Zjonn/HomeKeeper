@@ -10,4 +10,4 @@ targets:
           schema_mapping:
             - schema: schema.graphql
               queries_glob: graphql/*.graphql
-              output: lib/graphql_api.dart
+              output: lib/graphql/graphql_api.dart
