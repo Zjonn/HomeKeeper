@@ -10,6 +10,7 @@ import 'package:home_keeper/register.dart';
 import 'package:home_keeper/dashboard.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
