@@ -1,4 +1,6 @@
 {
     "editor.formatOnSave": true,
     "vscode-graphql.useSchemaFileDefinitions": true,
+    "dart.allowAnalytics": false,
+    "dart.runPubGetOnPubspecChanges": false,
 }
