@@ -37,13 +37,13 @@ class LoginResult {
 
 class AuthProvider with ChangeNotifier {
   ArtemisClient _client = ArtemisClient(ApiUrl.URL);
+  FlutterSecureStorage _storage = FlutterSecureStorage();
+
   AuthProvider();
-  AuthProvider.withMocks(this._client);
+  AuthProvider.withMocks(this._client, this._storage);
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
-
-  FlutterSecureStorage _storage = FlutterSecureStorage();
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;

@@ -6,10 +6,13 @@ import 'dart:convert';
 
 import 'package:graphql/client.dart';
 import 'package:artemis/artemis.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:home_keeper/auth_provider.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
+
+class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 
 NormalizedInMemoryCache getTestCache() => NormalizedInMemoryCache(
       dataIdFromObject: typenameDataIdFromObject,
@@ -29,17 +32,19 @@ void main() {
   ArtemisClient artemisClient;
   MockHttpClient mockHttpClient;
   AuthProvider authProvider;
+  MockFlutterSecureStorage mockStorage;
 
   group(
     'authProvider',
     () {
       setUp(() {
         mockHttpClient = MockHttpClient();
+        mockStorage = MockFlutterSecureStorage();
 
         artemisClient = ArtemisClient('http://localhost:3001/graphql',
             httpClient: mockHttpClient);
 
-        authProvider = AuthProvider.withMocks(artemisClient);
+        authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
       });
 
       // TODO complete this test to actually check something
@@ -50,14 +55,15 @@ void main() {
             return simpleResponse(body: '''{
               "data": {
                 "tokenAuth": {
-                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IkFnYXRrYSIsImV4cCI6MTYwOTY5NzgzOCwib3JpZ0lhdCI6MTYwOTY5NzUzOH0.635kP0r4v9yckzCU-y0wPEL6tJBb803eIsJbyVbMJzs",
+                  "token": "token_value",
                   "refreshExpiresIn": 1610302338
                 }
               }
             } ''');
           });
-          authProvider.login("username", "password");
-          await untilCalled(mockHttpClient.send(any));
+
+          await authProvider.login("username", "password");
+          verify(mockStorage.write(key: "token", value: "token_value"));
         },
       );
     },
