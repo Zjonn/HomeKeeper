@@ -1,6 +1,6 @@
 
 # HomeKeeper
-![CI](https://github.com/MariuszBielecki288728/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/MariuszBielecki288728/HomeKeeper/branch/main/graph/badge.svg?token=UD9DGKCODS)](undefined)
+![CI](https://github.com/Zjonn/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/Zjonn/HomeKeeper/branch/main/graph/badge.svg?token=DWQNZHRVE3)](https://codecov.io/gh/Zjonn/HomeKeeper)
 
 HomeKeeper is an open-source housework management application for families and cotenants.
 
