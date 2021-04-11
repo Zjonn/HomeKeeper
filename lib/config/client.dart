@@ -1,44 +1,21 @@
 // based on https://hasura.io/learn/graphql/flutter-graphql/graphql-client/
-
-import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-
+import 'package:artemis/artemis.dart';
 import 'package:home_keeper/config/api_url.dart';
 
-class Config {
-  static final HttpLink httpLink = HttpLink(
-    uri: ApiUrl.URL,
-  );
+import 'package:http/http.dart' as http;
 
-  static String _token;
+class HttpClientWithToken extends http.BaseClient {
+  HttpClientWithToken(this.token);
 
-  static final AuthLink authLink = AuthLink(getToken: () => _token);
+  final String token;
+  final http.Client _client = http.Client();
 
-  // static final WebSocketLink websocketLink = WebSocketLink(
-  //   url: 'wss://hasura.io/learn/graphql',
-  //   config: SocketClientConfig(
-  //     autoReconnect: true,
-  //     inactivityTimeout: Duration(seconds: 30),
-  //     initPayload: {
-  //       'headers': {'Authorization': _token},
-  //     },
-  //   ),
-  // );
-
-  static final Link link = authLink.concat(httpLink);
-
-  static String token;
-
-  static ValueNotifier<GraphQLClient> initializeClient(String token) {
-    _token = token;
-
-    ValueNotifier<GraphQLClient> client = ValueNotifier(
-      GraphQLClient(
-        cache: OptimisticCache(dataIdFromObject: typenameDataIdFromObject),
-        link: link,
-      ),
-    );
-
-    return client;
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['Authorization'] = token;
+    return _client.send(request);
   }
+}
+
+ArtemisClient initializeClient(String token) {
+  return ArtemisClient(ApiUrl.URL, httpClient: HttpClientWithToken(token));
 }

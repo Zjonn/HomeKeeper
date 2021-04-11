@@ -1,0 +1,35 @@
+query ListUserTeams {
+  myTeams {
+    id
+  }
+}
+
+query ListTeams {
+  teams {
+    id
+    name
+    createdBy {
+      username
+    }
+  }
+}
+
+mutation CreateTeam($name: String!) {
+    createTeam (input: {name: $name}) {
+        team {
+            name
+        }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation JoinTeam($teamId: Int!) {
+    joinTeam (teamId: $teamId) {
+        team {
+            name
+        }
+    }
+}

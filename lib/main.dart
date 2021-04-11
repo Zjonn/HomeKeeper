@@ -54,8 +54,7 @@ class MyApp extends StatelessWidget {
                     else if (snapshot.data == null)
                       return Login();
                     else
-                      FlutterSecureStorage().delete(key: "token");
-                    return Welcome();
+                      return Welcome();
                 }
               }),
           routes: {
