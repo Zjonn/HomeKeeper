@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:artemis/artemis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/config/api_url.dart';
 import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 // import 'package:home_keeper/util/shared_preference.dart';

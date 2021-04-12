@@ -33,6 +33,12 @@ jobs:
       - name: Generate graphql
         run: flutter pub run build_runner build
 
+      - name: Check code formatting
+        run: flutter format -n --set-exit-if-changed .
+
+      - name: Run Flutter analyzer
+        run: flutter analyze
+
       - name: Build app
         run: flutter build apk
 
@@ -44,9 +50,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
-
-      - name: Check code formatting
-        run: flutter format -n --set-exit-if-changed .
-
-      - name: Run Flutter analyzer
-        run: flutter analyze

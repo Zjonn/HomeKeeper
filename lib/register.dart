@@ -49,14 +49,18 @@ class _RegisterState extends State<Register> {
     final forgotLabel = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        FlatButton(
-          padding: EdgeInsets.all(0.0),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.all(0.0),
+          ),
           child: Text("Forgot password?",
               style: TextStyle(fontWeight: FontWeight.w300)),
           onPressed: () {},
         ),
-        FlatButton(
-          padding: EdgeInsets.only(left: 0.0),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.all(0.0),
+          ),
           child: Text("Sign in", style: TextStyle(fontWeight: FontWeight.w300)),
           onPressed: () {
             Navigator.pushReplacementNamed(context, '/login');
