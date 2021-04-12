@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
-
 import 'package:home_keeper/auth_provider.dart';
-
+import 'package:home_keeper/dashboard.dart';
 import 'package:home_keeper/login.dart';
 import 'package:home_keeper/register.dart';
-import 'package:home_keeper/dashboard.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

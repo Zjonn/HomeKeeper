@@ -2,13 +2,11 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-
 import 'package:artemis/artemis.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/config/api_url.dart';
+import 'package:home_keeper/graphql/graphql_api.dart';
 // import 'package:home_keeper/util/shared_preference.dart';
 
 enum Status {
@@ -40,12 +38,14 @@ class AuthProvider with ChangeNotifier {
   FlutterSecureStorage _storage = FlutterSecureStorage();
 
   AuthProvider();
+
   AuthProvider.withMocks(this._client, this._storage);
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
 
   Status get loggedInStatus => _loggedInStatus;
+
   Status get registeredInStatus => _registeredInStatus;
 
   Future<LoginResult> login(String username, String password) async {
