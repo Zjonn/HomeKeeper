@@ -1,6 +1,6 @@
 mutation LoginUser($username: String!, $password: String!) {
-  tokenAuth (username: $username, password: $password) {
-    token
-    refreshExpiresIn
-  }
+    tokenAuth (username: $username, password: $password) {
+        token
+        refreshExpiresIn
+    }
 }

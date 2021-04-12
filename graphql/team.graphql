@@ -1,17 +1,17 @@
 query ListUserTeams {
-  myTeams {
-    id
-  }
+    myTeams {
+        id
+    }
 }
 
 query ListTeams {
-  teams {
-    id
-    name
-    createdBy {
-      username
+    teams {
+        id
+        name
+        createdBy {
+            username
+        }
     }
-  }
 }
 
 mutation CreateTeam($name: String!) {

@@ -1,9 +1,9 @@
 mutation RegisterUser($input: RegisterInput!) {
-  register (input: $input) {
-    username
-    errors {
-      field
-      messages
+    register (input: $input) {
+        username
+        errors {
+            field
+            messages
+        }
     }
-  }
 }
