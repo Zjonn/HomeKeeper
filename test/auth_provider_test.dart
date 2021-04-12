@@ -4,7 +4,6 @@ import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:graphql/client.dart';
 import 'package:artemis/artemis.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -13,10 +12,6 @@ import 'package:home_keeper/auth_provider.dart';
 class MockHttpClient extends Mock implements http.Client {}
 
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
-
-NormalizedInMemoryCache getTestCache() => NormalizedInMemoryCache(
-      dataIdFromObject: typenameDataIdFromObject,
-    );
 
 http.StreamedResponse simpleResponse({String body, int status}) {
   final List<int> bytes = utf8.encode(body);
