@@ -49,3 +49,6 @@ app.*.map.json
 **/android/key.properties
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+
+# Generated file
+lib/graphql
