@@ -34,10 +34,7 @@ class _DashBoardState extends State<DashBoard> {
           ),
           Center(child: Text("WELCOME")),
           SizedBox(height: 100),
-          ElevatedButton(
-            onPressed: doLogout,
-            child: Text("Logout")
-          )
+          ElevatedButton(onPressed: doLogout, child: Text("Logout"))
         ],
       ),
     );
