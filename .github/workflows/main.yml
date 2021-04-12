@@ -21,22 +21,32 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: '8.x'
+
       - name: Install Flutter
         uses: subosito/flutter-action@v1
         with:
           channel: 'stable' # or: 'dev' or 'beta'
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate graphql
+        run: flutter pub run build_runner build
+
+      - name: Build app
+        run: flutter build apk
+
       - name: Test app
         run: flutter test --coverage
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-         token: ${{ secrets.CODECOV_TOKEN }}
-         file: coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
+
       - name: Check code formatting
         run: flutter format -n --set-exit-if-changed .
+
       - name: Run Flutter analyzer
         run: flutter analyze
-      - name: Build app
-        run: flutter build apk
