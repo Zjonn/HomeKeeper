@@ -50,3 +50,9 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
+
+      - name: Upload built app
+        uses: actions/upload-artifact@v2
+        with:
+          name: HomeKeeper.apk
+          path: build\app\outputs\flutter-apk\app-release
