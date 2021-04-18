@@ -35,5 +35,3 @@ jobs:
           commit-message: Update schema
           title: Update schema
           branch: schema_update
-
-
