@@ -20,7 +20,7 @@ jobs:
             | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['archive_download_url'])")
 
           SCHEMA_FILENAME="schema.zip"
-          wget $LATEST_BACKEND_ARTIFACT -o $SCHEMA_FILENAME
+          wget $LATEST_BACKEND_ARTIFACT -O $SCHEMA_FILENAME
           unzip $SCHEMA_FILENAME -d new_schema
 
           if ! diff schema.graphql new_schema/schema.graphql
