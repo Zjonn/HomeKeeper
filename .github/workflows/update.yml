@@ -14,9 +14,10 @@ jobs:
         shell: bash
         run: |
           set -x
-          LATEST_BACKEND_ARTIFACT=$(curl \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions/artifacts?per_page=1 \
+          LATEST_BACKEND_ARTIFACT=$( \
+            curl \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions/artifacts?per_page=1 \
             | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['archive_download_url'])")
 
           SCHEMA_FILENAME="schema.zip"
@@ -24,6 +25,7 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             $LATEST_BACKEND_ARTIFACT \
             -L -o $SCHEMA_FILENAME
+          ls
           unzip $SCHEMA_FILENAME -d new_schema
 
           if ! diff schema.graphql new_schema/schema.graphql
@@ -33,7 +35,7 @@ jobs:
           fi
 
           cat new_schema/schema.graphql > schema.graphql
-          rm -rf new_schema
+          rm -rf new_schema $SCHEMA_FILENAME
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
