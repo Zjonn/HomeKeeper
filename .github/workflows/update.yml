@@ -21,14 +21,13 @@ jobs:
             | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['archive_download_url'])")
 
           SCHEMA_ARCH="schema.zip"
-          FIXED_SCHEMA_ARCH=fix_$SCHEMA_ARCH
 
           curl \
             -H "Accept: application/vnd.github.v3+json" \
             $LATEST_BACKEND_ARTIFACT \
             -L -o $SCHEMA_ARCH
           ls
-          zip -FF $SCHEMA_ARCH --out $FIXED_SCHEMA_ARCH | unzip -d new_schema
+          7z x $SCHEMA_ARCH -o new_schema
 
           if ! diff schema.graphql new_schema/schema.graphql
           then
@@ -37,7 +36,7 @@ jobs:
           fi
 
           cat new_schema/schema.graphql > schema.graphql
-          rm -rf new_schema $SCHEMA_ARCH $FIXED_SCHEMA_ARCH
+          rm -rf new_schema $SCHEMA_ARCH
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
