@@ -1,0 +1,38 @@
+name: Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  Update schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download new schema if alvaible
+        run: |
+          LATEST_BACKEND_ARTIFACT=$(curl \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions/artifacts?per_page=1) \
+            | python -c "import sys, json; print(json.loads(sys.stdin)['artifacts'][0]['archive_download_url']))
+
+          SCHEMA_FILENAME='schema.zip'
+          wget $LATEST_BACKEND_ARTIFACT -o $SCHEMA_FILENAME
+          unzip $SCHEMA_FILENAME -d new_schema
+
+          if ! diff schema.graphql new_schema/schema.graphql
+          then
+            echo "A newer scheme is not available"
+            exit 1
+          fi
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        run: |
+          schema.graphql << new_schema/schema.graphql
+          rm -rf new_schema
+        with:
+          commit-message: Update schema
+          title: Update schema
+          branch: schema_update
+
+

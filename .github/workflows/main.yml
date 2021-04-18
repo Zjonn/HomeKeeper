@@ -12,7 +12,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
+  Test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
@@ -39,11 +39,11 @@ jobs:
       - name: Run Flutter analyzer
         run: flutter analyze
 
-      - name: Build app
-        run: flutter build apk
-
       - name: Test app
         run: flutter test --coverage
+
+      - name: Build app
+        run: flutter build apk
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -52,7 +52,11 @@ jobs:
           file: coverage/lcov.info
 
       - name: Upload built app
+        if:  ${{ github.event_name == push }}
         uses: actions/upload-artifact@v2
         with:
           name: HomeKeeper.apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+
+
