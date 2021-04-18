@@ -23,7 +23,7 @@ jobs:
           curl \
             -H "Accept: application/vnd.github.v3+json" \
             $LATEST_BACKEND_ARTIFACT \
-            --output $SCHEMA_FILENAME
+            -LO
           unzip $SCHEMA_FILENAME -d new_schema
 
           if ! diff schema.graphql new_schema/schema.graphql
