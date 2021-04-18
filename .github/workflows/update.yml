@@ -11,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download new schema if alvaible
+        shell: bash
         run: |
+          set -x
           LATEST_BACKEND_ARTIFACT=$(curl \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions/artifacts?per_page=1 \
