@@ -25,11 +25,12 @@ jobs:
             echo "A newer scheme is not available"
             exit 1
           fi
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
-        run: |
+
           schema.graphql << new_schema/schema.graphql
           rm -rf new_schema
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Update schema
           title: Update schema

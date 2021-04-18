@@ -52,7 +52,7 @@ jobs:
           file: coverage/lcov.info
 
       - name: Upload built app
-        if:  ${{ github.event_name == push }}
+        if:  ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
           name: HomeKeeper.apk
