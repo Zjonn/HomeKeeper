@@ -8,6 +8,8 @@ on:
 jobs:
   Update_schema:
     runs-on: ubuntu-latest
+    env:
+      NEW_SCHEMA_ALVAIBLE: false
     steps:
       - uses: actions/checkout@v2
       - name: Download new schema if alvaible
@@ -26,13 +28,13 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             $LATEST_BACKEND_ARTIFACT \
             -L -o $SCHEMA_FILENAME
-          cat $SCHEMA_FILENAME
           unzip $SCHEMA_FILENAME -d new_schema
 
-          if ! diff schema.graphql new_schema/schema.graphql
+          if ! diff -q --ignore-space-change --ignore-blank-lines schema.graphql new_schema/schema.graphql &> /dev/null
           then
-            echo "A newer scheme is not available"
-            exit 1
+            echo "A newer schema is not available"
+          else
+            echo "::set-env name=NEW_SCHEMA_ALVAIBLE::true"
           fi
 
           cat new_schema/schema.graphql > schema.graphql
@@ -40,6 +42,7 @@ jobs:
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
+        if: ${{ env.NEW_SCHEMA_ALVAIBLE == 'true' }}
         with:
           commit-message: Update schema
           title: Update schema
