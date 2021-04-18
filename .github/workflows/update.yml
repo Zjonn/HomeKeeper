@@ -27,7 +27,7 @@ jobs:
             $LATEST_BACKEND_ARTIFACT \
             -L -o $SCHEMA_ARCH
           ls
-          7z x $SCHEMA_ARCH -o new_schema
+          7z x $SCHEMA_ARCH -onew_schema
 
           if ! diff schema.graphql new_schema/schema.graphql
           then
