@@ -30,11 +30,11 @@ jobs:
             -L -o $SCHEMA_FILENAME
           unzip $SCHEMA_FILENAME -d new_schema
 
-          if diff -q --ignore-space-change --ignore-blank-lines schema.graphql new_schema/schema.graphql &> /dev/null
+          if diff -q --ignore-all-space --ignore-blank-lines schema.graphql new_schema/schema.graphql &> /dev/null
           then
             echo "A newer schema is not available"
           else
-            echo "::set-env name=NEW_SCHEMA_ALVAIBLE::true"
+            echo "NEW_SCHEMA_ALVAIBLE=true" >> $GITHUB_ENV
           fi
 
           cat new_schema/schema.graphql > schema.graphql
