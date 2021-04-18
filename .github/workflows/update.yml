@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Update schema:
+  Update_schema:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
