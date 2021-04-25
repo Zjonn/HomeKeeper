@@ -12,6 +12,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final _storage = FlutterSecureStorage();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
           home: FutureBuilder(
-              future: FlutterSecureStorage().read(key: "token"),
+              future: _storage.read(key: "token"),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
                     else if (snapshot.data == null)
                       return Login();
                     else
-                      return Welcome();
+                      return DashBoard();
                 }
               }),
           routes: {
@@ -59,21 +61,6 @@ class MyApp extends StatelessWidget {
             '/login': (context) => Login(),
             '/register': (context) => Register(),
           }),
-    );
-  }
-}
-
-class Welcome extends StatelessWidget {
-  Welcome({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Center(
-          child: Text("WELCOME PAGE"),
-        ),
-      ),
     );
   }
 }
