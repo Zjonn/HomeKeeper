@@ -52,7 +52,7 @@ type TeamType {
 type Mutation {
   register(input: RegisterInput!): RegisterPayload
   createTeam(input: CreateTeamInput!): CreateTeamPayload
-  joinTeam(teamId: Int = null): JoinTeam
+  joinTeam(password: String = null, teamId: Int = null): JoinTeam
   leaveTeam(teamId: Int = null): LeaveTeam
 
   """Obtain JSON Web Token mutation"""
@@ -105,6 +105,9 @@ type CreateTeamPayload {
 
 input CreateTeamInput {
   name: String!
+
+  """Password used to join the team"""
+  password: String!
   id: ID
   clientMutationId: String
 }
