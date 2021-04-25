@@ -36,9 +36,9 @@ class _RegisterState extends State<Register> {
 
     final confirmPassword = TextFormField(
       autofocus: false,
+      obscureText: true,
       validator: (value) => value.isEmpty ? "Your password is required" : null,
       onSaved: (value) => _confirmPassword = value,
-      obscureText: true,
     );
 
     var loading = Row(

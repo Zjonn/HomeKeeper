@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 250.0),
-                  Text("Email"),
+                  Text("Username"),
                   SizedBox(height: 5.0),
                   usernameField,
                   SizedBox(height: 20.0),
