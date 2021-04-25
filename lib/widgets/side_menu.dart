@@ -7,7 +7,6 @@ import '../auth_provider.dart';
 class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
     Function() doLogout = () async {
@@ -29,7 +28,7 @@ class SideMenu extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           ListTile(

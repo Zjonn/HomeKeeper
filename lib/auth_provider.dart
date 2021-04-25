@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/config/api_url.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
-
 enum Status {
   NotLoggedIn,
   NotRegistered,
