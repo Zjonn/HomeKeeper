@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/pages/dashboard.dart';
 import 'package:home_keeper/pages/login.dart';
-import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:home_keeper/pages/register.dart';
+import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -23,8 +23,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           title: 'Flutter Demo',
-          theme: ThemeData.dark()
-          ,
+          theme: ThemeData.dark(),
           home: FutureBuilder(
               future: _storage.read(key: "token"),
               builder: (context, snapshot) {
