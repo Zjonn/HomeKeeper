@@ -63,7 +63,6 @@ class AuthProvider with ChangeNotifier {
         .timeout(Duration(seconds: 2), onTimeout: () {
       return GraphQLResponse(
           errors: [GraphQLError(message: "No internet connection")]);
-      ;
     });
 
     if (!response.hasErrors) {
