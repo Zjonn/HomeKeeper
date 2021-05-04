@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'package:artemis/artemis.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'package:home_keeper/auth_provider.dart';
+import 'package:home_keeper/providers/auth_provider.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 

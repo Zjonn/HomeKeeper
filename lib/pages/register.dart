@@ -1,6 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:home_keeper/auth_provider.dart';
+import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
@@ -79,7 +79,7 @@ class _RegisterState extends State<Register> {
           if (response.status) {
             Navigator.pushReplacementNamed(context, '/login');
             Flushbar(
-              message: "Registration succeded",
+              message: "Registration succeeded",
               duration: Duration(seconds: 3),
             ).show(context);
           } else {
@@ -136,7 +136,7 @@ class _RegisterState extends State<Register> {
                       : Material(
                           elevation: 5.0,
                           borderRadius: BorderRadius.circular(30.0),
-                          color: Color(0xff01A0C7),
+                          color: Theme.of(context).primaryColor,
                           child: MaterialButton(
                             minWidth: MediaQuery.of(context).size.width,
                             padding:

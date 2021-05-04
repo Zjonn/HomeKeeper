@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:artemis/artemis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:home_keeper/config/api_url.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
@@ -55,7 +56,15 @@ class AuthProvider with ChangeNotifier {
 
     final loginMutation = LoginUserMutation(
         variables: LoginUserArguments(username: username, password: password));
-    final response = await this._client.execute(loginMutation);
+
+    final response = await this
+        ._client
+        .execute(loginMutation)
+        .timeout(Duration(seconds: 2), onTimeout: () {
+      return GraphQLResponse(
+          errors: [GraphQLError(message: "No internet connection")]);
+      ;
+    });
 
     if (!response.hasErrors) {
       // TODO handle token expiration
