@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
-
 class JoinResult {
   bool status;
   GraphQLResponse<JoinTeam$Mutation> response;
