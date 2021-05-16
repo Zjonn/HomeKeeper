@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
-          title: 'Flutter Demo',
+          title: 'HomeKeeper',
           theme: ThemeData.dark(),
           home: FutureBuilder(
               future: _storage.read(key: "token"),
