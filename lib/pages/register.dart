@@ -1,6 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
@@ -39,11 +40,6 @@ class _RegisterState extends State<Register> {
       obscureText: true,
       validator: (value) => value.isEmpty ? "Your password is required" : null,
       onSaved: (value) => _confirmPassword = value,
-    );
-
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator()],
     );
 
     final forgotLabel = Row(
@@ -132,7 +128,7 @@ class _RegisterState extends State<Register> {
                   confirmPassword,
                   SizedBox(height: 20.0),
                   auth.registeredInStatus == Status.Registering
-                      ? loading
+                      ? Loading()
                       : Material(
                           elevation: 5.0,
                           borderRadius: BorderRadius.circular(30.0),

@@ -22,9 +22,8 @@ class _SettingsState extends State<Settings> {
       ).show(context);
     };
 
-    return Scaffold(
-        body: SingleChildScrollView(
-            child: Container(
+    return SingleChildScrollView(
+        child: Container(
       padding: EdgeInsets.all(40.0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Material(
@@ -42,6 +41,6 @@ class _SettingsState extends State<Settings> {
           ),
         ),
       ]),
-    )));
+    ));
   }
 }

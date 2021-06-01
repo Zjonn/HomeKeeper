@@ -3,6 +3,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/widgets/loading.dart';
 // import 'package:jada/util/validators.dart';
 // import 'package:jada/util/widgets.dart';
 import 'package:provider/provider.dart';
@@ -31,11 +32,6 @@ class _LoginState extends State<Login> {
       obscureText: true,
       validator: (value) => value.isEmpty ? "Please enter password" : null,
       onSaved: (value) => _password = value,
-    );
-
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator()],
     );
 
     final forgotLabel = Row(
@@ -115,7 +111,7 @@ class _LoginState extends State<Login> {
                   passwordField,
                   SizedBox(height: 20.0),
                   auth.loggedInStatus == Status.Authenticating
-                      ? loading
+                      ? Loading()
                       : Material(
                           elevation: 5.0,
                           borderRadius: BorderRadius.circular(30.0),

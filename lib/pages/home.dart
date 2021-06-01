@@ -13,8 +13,7 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
 
-    return Scaffold(
-        body: Center(
+    return Center(
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,6 +24,6 @@ class _Home extends State<Home> {
               style: TextStyle(fontSize: 30),
             ),
           ]),
-    ));
+    );
   }
 }

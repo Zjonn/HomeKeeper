@@ -16,5 +16,6 @@ class HttpClientWithToken extends http.BaseClient {
 }
 
 ArtemisClient initializeClient(String token) {
-  return ArtemisClient(ApiUrl.URL, httpClient: HttpClientWithToken(token));
+  return ArtemisClient(ApiUrl.URL,
+      httpClient: HttpClientWithToken("JWT " + token));
 }

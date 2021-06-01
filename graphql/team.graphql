@@ -14,8 +14,8 @@ query ListTeams {
     }
 }
 
-mutation CreateTeam($name: String!) {
-    createTeam (input: {name: $name}) {
+mutation CreateTeam($name: String!, $password: String!) {
+    createTeam (input: {name: $name, password: $password}) {
         team {
             name
         }

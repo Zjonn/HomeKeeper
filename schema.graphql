@@ -48,25 +48,9 @@ type TeamType {
   deletedAt: DateTime
   name: String!
   members: [UserType!]!
-  taskSet: [TaskType!]!
-}
-
-type TaskType {
-  id: ID!
-  createdAt: DateTime!
-  createdBy: UserType
-  modifiedAt: DateTime!
-  deletedAt: DateTime
-  name: String!
-  description: String!
-  team: TeamType
-  basePointsPrize: Int!
-  refreshInterval: Float
-  isRecurring: Boolean!
 }
 
 type Mutation {
-  createTask(input: CreateTaskInput!): CreateTaskPayload
   register(input: RegisterInput!): RegisterPayload
   createTeam(input: CreateTeamInput!): CreateTeamPayload
   joinTeam(password: String = null, teamId: Int = null): JoinTeam
@@ -76,28 +60,6 @@ type Mutation {
   tokenAuth(username: String!, password: String!): ObtainJSONWebToken
   verifyToken(token: String = null): Verify
   refreshToken(token: String = null): Refresh
-}
-
-type CreateTaskPayload {
-  task: TaskType
-  errors: [ErrorType]
-  clientMutationId: String
-}
-
-type ErrorType {
-  field: String!
-  messages: [String!]!
-}
-
-input CreateTaskInput {
-  name: String!
-  description: String
-  team: ID!
-  basePointsPrize: Int!
-  refreshInterval: String
-  isRecurring: Boolean
-  id: ID
-  clientMutationId: String
 }
 
 type RegisterPayload {
@@ -114,6 +76,11 @@ type RegisterPayload {
   email: String
   errors: [ErrorType]
   clientMutationId: String
+}
+
+type ErrorType {
+  field: String!
+  messages: [String!]!
 }
 
 input RegisterInput {
