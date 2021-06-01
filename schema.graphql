@@ -1,10 +1,37 @@
 type Query {
+  tasks(teamId: Int = null, onlyActive: Boolean = null): [TaskType]
+  taskInstances(teamId: Int = null, onlyActive: Boolean = null): [TaskInstanceType]
+  relatedTaskInstances(taskId: Int = null, onlyActive: Boolean = null): [TaskInstanceType]
+  completions(teamId: Int = null): [TaskInstanceCompletionType]
+  userPoints(teamId: Int = null): Int
   me: UserType
   users: [UserType]
   myTeams: [TeamType]
   teams: [TeamType]
   teamMembers(teamId: Int = null): [UserType]
 }
+
+type TaskType {
+  id: ID!
+  createdAt: DateTime!
+  createdBy: UserType
+  modifiedAt: DateTime!
+  deletedAt: DateTime
+  name: String!
+  description: String!
+  team: TeamType
+  basePointsPrize: Int!
+  refreshInterval: Float
+  isRecurring: Boolean!
+  taskinstanceSet: [TaskInstanceType!]!
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
 
 type UserType {
   id: ID!
@@ -31,14 +58,8 @@ type UserType {
   isActive: Boolean!
   dateJoined: DateTime!
   teamSet: [TeamType!]!
+  taskinstancecompletionSet: [TaskInstanceCompletionType!]!
 }
-
-"""
-The `DateTime` scalar type represents a DateTime
-value as specified by
-[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-"""
-scalar DateTime
 
 type TeamType {
   id: ID!
@@ -51,18 +72,26 @@ type TeamType {
   taskSet: [TaskType!]!
 }
 
-type TaskType {
+type TaskInstanceCompletionType {
   id: ID!
   createdAt: DateTime!
   createdBy: UserType
   modifiedAt: DateTime!
   deletedAt: DateTime
-  name: String!
-  description: String!
-  team: TeamType
-  basePointsPrize: Int!
-  refreshInterval: Float
-  isRecurring: Boolean!
+  taskInstance: TaskInstanceType!
+  userWhoCompletedTask: UserType!
+}
+
+type TaskInstanceType {
+  id: ID!
+  createdAt: DateTime!
+  createdBy: UserType
+  modifiedAt: DateTime!
+  deletedAt: DateTime
+  task: TaskType!
+  activeFrom: DateTime!
+  completed: Boolean!
+  taskinstancecompletionSet: [TaskInstanceCompletionType!]!
 }
 
 type Mutation {
