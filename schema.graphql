@@ -1,10 +1,44 @@
 type Query {
+  tasks(teamId: Int!, onlyActive: Boolean = false): [TaskType]
+  taskInstances(teamId: Int!, onlyActive: Boolean = false): [TaskInstanceType]
+  relatedTaskInstances(taskId: Int!, onlyActive: Boolean = false): [TaskInstanceType]
+  completions(teamId: Int!): [TaskInstanceCompletionType]
+  userPoints(teamId: Int!): Int
   me: UserType
   users: [UserType]
   myTeams: [TeamType]
   teams: [TeamType]
   teamMembers(teamId: Int = null): [UserType]
 }
+
+type TaskType {
+  id: ID!
+  name: String!
+  description: String!
+  team: TeamType
+  basePointsPrize: Int!
+  refreshInterval: Float
+  isRecurring: Boolean!
+  active: Boolean
+}
+
+type TeamType {
+  id: ID!
+  createdAt: DateTime!
+  createdBy: UserType
+  modifiedAt: DateTime!
+  deletedAt: DateTime
+  name: String!
+  members: [UserType!]!
+  taskSet: [TaskType!]!
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
 
 type UserType {
   id: ID!
@@ -31,26 +65,30 @@ type UserType {
   isActive: Boolean!
   dateJoined: DateTime!
   teamSet: [TeamType!]!
+  taskinstancecompletionSet: [TaskInstanceCompletionType!]!
 }
 
-"""
-The `DateTime` scalar type represents a DateTime
-value as specified by
-[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-"""
-scalar DateTime
-
-type TeamType {
+type TaskInstanceCompletionType {
   id: ID!
   createdAt: DateTime!
   createdBy: UserType
   modifiedAt: DateTime!
   deletedAt: DateTime
-  name: String!
-  members: [UserType!]!
+  taskInstance: TaskInstanceType!
+  userWhoCompletedTask: UserType!
+}
+
+type TaskInstanceType {
+  id: ID!
+  task: TaskType!
+  activeFrom: DateTime!
+  completed: Boolean!
+  active: Boolean
 }
 
 type Mutation {
+  createTask(input: CreateTaskInput!): CreateTaskPayload
+  submitTaskInstanceCompletion(input: SubmitTaskInstanceCompletionInput!): SubmitTaskInstanceCompletionPayload
   register(input: RegisterInput!): RegisterPayload
   createTeam(input: CreateTeamInput!): CreateTeamPayload
   joinTeam(password: String = null, teamId: Int = null): JoinTeam
@@ -60,6 +98,40 @@ type Mutation {
   tokenAuth(username: String!, password: String!): ObtainJSONWebToken
   verifyToken(token: String = null): Verify
   refreshToken(token: String = null): Refresh
+}
+
+type CreateTaskPayload {
+  task: TaskType
+  errors: [ErrorType]
+  clientMutationId: String
+}
+
+type ErrorType {
+  field: String!
+  messages: [String!]!
+}
+
+input CreateTaskInput {
+  name: String!
+  description: String
+  team: ID!
+  basePointsPrize: Int!
+  refreshInterval: String
+  isRecurring: Boolean
+  id: ID
+  clientMutationId: String
+}
+
+type SubmitTaskInstanceCompletionPayload {
+  taskInstanceCompletion: TaskInstanceCompletionType
+  errors: [ErrorType]
+  clientMutationId: String
+}
+
+input SubmitTaskInstanceCompletionInput {
+  taskInstance: ID!
+  id: ID
+  clientMutationId: String
 }
 
 type RegisterPayload {
@@ -76,11 +148,6 @@ type RegisterPayload {
   email: String
   errors: [ErrorType]
   clientMutationId: String
-}
-
-type ErrorType {
-  field: String!
-  messages: [String!]!
 }
 
 input RegisterInput {
