@@ -36,7 +36,7 @@ jobs:
 
           archive_download_url = json.loads(
               requests.get(
-                  URL + '/artifacts',
+                  last_succ_workflow['workflow_runs'][0]['artifacts_url'],
                   params={
                       'per_page': 1
                   },
