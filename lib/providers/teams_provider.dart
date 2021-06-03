@@ -55,13 +55,11 @@ class TeamProvider with ChangeNotifier {
   }
 
   Future<bool> isUserMemberOfTeam() async {
-    var query = ListUserTeamsQuery();
-    print(query.toString());
-
-    GraphQLResponse<ListUserTeams$Query> response =
-        await _getClient().then((client) => client.execute(query));
+    GraphQLResponse<ListUserTeams$Query> response = await _getClient()
+        .then((client) => client.execute(ListUserTeamsQuery()));
 
     assert(!response.hasErrors, response.errors.toString());
+
     bool result = response?.data?.myTeams?.isNotEmpty;
     if (result) {
       this._state = TeamState.UserIsAlreadyMember;
@@ -70,13 +68,14 @@ class TeamProvider with ChangeNotifier {
     } else {
       this._state = TeamState.UserIsNotMember;
     }
-    notifyListeners();
+    // notifyListeners();
     return result;
   }
 
   Future<List<ListTeams$Query$TeamType>> listTeams() async {
     var response =
         await _getClient().then((client) => client.execute(ListTeamsQuery()));
+    assert(!response.hasErrors, response.errors.toString());
     return response.data.teams;
   }
 
@@ -96,20 +95,21 @@ class TeamProvider with ChangeNotifier {
     return JoinResult(status: !response.hasErrors, response: response);
   }
 
-  Future<CreateResult> createTeam(String name) async {
+  Future<CreateResult> createTeam(String name, String password) async {
     GraphQLResponse<CreateTeam$Mutation> response = await _getClient().then(
         (client) => client.execute(CreateTeamMutation(
-            variables: CreateTeamArguments(name: name, password: "XD"))));
+            variables: CreateTeamArguments(name: name, password: password))));
     this._state = TeamState.UserIsCreatingTeam;
     notifyListeners();
-
+    print(this._state);
     bool status =
-        !response.hasErrors && response.data.createTeam.errors.isNotEmpty;
+        !response.hasErrors && response.data.createTeam.errors.isEmpty;
     if (status) {
       this._state = TeamState.UserCreatedTeam;
     } else {
       this._state = TeamState.UserIsNotMember;
     }
+    print(this._state);
     notifyListeners();
     return CreateResult(status: status, response: response);
   }

@@ -1,9 +1,12 @@
 // https://medium.com/@afegbua/flutter-thursday-13-building-a-user-registration-and-login-process-with-provider-and-external-api-1bb87811fd1d
 
+import 'dart:io';
+
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
+
 // import 'package:jada/util/validators.dart';
 // import 'package:jada/util/widgets.dart';
 import 'package:provider/provider.dart';
@@ -70,6 +73,8 @@ class _LoginState extends State<Login> {
 
         successfulMessage.then((response) {
           if (response.status) {
+            sleep(Duration(milliseconds: 100)); // TODO: Remove me
+
             Navigator.pushReplacementNamed(context, '/dashboard');
             Flushbar(
               message: "Successful login",
@@ -88,8 +93,6 @@ class _LoginState extends State<Login> {
         print("form is invalid");
       }
     };
-
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
     return SafeArea(
       child: Scaffold(
@@ -121,11 +124,10 @@ class _LoginState extends State<Login> {
                             padding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             onPressed: doLogin,
-                            child: Text("Login",
-                                textAlign: TextAlign.center,
-                                style: style.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
+                            child: Text(
+                              "Login",
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                   SizedBox(height: 5.0),

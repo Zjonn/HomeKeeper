@@ -9,6 +9,6 @@ class Tasks extends StatefulWidget {
 class _Tasks extends State<Tasks> {
   @override
   Widget build(BuildContext context) {
-    return Center();
+    return SingleChildScrollView();
   }
 }

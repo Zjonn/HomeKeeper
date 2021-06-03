@@ -39,8 +39,9 @@ class MyApp extends StatelessWidget {
                       return Text('Error: ${snapshot.error}');
                     else if (snapshot.data == null)
                       return Login();
-                    else
+                    else {
                       return DashBoard();
+                    }
                 }
               }),
           routes: {

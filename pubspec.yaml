@@ -44,6 +44,7 @@ dependencies:
 
   # login.dart
   flushbar: ^1.10.4
+  expandable: ^5.0.1
 
 dev_dependencies:
   flutter_test:

@@ -9,6 +9,6 @@ class Team extends StatefulWidget {
 class _Team extends State<Team> {
   @override
   Widget build(BuildContext context) {
-    return Center();
+    return SingleChildScrollView();
   }
 }
