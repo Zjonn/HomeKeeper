@@ -1,5 +1,4 @@
-import 'package:expandable/expandable.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
@@ -13,7 +12,7 @@ class Team extends StatefulWidget {
 class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
   final formKey = new GlobalKey<FormState>();
 
-  String _teamName, _teamPassword;
+  late String _teamName, _teamPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +22,15 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
 
     final usernameField = TextFormField(
       autofocus: false,
-      onSaved: (value) => _teamName = value,
+      onSaved: (value) => _teamName = value ?? '',
     );
 
     final passwordField = TextFormField(
       autofocus: false,
       obscureText: true,
-      validator: (value) => value.isEmpty ? "Please enter password" : null,
-      onSaved: (value) => _teamPassword = value,
+      validator: (value) =>
+          value?.isEmpty ?? true ? "Please enter password" : null,
+      onSaved: (value) => _teamPassword = value ?? '',
     );
 
     var doJoin = () {
@@ -64,8 +64,8 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
     };
     var doCreate = () {
       final form = formKey.currentState;
-      if (form.validate()) {
-        form.save();
+      if (form?.validate() ?? false) {
+        form!.save();
 
         final Future<CreateResult> successfulMessage =
             teamProvider.createTeam(_teamName, _teamPassword);
@@ -74,12 +74,12 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           if (response.status) {
             // Navigator.pushReplacementNamed(context, '/login');
             Flushbar(
-              message: "Successful login",
+              message: "Team created",
               duration: Duration(seconds: 2),
             ).show(context);
           } else {
             Flushbar(
-              message: response.response.errors
+              message: response.response.errors!
                   .map((error) => error.message)
                   .join("\n"),
               duration: Duration(seconds: 2),
@@ -100,32 +100,10 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 250.0),
-            ExpandablePanel(
-              header: Material(
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(30.0),
-                color: Theme.of(context).primaryColor,
-                child: MaterialButton(
-                  minWidth: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  onPressed: doJoin,
-                  child: Text("Join", textAlign: TextAlign.center),
-                ),
-              ),
-              collapsed: Center(child: Text("TEST 123")),
-              expanded: Text("Create team"),
-            ),
-            ExpandablePanel(
-              header: Text("Join to an existing team"),
-              collapsed: Center(child: Text("TEST 123")),
-              expanded: Text("Create team"),
-            ),
-            Text("Team name"),
-            SizedBox(height: 5.0),
+            Text("Name"),
             usernameField,
             SizedBox(height: 20.0),
-            Text("Team password"),
-            SizedBox(height: 5.0),
+            Text("Password"),
             passwordField,
             SizedBox(height: 20.0),
             Material(
@@ -135,22 +113,20 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
               child: MaterialButton(
                 minWidth: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                onPressed: doJoin,
-                child: Text("Join", textAlign: TextAlign.center),
-              ),
-            ),
-            SizedBox(height: 5.0),
-            Material(
-              elevation: 5.0,
-              borderRadius: BorderRadius.circular(30.0),
-              color: Theme.of(context).primaryColor,
-              child: MaterialButton(
-                minWidth: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                 onPressed: doCreate,
-                child: Text("Create", textAlign: TextAlign.center),
+                child: Text("Create a team", textAlign: TextAlign.center),
               ),
             ),
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.all(0.0),
+              ),
+              child: Text("Join to an existing team",
+                  style: TextStyle(fontWeight: FontWeight.w300)),
+              onPressed: () {
+//            Navigator.pushReplacementNamed(context, '/reset-password');
+              },
+            )
           ],
         ),
       ),

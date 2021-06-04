@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_keeper/pages/join_team.dart' as joinTeam;
+import 'package:home_keeper/pages/join_team/join_team_builder.dart';
 import 'package:home_keeper/pages/settings.dart';
 import 'package:home_keeper/pages/tasks.dart';
 import 'package:home_keeper/pages/team.dart';
@@ -14,8 +14,9 @@ class DashBoard extends StatefulWidget {
   _DashBoardState createState() => _DashBoardState();
 }
 
-class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
-  final _no_team_tabs = [joinTeam.Team(), Settings()];
+class _DashBoardState extends State<DashBoard>
+    with TickerProviderStateMixin<DashBoard> {
+  final _no_team_tabs = [JoinTeamBuilder(), Settings()];
   final _no_team_tabs_icons = [
     Icons.supervisor_account_rounded,
     Icons.settings
@@ -29,81 +30,82 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
     Icons.settings
   ];
 
-  TabController _controller;
+  late TabController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = new TabController(length: 0, vsync: this);
   }
 
   @override
   void dispose() {
-    if (_controller != null) _controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    TeamProvider teamProvider = Provider.of(context);
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => TeamProvider())
+        ],
+        builder: (context, child) {
+          final teamProvider = Provider.of<TeamProvider>(context);
 
-    return FutureBuilder<bool>(
-        future: teamProvider.isUserMemberOfTeam(),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.hasData) {
-            final tabs = snapshot.data ? _tabs : _no_team_tabs;
-            final icons = snapshot.data ? _tabs_icons : _no_team_tabs_icons;
+          List<StatefulWidget> tabs;
+          List<IconData> icons;
 
-            _changeController(tabs, snapshot.data);
-
-            return Scaffold(
-                body: TabBarView(
-                  children: tabs,
-                  controller: _controller,
-                ),
-                bottomNavigationBar: BottomNavigationBar(
-                  currentIndex: _controller.index,
-                  selectedItemColor: Theme.of(context).buttonColor,
-                  onTap: (int index) {
-                    setState(() {
-                      _controller.index = index;
-                    });
-                  },
-                  items: _bottomNavigationBarItems(tabs, icons),
-                ));
-          } else if (snapshot.hasError) {
-            throw UnsupportedError(snapshot.error.toString());
-          } else {
-            return Scaffold(body: Loading());
+          switch (teamProvider.state) {
+            case TeamState.CheckInProgress:
+              return Scaffold(body: Loading());
+            case TeamState.ToBeChecked:
+              return FutureBuilder(
+                  future: teamProvider.isUserMemberOfTeam(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (snapshot.hasError) {
+                      throw UnsupportedError(snapshot.error.toString());
+                    }
+                    return Scaffold(body: Loading());
+                  });
+            case TeamState.UserIsMember:
+              tabs = _tabs;
+              icons = _tabs_icons;
+              _changeController(tabs, true);
+              break;
+            case TeamState.UserIsNotMember:
+              tabs = _no_team_tabs;
+              icons = _no_team_tabs_icons;
+              _changeController(tabs, false);
+              break;
           }
+          return Scaffold(
+              body: TabBarView(
+                children: tabs,
+                controller: _controller,
+              ),
+              bottomNavigationBar: TabBar(
+                tabs: icons
+                    .map((e) => Container(
+                        margin: EdgeInsets.all(10),
+                        child: Icon(
+                          e,
+                        )))
+                    .toList(),
+                controller: _controller,
+              ));
         });
   }
 
-  void _changeController(tabs, isUserMemberOfTeam) {
-    if (_controller != null) {
-      if (_controller.length == tabs.length) {
-        return;
-      }
-      _controller.dispose();
+  void _changeController(final List<StatefulWidget> tabs, isUserMemberOfTeam) {
+    if (_controller.length == tabs.length) {
+      return;
     }
+    _controller.dispose();
 
     _controller = new TabController(
         length: isUserMemberOfTeam ? _tabs.length : _no_team_tabs.length,
         vsync: this);
-    _controller.addListener(() {
-      if (!_controller.indexIsChanging) setState(() {});
-    });
-  }
-
-  List<BottomNavigationBarItem> _bottomNavigationBarItems(
-      var pages, var icons) {
-    final _pages = pages.iterator;
-    final _icons = icons.iterator;
-    List<BottomNavigationBarItem> items = [];
-
-    while (_pages.moveNext() && _icons.moveNext()) {
-      items.add(BottomNavigationBarItem(
-          icon: Icon(_icons.current), label: _pages.current.toString()));
-    }
-    return items;
   }
 }
