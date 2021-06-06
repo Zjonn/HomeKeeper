@@ -23,14 +23,14 @@ class RegisterResult {
   bool status;
   GraphQLResponse<RegisterUser$Mutation> response;
 
-  RegisterResult({this.status, this.response});
+  RegisterResult(this.status, this.response);
 }
 
 class LoginResult {
   bool status;
   GraphQLResponse<LoginUser$Mutation> response;
 
-  LoginResult({this.status, this.response});
+  LoginResult(this.status, this.response);
 }
 
 class AuthProvider with ChangeNotifier {
@@ -70,15 +70,15 @@ class AuthProvider with ChangeNotifier {
 
       await this
           ._storage
-          .write(key: "token", value: response.data.tokenAuth.token);
+          .write(key: "token", value: response.data!.tokenAuth!.token);
 
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();
-      result = LoginResult(status: true, response: response);
+      result = LoginResult(true, response);
     } else {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
-      result = LoginResult(status: false, response: response);
+      result = LoginResult(false, response);
     }
     return result;
   }
@@ -109,21 +109,21 @@ class AuthProvider with ChangeNotifier {
       GraphQLResponse<RegisterUser$Mutation> response) async {
     var result;
 
-    if (response.data.register.errors.isEmpty) {
+    if (response.data!.register!.errors?.isEmpty ?? true) {
       _registeredInStatus = Status.Registered;
-      result = RegisterResult(status: true, response: response);
+      result = RegisterResult(true, response);
     } else {
       _registeredInStatus = Status.NotRegistered;
-      result = RegisterResult(status: false, response: response);
+      result = RegisterResult(false, response);
     }
     notifyListeners();
     return result;
   }
 
-  RegisterResult onError(GraphQLResponse response) {
+  RegisterResult onError(GraphQLResponse<RegisterUser$Mutation> response) {
     _registeredInStatus = Status.NotRegistered;
     notifyListeners();
-    return RegisterResult(status: false, response: response);
+    return RegisterResult(false, response);
   }
 
   Future<void> logout() async {

@@ -12,105 +12,123 @@ class JoinResult {
   bool status;
   GraphQLResponse<JoinTeam$Mutation> response;
 
-  JoinResult({this.status, this.response});
+  JoinResult(this.status, this.response);
 }
 
 class CreateResult {
   bool status;
   GraphQLResponse<CreateTeam$Mutation> response;
 
-  CreateResult({this.status, this.response});
+  CreateResult(this.status, this.response);
+}
+
+class TeamInfo {
+  late int id;
+  late String name;
+  late List<String> teamMembers;
+
+  TeamInfo(this.id, this.name, this.teamMembers);
+
+  TeamInfo.fromResp(ListUserTeamsInfo$Query$TeamType response) {
+    id = int.parse(response.id);
+    name = response.name;
+    teamMembers = response.members.map((e) => e.username).toList();
+  }
 }
 
 enum TeamState {
   ToBeChecked,
   UserIsNotMember,
-  UserIsAlreadyMember,
-  UserIsJoiningTeam,
-  UserJoinedTeam,
-  UserIsCreatingTeam,
-  UserCreatedTeam
+  UserIsMember,
 }
 
 class TeamProvider with ChangeNotifier {
-  ArtemisClient _client = null;
+  late ArtemisClient _client;
+  bool _client_init = false;
+
   FlutterSecureStorage _storage = FlutterSecureStorage();
+
   TeamState _state = TeamState.ToBeChecked;
+  // int? _currentTeam = null;
+  // TeamInfo? _teamInfo = null;
 
   TeamState get state => _state;
+  // void set currentTeam(int teamId) {
+  //   _currentTeam = teamId;
+  // }
 
   TeamProvider();
 
   TeamProvider.withMocks(this._client, this._storage);
 
-  Future<ArtemisClient> _getClient() async {
-    if (_client == null) {
-      String token = await this._storage.read(key: "token");
-      if (token == null) {
-        throw ("token has to be in storage");
-      }
-      _client = initializeClient(token);
-    }
-    return _client;
-  }
-
   Future<bool> isUserMemberOfTeam() async {
     GraphQLResponse<ListUserTeams$Query> response = await _getClient()
         .then((client) => client.execute(ListUserTeamsQuery()));
-
     assert(!response.hasErrors, response.errors.toString());
 
-    bool result = response?.data?.myTeams?.isNotEmpty;
-    if (result) {
-      this._state = TeamState.UserIsAlreadyMember;
-    } else if (result == null) {
-      this._state = TeamState.ToBeChecked;
+    bool? result = response.data?.myTeams?.isNotEmpty;
+    var prev_state = _state;
+    if (result == null) {
+      _state = TeamState.ToBeChecked;
+    } else if (result) {
+      _state = TeamState.UserIsMember;
     } else {
-      this._state = TeamState.UserIsNotMember;
+      _state = TeamState.UserIsNotMember;
     }
-    // notifyListeners();
-    return result;
+
+    if (prev_state != state) {
+      notifyListeners();
+    }
+
+    return result ?? false;
   }
 
-  Future<List<ListTeams$Query$TeamType>> listTeams() async {
-    var response =
-        await _getClient().then((client) => client.execute(ListTeamsQuery()));
+  Future<List<TeamInfo>> listUserTeamsInfo() async {
+    GraphQLResponse<ListUserTeamsInfo$Query> response = await await _getClient()
+        .then((client) => client.execute(ListUserTeamsInfoQuery()));
     assert(!response.hasErrors, response.errors.toString());
-    return response.data.teams;
+
+    List<TeamInfo> info =
+        response.data!.myTeams!.map((e) => TeamInfo.fromResp(e!)).toList();
+    return info;
   }
 
-  Future<JoinResult> joinTeam(int teamId) async {
-    this._state = TeamState.UserIsJoiningTeam;
-    notifyListeners();
-
+  Future<JoinResult> joinTeam(int teamId, String password) async {
     GraphQLResponse<JoinTeam$Mutation> response = await await _getClient().then(
-        (client) => client.execute(
-            JoinTeamMutation(variables: JoinTeamArguments(teamId: teamId))));
-    if (!response.hasErrors) {
-      this._state = TeamState.UserJoinedTeam;
-    } else {
-      this._state = TeamState.UserIsNotMember;
+        (client) => client.execute(JoinTeamMutation(
+            variables: JoinTeamArguments(teamId: teamId, password: password))));
+
+    if (!response.hasErrors && _state != TeamState.UserIsMember) {
+      _state = TeamState.UserIsMember;
+      notifyListeners();
     }
-    notifyListeners();
-    return JoinResult(status: !response.hasErrors, response: response);
+
+    return JoinResult(!response.hasErrors, response);
   }
 
   Future<CreateResult> createTeam(String name, String password) async {
     GraphQLResponse<CreateTeam$Mutation> response = await _getClient().then(
         (client) => client.execute(CreateTeamMutation(
             variables: CreateTeamArguments(name: name, password: password))));
-    this._state = TeamState.UserIsCreatingTeam;
-    notifyListeners();
-    print(this._state);
-    bool status =
-        !response.hasErrors && response.data.createTeam.errors.isEmpty;
-    if (status) {
-      this._state = TeamState.UserCreatedTeam;
-    } else {
-      this._state = TeamState.UserIsNotMember;
+    bool hasData = !response.hasErrors &&
+        (response.data!.createTeam!.errors?.isEmpty ?? false);
+
+    if (hasData && _state != TeamState.UserIsMember) {
+      _state = TeamState.UserIsMember;
+      notifyListeners();
     }
-    print(this._state);
-    notifyListeners();
-    return CreateResult(status: status, response: response);
+    return CreateResult(hasData, response);
+  }
+
+  Future<ArtemisClient> _getClient() async {
+    if (!_client_init) {
+      String? token = await this._storage.read(key: "token");
+      if (token == null) {
+        throw ("token has to be in storage");
+      }
+      _client = initializeClient(token);
+      _client_init = true;
+    }
+    return _client;
   }
 }
