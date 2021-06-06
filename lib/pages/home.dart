@@ -14,16 +14,18 @@ class _Home extends State<Home> {
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
 
     return SingleChildScrollView(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "You have to join a team first",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 30),
-            ),
-          ]),
+      child: Container(
+          padding: EdgeInsets.all(40.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Ble ble bleble",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 30),
+                ),
+              ])),
     );
   }
 }

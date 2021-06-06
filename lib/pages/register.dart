@@ -1,6 +1,7 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/widgets/button.dart';
+import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final formKey = new GlobalKey<FormState>();
 
-  String _username, _email, _password, _confirmPassword;
+  late String _username, _email, _password, _confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -20,86 +21,57 @@ class _RegisterState extends State<Register> {
 
     final usernameField = TextFormField(
       autofocus: false,
-      onSaved: (value) => _username = value,
+      onSaved: (value) => _username = value ?? '',
     );
 
     final emailField = TextFormField(
       autofocus: false,
-      onSaved: (value) => _email = value,
+      onSaved: (value) => _email = value ?? '',
     );
 
     final passwordField = TextFormField(
       autofocus: false,
       obscureText: true,
-      validator: (value) => value.isEmpty ? "Please enter password" : null,
-      onSaved: (value) => _password = value,
+      validator: (value) =>
+          (value?.isEmpty ?? true) ? "Please enter password" : null,
+      onSaved: (value) => _password = value ?? '',
     );
 
     final confirmPassword = TextFormField(
       autofocus: false,
       obscureText: true,
-      validator: (value) => value.isEmpty ? "Your password is required" : null,
-      onSaved: (value) => _confirmPassword = value,
-    );
-
-    final forgotLabel = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.all(0.0),
-          ),
-          child: Text("Forgot password?",
-              style: TextStyle(fontWeight: FontWeight.w300)),
-          onPressed: () {},
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.all(0.0),
-          ),
-          child: Text("Sign in", style: TextStyle(fontWeight: FontWeight.w300)),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/login');
-          },
-        ),
-      ],
+      validator: (value) =>
+          (value?.isEmpty ?? true) ? "Your password is required" : null,
+      onSaved: (value) => _confirmPassword = value ?? '',
     );
 
     var doRegister = () {
       final form = formKey.currentState;
-      if (form.validate()) {
-        form.save();
+      if (form?.validate() ?? false) {
+        form!.save();
         auth
             .register(_username, _email, _password, _confirmPassword)
             .then((response) {
           if (response.status) {
             Navigator.pushReplacementNamed(context, '/login');
-            Flushbar(
-              message: "Registration succeeded",
-              duration: Duration(seconds: 3),
-            ).show(context);
+            CommonFlushbar("Registration succeeded").show(context);
           } else {
-            Flushbar(
-              message: response.response.hasErrors
-                  ? response.response.errors
-                      .map((err) => err.message)
-                      .join("\n")
-                  : response.response.data.register.errors
-                      .map((err) =>
-                          [err.field, err.messages.join(",")].join(": "))
-                      .join("\n"),
-              duration: Duration(seconds: 10),
-            ).show(context);
+            CommonFlushbar(response.response.hasErrors
+                    ? response.response.errors!
+                        .map((err) => err.message)
+                        .join("\n")
+                    : response.response.data!.register!.errors!
+                        .map((err) => err != null
+                            ? [err.field, err.messages.join(",")].join(": ")
+                            : '')
+                        .join("\n"))
+                .show(context);
           }
         });
       } else {
-        Flushbar(
-          message: "Invalid form",
-          duration: Duration(seconds: 3),
-        ).show(context);
+        CommonFlushbar("Invalid form").show(context);
       }
     };
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
     return SafeArea(
       child: Scaffold(
@@ -130,24 +102,7 @@ class _RegisterState extends State<Register> {
                   SizedBox(height: 20.0),
                   auth.registeredInStatus == Status.Registering
                       ? Loading()
-                      : Material(
-                          elevation: 5.0,
-                          borderRadius: BorderRadius.circular(30.0),
-                          color: Theme.of(context).primaryColor,
-                          child: MaterialButton(
-                            minWidth: MediaQuery.of(context).size.width,
-                            padding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            onPressed: doRegister,
-                            child: Text("Register",
-                                textAlign: TextAlign.center,
-                                style: style.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                  SizedBox(height: 5.0),
-                  forgotLabel
+                      : CommonMaterialButton("Register", onPressed: doRegister)
                 ],
               ),
             ),

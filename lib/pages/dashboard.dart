@@ -47,9 +47,7 @@ class _DashBoardState extends State<DashBoard>
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => TeamProvider())
-        ],
+        providers: [ChangeNotifierProvider(create: (_) => TeamProvider())],
         builder: (context, child) {
           final teamProvider = Provider.of<TeamProvider>(context);
 
@@ -57,8 +55,6 @@ class _DashBoardState extends State<DashBoard>
           List<IconData> icons;
 
           switch (teamProvider.state) {
-            case TeamState.CheckInProgress:
-              return Scaffold(body: Loading());
             case TeamState.ToBeChecked:
               return FutureBuilder(
                   future: teamProvider.isUserMemberOfTeam(),
@@ -88,7 +84,7 @@ class _DashBoardState extends State<DashBoard>
               bottomNavigationBar: TabBar(
                 tabs: icons
                     .map((e) => Container(
-                        margin: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(15),
                         child: Icon(
                           e,
                         )))
