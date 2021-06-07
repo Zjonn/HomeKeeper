@@ -4,13 +4,11 @@ query ListUserTeams {
     }
 }
 
-query ListTeams {
-    teams {
-        id
-        name
-        createdBy {
-            username
-        }
+query ListUserTeamsInfo {
+    myTeams {
+        id,
+        name,
+        members {username}
     }
 }
 
@@ -26,8 +24,8 @@ mutation CreateTeam($name: String!, $password: String!) {
     }
 }
 
-mutation JoinTeam($teamId: Int!) {
-    joinTeam (teamId: $teamId) {
+mutation JoinTeam($teamId: Int!, $password: String!) {
+    joinTeam (teamId: $teamId, password: $password) {
         team {
             name
         }

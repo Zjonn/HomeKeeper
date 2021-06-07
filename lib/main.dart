@@ -4,7 +4,6 @@ import 'package:home_keeper/pages/dashboard.dart';
 import 'package:home_keeper/pages/login.dart';
 import 'package:home_keeper/pages/register.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
-import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => TeamProvider())
       ],
       child: MaterialApp(
           title: 'HomeKeeper',
@@ -39,8 +37,9 @@ class MyApp extends StatelessWidget {
                       return Text('Error: ${snapshot.error}');
                     else if (snapshot.data == null)
                       return Login();
-                    else
+                    else {
                       return DashBoard();
+                    }
                 }
               }),
           routes: {

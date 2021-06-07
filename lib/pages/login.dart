@@ -1,11 +1,12 @@
 // https://medium.com/@afegbua/flutter-thursday-13-building-a-user-registration-and-login-process-with-provider-and-external-api-1bb87811fd1d
 
-import 'package:flushbar/flushbar.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/widgets/button.dart';
+import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:home_keeper/widgets/loading.dart';
-// import 'package:jada/util/validators.dart';
-// import 'package:jada/util/widgets.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -16,7 +17,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final formKey = new GlobalKey<FormState>();
 
-  String _username, _password;
+  late String _username, _password;
 
   @override
   Widget build(BuildContext context) {
@@ -24,72 +25,55 @@ class _LoginState extends State<Login> {
 
     final usernameField = TextFormField(
       autofocus: false,
-      onSaved: (value) => _username = value,
+      onSaved: (value) => _username = value ?? '',
     );
 
     final passwordField = TextFormField(
       autofocus: false,
       obscureText: true,
-      validator: (value) => value.isEmpty ? "Please enter password" : null,
-      onSaved: (value) => _password = value,
+      validator: (value) =>
+          (value?.isEmpty ?? true) ? "Please enter password" : null,
+      onSaved: (value) => _password = value ?? '',
     );
 
     final forgotLabel = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.all(0.0),
-          ),
-          child: Text("Forgot password?",
-              style: TextStyle(fontWeight: FontWeight.w300)),
-          onPressed: () {
-//            Navigator.pushReplacementNamed(context, '/reset-password');
-          },
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.all(0.0),
-          ),
-          child: Text("Sign up", style: TextStyle(fontWeight: FontWeight.w300)),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/register');
-          },
-        ),
+        CommonButton("Forgot password?", onPressed: () {
+          // Navigator.pushReplacementNamed(context, '/reset-password');
+        }),
+        CommonButton("Sign up", onPressed: () {
+          Navigator.pushNamed(context, '/register');
+        }),
       ],
     );
 
     var doLogin = () {
       final form = formKey.currentState;
 
-      if (form.validate()) {
-        form.save();
+      if (form?.validate() ?? false) {
+        form!.save();
 
         final Future<LoginResult> successfulMessage =
             auth.login(_username, _password);
 
         successfulMessage.then((response) {
           if (response.status) {
+            sleep(Duration(milliseconds: 100)); // TODO: Remove me
+
             Navigator.pushReplacementNamed(context, '/dashboard');
-            Flushbar(
-              message: "Successful login",
-              duration: Duration(seconds: 2),
-            ).show(context);
+            CommonFlushbar("Successful login").show(context);
           } else {
-            Flushbar(
-              message: response.response.errors
-                  .map((error) => error.message)
-                  .join("\n"),
-              duration: Duration(seconds: 2),
-            ).show(context);
+            CommonFlushbar(response.response.errors!
+                    .map((error) => error.message)
+                    .join("\n"))
+                .show(context);
           }
         });
       } else {
         print("form is invalid");
       }
     };
-
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
 
     return SafeArea(
       child: Scaffold(
@@ -112,22 +96,7 @@ class _LoginState extends State<Login> {
                   SizedBox(height: 20.0),
                   auth.loggedInStatus == Status.Authenticating
                       ? Loading()
-                      : Material(
-                          elevation: 5.0,
-                          borderRadius: BorderRadius.circular(30.0),
-                          color: Theme.of(context).primaryColor,
-                          child: MaterialButton(
-                            minWidth: MediaQuery.of(context).size.width,
-                            padding:
-                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                            onPressed: doLogin,
-                            child: Text("Login",
-                                textAlign: TextAlign.center,
-                                style: style.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
+                      : CommonMaterialButton("Login", onPressed: doLogin),
                   SizedBox(height: 5.0),
                   forgotLabel
                 ],
