@@ -9,7 +9,7 @@ class CommonContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-       padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+        padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         height: height,
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,

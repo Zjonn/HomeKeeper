@@ -2,6 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class CommonFlushbar extends Flushbar {
   CommonFlushbar(String message, {seconds = 2})
       : super(
