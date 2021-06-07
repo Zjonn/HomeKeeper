@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:artemis/artemis.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 @TestOn("vm")
@@ -23,22 +21,22 @@ class MockHttpClient extends Mock implements http.Client {}
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 
 void main() {
-  late ArtemisClient artemisClient;
-  late MockHttpClient mockHttpClient;
-  late AuthProvider authProvider;
-  late MockFlutterSecureStorage mockStorage;
+  // late ArtemisClient artemisClient;
+  // late MockHttpClient mockHttpClient;
+  // late AuthProvider authProvider;
+  // late MockFlutterSecureStorage mockStorage;
 
   group(
     'authProvider',
     () {
       setUp(() {
-        mockHttpClient = MockHttpClient();
-        mockStorage = MockFlutterSecureStorage();
-
-        artemisClient = ArtemisClient('http://localhost:3001/graphql',
-            httpClient: mockHttpClient);
-
-        authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
+        // mockHttpClient = MockHttpClient();
+        // mockStorage = MockFlutterSecureStorage();
+        //
+        // artemisClient = ArtemisClient('http://localhost:3001/graphql',
+        //     httpClient: mockHttpClient);
+        //
+        // authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
       });
 
       // TODO complete this test to actually check something
