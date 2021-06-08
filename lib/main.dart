@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/pages/dashboard.dart';
+import 'package:home_keeper/pages/dashboard/dashboard_builder.dart';
 import 'package:home_keeper/pages/login.dart';
 import 'package:home_keeper/pages/register.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
@@ -38,12 +38,12 @@ class MyApp extends StatelessWidget {
                     else if (snapshot.data == null)
                       return Login();
                     else {
-                      return DashBoard();
+                      return DashBoardBuilder();
                     }
                 }
               }),
           routes: {
-            '/dashboard': (context) => DashBoard(),
+            '/dashboard': (context) => DashBoardBuilder(),
             '/login': (context) => Login(),
             '/register': (context) => Register(),
           }),
