@@ -7,7 +7,7 @@ import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
-import 'home.dart';
+import '../home.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -46,52 +46,47 @@ class _DashBoardState extends State<DashBoard>
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => TeamProvider())],
-        builder: (context, child) {
-          final teamProvider = Provider.of<TeamProvider>(context);
+    final teamProvider = Provider.of<TeamProvider>(context);
 
-          List<StatefulWidget> tabs;
-          List<IconData> icons;
+    List<StatefulWidget> tabs;
+    List<IconData> icons;
 
-          switch (teamProvider.state) {
-            case TeamState.ToBeChecked:
-              return FutureBuilder(
-                  future: teamProvider.isUserMemberOfTeam(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    if (snapshot.hasError) {
-                      throw UnsupportedError(snapshot.error.toString());
-                    }
-                    return Scaffold(body: Loading());
-                  });
-            case TeamState.UserIsMember:
-              tabs = _tabs;
-              icons = _tabs_icons;
-              _changeController(tabs, true);
-              break;
-            case TeamState.UserIsNotMember:
-              tabs = _no_team_tabs;
-              icons = _no_team_tabs_icons;
-              _changeController(tabs, false);
-              break;
-          }
-          return Scaffold(
-              body: TabBarView(
-                children: tabs,
-                controller: _controller,
-              ),
-              bottomNavigationBar: TabBar(
-                tabs: icons
-                    .map((e) => Container(
-                        margin: EdgeInsets.all(15),
-                        child: Icon(
-                          e,
-                        )))
-                    .toList(),
-                controller: _controller,
-              ));
-        });
+    switch (teamProvider.state) {
+      case TeamState.ToBeChecked:
+        return FutureBuilder(
+            future: teamProvider.updateUserTeamsInfo(),
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+              if (snapshot.hasError) {
+                throw UnsupportedError(snapshot.error.toString());
+              }
+              return Scaffold(body: Loading());
+            });
+      case TeamState.UserIsMember:
+        tabs = _tabs;
+        icons = _tabs_icons;
+        _changeController(tabs, true);
+        break;
+      case TeamState.UserIsNotMember:
+        tabs = _no_team_tabs;
+        icons = _no_team_tabs_icons;
+        _changeController(tabs, false);
+        break;
+    }
+    return Scaffold(
+        body: TabBarView(
+          children: tabs,
+          controller: _controller,
+        ),
+        bottomNavigationBar: TabBar(
+          tabs: icons
+              .map((e) => Container(
+                  margin: EdgeInsets.all(15),
+                  child: Icon(
+                    e,
+                  )))
+              .toList(),
+          controller: _controller,
+        ));
   }
 
   void _changeController(final List<StatefulWidget> tabs, isUserMemberOfTeam) {
