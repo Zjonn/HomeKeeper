@@ -32,7 +32,7 @@ class CommonButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    throw TextButton(
+    return TextButton(
         style: TextButton.styleFrom(
           padding: EdgeInsets.all(0.0),
         ),
