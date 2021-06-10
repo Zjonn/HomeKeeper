@@ -17,21 +17,25 @@ jobs:
           LATEST_BACKEND_ARTIFACT=$(python3 << END
           import requests
           import json
+          import time
           from requests.api import request
 
           URL = 'https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions'
 
-          last_succ_workflow = json.loads(
-              requests.get(
-                  URL + '/runs',
-                  params={
-                      'branch': 'main',
-                      'status': 'success',
-                      'event': 'push',
-                  },
-                  headers={
-                      'Accept': 'application/vnd.github.v3+json'
-                  }).text)
+          last_succ_workflow = []
+          while not last_succ_workflow:
+              last_succ_workflow = json.loads(
+                  requests.get(
+                     URL + '/runs',
+                      params={
+                          'branch': 'main',
+                          'status': 'success',
+                          'event': 'push',
+                     },
+                     headers={
+                         'Accept': 'application/vnd.github.v3+json'
+                     }).text)
+             time.sleep(3)
 
           archive_download_url = json.loads(
               requests.get(
