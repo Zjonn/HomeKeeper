@@ -94,12 +94,13 @@ class TeamProvider with ChangeNotifier {
     _teamsInfo = info;
 
     if (_teamsInfo.isNotEmpty) {
-      if (_state != TeamState.UserIsMember) {
-        _state = TeamState.UserIsMember;
-      }
+      _state = TeamState.UserIsMember;
       if (_currentTeam == null) {
         _currentTeam = _teamsInfo.entries.first.key;
       }
+    } else {
+      _state = TeamState.UserIsNotMember;
+      _currentTeam = null;
     }
     notifyListeners();
   }
