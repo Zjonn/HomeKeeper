@@ -35,7 +35,7 @@ jobs:
                      headers={
                          'Accept': 'application/vnd.github.v3+json'
                      }).text)
-             time.sleep(3)
+              time.sleep(3)
 
           archive_download_url = json.loads(
               requests.get(
