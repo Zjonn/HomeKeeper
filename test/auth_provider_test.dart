@@ -39,11 +39,15 @@ void main() {
       authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
     });
 
-    // TODO complete this test to actually check something
+    test('initialState', () async {
+      expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
+    });
+
     test(
       'loginUser',
       () async {
-        when(mockHttpClient.send(http.Request("Test", Uri())))
+        when(mockHttpClient.send(any))
             .thenAnswer((Invocation a) async => simpleResponse('''{
             "data": {
               "tokenAuth": {
@@ -53,8 +57,32 @@ void main() {
             }
           } '''));
 
-        await authProvider.login("username", "password");
+        final res = await authProvider.login("username", "password");
+        expect(res.status, true);
+        expect(authProvider.loggedInStatus, Status.LoggedIn);
+
         verify(mockStorage.write(key: "token", value: "token_value"));
+      },
+    );
+
+    test(
+      'failingLoginUser',
+      () async {
+        when(mockHttpClient.send(any))
+            .thenAnswer((Invocation a) async => simpleResponse('''{
+            "errors": [
+              {
+                "message": ""
+              }
+            ],
+            "data": null
+          } '''));
+
+        final res = await authProvider.login("username", "password");
+        expect(res.status, false);
+        expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+
+        verifyZeroInteractions(mockStorage);
       },
     );
   });
