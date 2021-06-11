@@ -21,7 +21,7 @@ packages:
       name: another_flushbar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.22"
+    version: "1.10.23"
   args:
     dependency: transitive
     description:
@@ -35,7 +35,7 @@ packages:
       name: artemis
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.0-beta.11"
+    version: "7.0.0-beta.13"
   async:
     dependency: transitive
     description:
@@ -98,7 +98,7 @@ packages:
       name: built_collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "5.1.0"
   built_value:
     dependency: transitive
     description:
@@ -155,34 +155,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  connectivity:
+  connectivity_plus:
     dependency: transitive
     description:
-      name: connectivity
+      name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.6"
-  connectivity_for_web:
+    version: "1.0.2"
+  connectivity_plus_linux:
     dependency: transitive
     description:
-      name: connectivity_for_web
+      name: connectivity_plus_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0"
-  connectivity_macos:
+    version: "1.0.3"
+  connectivity_plus_macos:
     dependency: transitive
     description:
-      name: connectivity_macos
+      name: connectivity_plus_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0"
-  connectivity_platform_interface:
+    version: "1.0.2"
+  connectivity_plus_platform_interface:
     dependency: transitive
     description:
-      name: connectivity_platform_interface
+      name: connectivity_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "1.0.2"
+  connectivity_plus_web:
+    dependency: transitive
+    description:
+      name: connectivity_plus_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
+  connectivity_plus_windows:
+    dependency: transitive
+    description:
+      name: connectivity_plus_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   convert:
     dependency: transitive
     description:
@@ -218,6 +232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.2"
   equatable:
     dependency: "direct main"
     description:
@@ -245,7 +266,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.2"
   file:
     dependency: transitive
     description:
@@ -303,13 +324,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.0"
-  gql_code_builder_temp:
+  gql_code_builder:
     dependency: transitive
     description:
-      name: gql_code_builder_temp
+      name: gql_code_builder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0-nullsafety.1"
+    version: "0.2.0"
   gql_dedupe_link:
     dependency: transitive
     description:
@@ -358,14 +379,14 @@ packages:
       name: graphql
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0-nullsafety.5"
+    version: "5.0.0"
   graphql_flutter:
     dependency: "direct main"
     description:
       name: graphql_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0-nullsafety.5"
+    version: "5.0.0"
   graphs:
     dependency: transitive
     description:
@@ -463,7 +484,7 @@ packages:
       name: mockito
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.9"
+    version: "5.0.10"
   nested:
     dependency: transitive
     description:
@@ -484,7 +505,7 @@ packages:
       name: normalize
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.3"
+    version: "0.5.4"
   package_config:
     dependency: transitive
     description:
@@ -541,6 +562,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   platform:
     dependency: transitive
     description:
@@ -643,7 +671,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -783,7 +811,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.5"
   xdg_directories:
     dependency: transitive
     description:
@@ -791,6 +819,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.1.2"
   yaml:
     dependency: transitive
     description:
