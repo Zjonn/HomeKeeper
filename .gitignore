@@ -52,3 +52,4 @@ app.*.map.json
 
 # Generated file
 lib/graphql
+*mocks*
