@@ -4,6 +4,7 @@ targets:
       - lib/**
       - graphql/**
       - schema.graphql
+      - test/**
     builders:
       artemis:
         options:
