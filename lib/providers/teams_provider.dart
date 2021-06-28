@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:artemis/artemis.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 class JoinResult {
@@ -45,7 +43,6 @@ enum TeamState {
 
 class TeamProvider with ChangeNotifier {
   late final ArtemisClient _client;
-  late final FlutterSecureStorage _storage;
 
   TeamState _state = TeamState.ToBeChecked;
   Map<String, TeamInfo> _teamsInfo = {};
@@ -68,15 +65,7 @@ class TeamProvider with ChangeNotifier {
     }
   }
 
-  TeamProvider();
-
-  TeamProvider.withMocks(this._client, this._storage);
-
-  Future<void> initialize() async {
-    _storage = FlutterSecureStorage();
-    String token = (await this._storage.read(key: "token"))!;
-    _client = initializeClient(token);
-  }
+  TeamProvider(this._client);
 
   Future<void> updateUserTeamsInfo() async {
     GraphQLResponse<ListUserTeamsInfo$Query> response =
@@ -88,7 +77,8 @@ class TeamProvider with ChangeNotifier {
         team!.id: TeamInfo.fromResp(team)
     };
 
-    if (mapEquals<String, TeamInfo>(info, _teamsInfo)) {
+    if (mapEquals<String, TeamInfo>(info, _teamsInfo) &&
+        _state != TeamState.ToBeChecked) {
       return;
     }
     _teamsInfo = info;
