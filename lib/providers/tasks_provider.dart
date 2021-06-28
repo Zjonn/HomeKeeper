@@ -10,5 +10,4 @@ class TasksProvider with ChangeNotifier {
   late final ArtemisClient _client;
 
   TasksProvider(this._client);
-
 }
