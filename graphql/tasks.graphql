@@ -1,0 +1,50 @@
+query ListTasks($teamId: Int!) {
+    tasks(onlyActive: true, teamId: $teamId) {
+        id,
+        name,
+        description,
+        basePointsPrize,
+        refreshInterval,
+        isRecurring
+    }
+}
+
+query ListTasksInstances($teamId: Int!) {
+    taskInstances(onlyActive: false, teamId: $teamId) {
+        id,
+        active,
+        activeFrom,
+        task {
+            id
+        }
+    }
+}
+
+query ListTasksCompletions($teamId: Int!) {
+    completions(teamId: $teamId) {
+        userWhoCompletedTask {
+            id
+        },
+        taskInstance {
+            id
+        },
+        modifiedAt
+    }
+}
+
+mutation CreateTask($input : CreateTaskInput!) {
+    createTask(input: $input) {
+        task {
+            id,
+            name,
+            description,
+            basePointsPrize,
+            refreshInterval,
+            isRecurring
+        },
+        errors {
+            field,
+            messages
+        }
+    }
+}
