@@ -11,7 +11,7 @@ class Task {
 }
 
 class TaskInstance {
-  TaskInstance.fromResp(ListTaskInstances$Query$TaskInstanceType resp) {}
+  TaskInstance.fromResp(ListTasksInstances$Query$TaskInstanceType resp) {}
 }
 
 class TaskCompletion {
@@ -54,9 +54,9 @@ class TasksProvider with ChangeNotifier {
   }
 
   Future<void> updateUserTaskInstances(int teamId) async {
-    GraphQLResponse<ListTaskInstances$Query> response = await _client.execute(
-        ListTaskInstancesQuery(
-            variables: ListTaskInstancesArguments(teamId: teamId)));
+    GraphQLResponse<ListTasksInstances$Query> response = await _client.execute(
+        ListTasksInstancesQuery(
+            variables: ListTasksInstancesArguments(teamId: teamId)));
     assert(!response.hasErrors, response.errors.toString());
 
     List<TaskInstance> taskInstances_ = [
