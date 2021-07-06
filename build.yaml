@@ -9,6 +9,9 @@ targets:
     builders:
       artemis:
         options:
+          scalar_mapping:
+            - graphql_type: DateTime
+              dart_type: DateTime
           schema_mapping:
             - schema: schema.graphql
               queries_glob: graphql/*.graphql
