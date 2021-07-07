@@ -66,20 +66,18 @@ class AuthProvider with ChangeNotifier {
     });
 
     if (!response.hasErrors) {
-      // TODO handle token expiration
-
       await this
           ._storage
           .write(key: "token", value: response.data!.tokenAuth!.token);
 
       _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
       result = LoginResult(true, response);
     } else {
       _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
       result = LoginResult(false, response);
     }
+
+    notifyListeners();
     return result;
   }
 
@@ -130,5 +128,19 @@ class AuthProvider with ChangeNotifier {
     await FlutterSecureStorage().delete(key: "token");
     _loggedInStatus = Status.LoggedOut;
     notifyListeners();
+  }
+
+  Future<bool> isTokenValid() async {
+    final token = await FlutterSecureStorage().read(key: "token");
+    if (token?.isEmpty ?? true) {
+      return false;
+    }
+
+    final response = await _client.execute(
+        IsTokenValidMutation(variables: IsTokenValidArguments(token: token)));
+    if (response.hasErrors) {
+      return false;
+    }
+    return true;
   }
 }
