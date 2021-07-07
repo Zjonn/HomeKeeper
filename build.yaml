@@ -12,6 +12,8 @@ targets:
           scalar_mapping:
             - graphql_type: DateTime
               dart_type: DateTime
+            - graphql_type: GenericScalar
+              dart_type: List
           schema_mapping:
             - schema: schema.graphql
               queries_glob: graphql/*.graphql
