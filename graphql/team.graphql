@@ -14,9 +14,6 @@ query ListUserTeamsInfo {
 
 mutation CreateTeam($name: String!, $password: String!) {
     createTeam (input: {name: $name, password: $password}) {
-        team {
-            name
-        }
         errors {
             field
             messages
@@ -26,8 +23,6 @@ mutation CreateTeam($name: String!, $password: String!) {
 
 mutation JoinTeam($teamId: Int!, $password: String!) {
     joinTeam (teamId: $teamId, password: $password) {
-        team {
-            name
-        }
+        __typename
     }
 }
