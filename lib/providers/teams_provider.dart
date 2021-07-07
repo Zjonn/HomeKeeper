@@ -101,8 +101,7 @@ class TeamProvider with ChangeNotifier {
             variables: JoinTeamArguments(teamId: teamId, password: password)));
 
     if (!response.hasErrors && _state != TeamState.UserIsMember) {
-      _state = TeamState.UserIsMember;
-      notifyListeners();
+      await updateUserTeamsInfo();
     }
     return JoinResult(!response.hasErrors, response);
   }
@@ -115,8 +114,7 @@ class TeamProvider with ChangeNotifier {
         (response.data!.createTeam!.errors?.isEmpty ?? false);
 
     if (hasData && _state != TeamState.UserIsMember) {
-      _state = TeamState.UserIsMember;
-      notifyListeners();
+      await updateUserTeamsInfo();
     }
     return CreateResult(hasData, response);
   }
