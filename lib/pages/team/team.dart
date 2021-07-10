@@ -56,19 +56,18 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           ))
     ]));
 
-    return SingleChildScrollView(
+    return Container(
       padding: EdgeInsets.fromLTRB(20, 40, 20, 40),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             UserPointsPieChart(),
-            SizedBox(height: 5.0),
+            Spacer(),
             currentTeam,
             SizedBox(height: 5.0),
             teamMembers
           ]),
-      reverse: true,
     );
   }
 
