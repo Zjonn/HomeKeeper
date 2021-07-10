@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:home_keeper/pages/team/points_pie_chart.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:provider/provider.dart';
@@ -19,17 +20,6 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
 
     final teamProvider = Provider.of<TeamProvider>(context);
     final teamInfo = teamProvider.currentTeamInfo;
-
-    final teamMembersPoints = IntrinsicHeight(
-        child: PieChart(
-      PieChartData(
-        centerSpaceRadius: 40,
-        sectionsSpace: 0,
-      ),
-      swapAnimationDuration: Duration(milliseconds: 150), // Optional
-      swapAnimationCurve: Curves.linear,
-      // Optional
-    ));
 
     final currentTeam = CommonContainer(
       child: Column(children: [
@@ -73,7 +63,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            teamMembersPoints,
+            UserPointsPieChart(),
             SizedBox(height: 5.0),
             currentTeam,
             SizedBox(height: 5.0),
