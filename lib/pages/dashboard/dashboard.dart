@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_keeper/pages/join_team/join_team_builder.dart';
 import 'package:home_keeper/pages/settings.dart';
-import 'package:home_keeper/pages/tasks.dart';
+import 'package:home_keeper/pages/tasks/tasks_builder.dart';
 import 'package:home_keeper/pages/team/team.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
@@ -22,7 +22,7 @@ class _DashBoardState extends State<DashBoard>
     Icons.settings
   ];
 
-  final _tabs = [Home(), Tasks(), Team(), Settings()];
+  final _tabs = [Home(), TasksBuilder(), Team(), Settings()];
   final _tabs_icons = [
     Icons.home,
     Icons.rule_rounded,
