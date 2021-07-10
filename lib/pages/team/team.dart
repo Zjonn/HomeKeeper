@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,6 +20,17 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
     final teamProvider = Provider.of<TeamProvider>(context);
     final teamInfo = teamProvider.currentTeamInfo;
 
+    final teamMembersPoints = IntrinsicHeight(
+        child: PieChart(
+      PieChartData(
+        centerSpaceRadius: 40,
+        sectionsSpace: 0,
+      ),
+      swapAnimationDuration: Duration(milliseconds: 150), // Optional
+      swapAnimationCurve: Curves.linear,
+      // Optional
+    ));
+
     final currentTeam = CommonContainer(
       child: Column(children: [
         Text(
@@ -32,6 +44,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                 TextStyle(fontSize: 30, color: Theme.of(context).accentColor)),
       ]),
     );
+
     final teamMembers = CommonContainer(
         child: Column(children: [
       Text(
@@ -59,7 +72,13 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [currentTeam, SizedBox(height: 5.0), teamMembers]),
+          children: [
+            teamMembersPoints,
+            SizedBox(height: 5.0),
+            currentTeam,
+            SizedBox(height: 5.0),
+            teamMembers
+          ]),
       reverse: true,
     );
   }
