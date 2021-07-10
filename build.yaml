@@ -13,7 +13,7 @@ targets:
             - graphql_type: DateTime
               dart_type: DateTime
             - graphql_type: GenericScalar
-              dart_type: List
+              dart_type: Object
           schema_mapping:
             - schema: schema.graphql
               queries_glob: graphql/*.graphql
