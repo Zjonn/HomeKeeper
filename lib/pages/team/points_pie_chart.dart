@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:home_keeper/widgets/container.dart';
-import 'package:random_color/random_color.dart';
+
 import '../../widgets/indicator.dart';
 
 class UserPointsPieChart extends StatefulWidget {
@@ -11,7 +11,7 @@ class UserPointsPieChart extends StatefulWidget {
 }
 
 class UserPointsPieChartState extends State {
-  final RandomColor _randomColor = RandomColor();
+  // final RandomColor _randomColor = RandomColor();
   int touchedIndex = -1;
 
   @override
