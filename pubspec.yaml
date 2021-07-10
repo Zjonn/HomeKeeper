@@ -44,6 +44,8 @@ dependencies:
   # login.dart
   another_flushbar: ^1.10.22
   expandable: ^5.0.1
+  fl_chart: ^0.36.2
+  random_color: ^1.0.6-nullsafety
 
 dev_dependencies:
   flutter_test:
