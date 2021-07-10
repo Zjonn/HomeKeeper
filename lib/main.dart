@@ -4,6 +4,7 @@ import 'package:home_keeper/pages/dashboard/dashboard_builder.dart';
 import 'package:home_keeper/pages/login.dart';
 import 'package:home_keeper/pages/register.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return CircularProgressIndicator();
+                        return Loading();
                       default:
                         if (snapshot.hasError)
                           return Text('Error: ${snapshot.error}');
