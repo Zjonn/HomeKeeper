@@ -97,13 +97,13 @@ class AuthProvider with ChangeNotifier {
     final response = await this._client.execute(registerMutation);
 
     if (response.hasErrors) {
-      return onError(response);
+      return _onError(response);
     } else {
-      return onValue(response);
+      return _onValue(response);
     }
   }
 
-  Future<RegisterResult> onValue(
+  Future<RegisterResult> _onValue(
       GraphQLResponse<RegisterUser$Mutation> response) async {
     var result;
 
@@ -118,20 +118,20 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  RegisterResult onError(GraphQLResponse<RegisterUser$Mutation> response) {
+  RegisterResult _onError(GraphQLResponse<RegisterUser$Mutation> response) {
     _registeredInStatus = Status.NotRegistered;
     notifyListeners();
     return RegisterResult(false, response);
   }
 
   Future<void> logout() async {
-    await FlutterSecureStorage().delete(key: "token");
+    await _storage.delete(key: "token");
     _loggedInStatus = Status.LoggedOut;
     notifyListeners();
   }
 
   Future<bool> isTokenValid() async {
-    final token = await FlutterSecureStorage().read(key: "token");
+    final token = await _storage.read(key: "token");
     if (token?.isEmpty ?? true) {
       return false;
     }
