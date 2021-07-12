@@ -1,9 +1,30 @@
 type Query {
+  """Lists Tasks in the given team."""
   tasks(teamId: Int!, onlyActive: Boolean = false): [TaskType]
+
+  """Lists TaskIntances in the given team."""
   taskInstances(teamId: Int!, onlyActive: Boolean = false): [TaskInstanceType]
+
+  """Lists TaskIntances of the given task."""
   relatedTaskInstances(taskId: Int!, onlyActive: Boolean = false): [TaskInstanceType]
+
+  """Lists history of TaskInsance completions in the given team."""
   completions(teamId: Int!): [TaskInstanceCompletionType]
-  userPoints(teamId: Int!): Int
+
+  """
+  Counts points for a given user in a given team.
+              User has to be a member of the given team.
+              Logged in user has to be member of the given team.
+          
+  """
+  userPoints(userId: Int!, teamId: Int!, fromDatetime: DateTime = null, toDatetime: DateTime = null): Int
+
+  """
+  Counts points for each member of a given team.
+              Logged in user has to be member of the given team.
+          
+  """
+  teamMembersPoints(teamId: Int!, fromDatetime: DateTime = null, toDatetime: DateTime = null): [MemberPointsType]
   me: UserType
   users: [UserType]
   myTeams: [TeamType]
@@ -76,6 +97,7 @@ type TaskInstanceCompletionType {
   deletedAt: DateTime
   taskInstance: TaskInstanceType!
   userWhoCompletedTask: UserType!
+  pointsGranted: Int!
 }
 
 type TaskInstanceType {
@@ -84,6 +106,11 @@ type TaskInstanceType {
   activeFrom: DateTime!
   completed: Boolean!
   active: Boolean
+}
+
+type MemberPointsType {
+  member: UserType
+  points: Int
 }
 
 type Mutation {
