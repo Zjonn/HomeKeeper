@@ -26,7 +26,6 @@ type Query {
   """
   teamMembersPoints(teamId: Int!, fromDatetime: DateTime = null, toDatetime: DateTime = null): [MemberPointsType]
   me: UserType
-  users: [UserType]
   myTeams: [TeamType]
   teams: [TeamType]
   teamMembers(teamId: Int = null): [UserType]
@@ -85,8 +84,16 @@ type UserType {
   """
   isActive: Boolean!
   dateJoined: DateTime!
+  profile: ProfileType
   teamSet: [TeamType!]!
   taskinstancecompletionSet: [TaskInstanceCompletionType!]!
+}
+
+type ProfileType {
+  id: ID!
+  imageId: String
+  colorId: String
+  user: UserType!
 }
 
 type TaskInstanceCompletionType {
@@ -117,6 +124,7 @@ type Mutation {
   createTask(input: CreateTaskInput!): CreateTaskPayload
   submitTaskInstanceCompletion(input: SubmitTaskInstanceCompletionInput!): SubmitTaskInstanceCompletionPayload
   register(input: RegisterInput!): RegisterPayload
+  setProfileData(input: ProfileInput!): SetProfileData
   createTeam(input: CreateTeamInput!): CreateTeamPayload
   joinTeam(password: String = null, teamId: Int = null): JoinTeam
   leaveTeam(teamId: Int = null): LeaveTeam
@@ -190,6 +198,16 @@ input RegisterInput {
   password2: String!
   email: String
   clientMutationId: String
+}
+
+type SetProfileData {
+  profile: ProfileType
+}
+
+input ProfileInput {
+  userId: ID
+  imageId: String
+  colorId: String
 }
 
 type CreateTeamPayload {
