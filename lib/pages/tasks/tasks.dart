@@ -10,7 +10,7 @@ class _Tasks extends State<Tasks> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(40.0),
+      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
       reverse: true,
       child: Column(children: [
         FloatingActionButton(

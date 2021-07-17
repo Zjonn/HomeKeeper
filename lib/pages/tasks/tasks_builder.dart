@@ -23,20 +23,20 @@ class _TasksBuilderState extends State<TasksBuilder>
         onWillPop: () async =>
             await navigatorState.currentState!.maybePop() && false,
         child: Navigator(
-          key: navigatorState,
-          initialRoute: 'tasks',
-          onGenerateRoute: (RouteSettings settings) {
-            switch (settings.name) {
-              case 'tasks':
-                return MaterialPageRoute(
-                    builder: (context) => Tasks(), settings: settings);
-              case 'create_task':
-                return MaterialPageRoute(
-                    builder: (context) => CreateTask(), settings: settings);
-              default:
-                throw Exception("Invalid route");
-            }
-          },
-        ));
+              key: navigatorState,
+              initialRoute: 'tasks',
+              onGenerateRoute: (RouteSettings settings) {
+                switch (settings.name) {
+                  case 'tasks':
+                    return MaterialPageRoute(
+                        builder: (context) => Tasks(), settings: settings);
+                  case 'create_task':
+                    return MaterialPageRoute(
+                        builder: (context) => CreateTask(), settings: settings);
+                  default:
+                    throw Exception("Invalid route");
+                }
+              },
+            ));
   }
 }

@@ -17,6 +17,7 @@ class _Home extends State<Home> {
     var lastEvents = taskProvider.taskCompletions
         .map((e) => CommonContainer(child: Text("123")))
         .toList();
+
     if (lastEvents.isEmpty) {
       lastEvents.add(CommonContainer(
           child: Text(
@@ -26,7 +27,7 @@ class _Home extends State<Home> {
     }
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20, 40, 20, 40),
+      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
