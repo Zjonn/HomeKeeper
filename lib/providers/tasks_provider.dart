@@ -91,8 +91,8 @@ class TasksProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<TaskCreateResult> createTask(String name, String? description, int points,
-      int teamId, String refreshInterval, bool isRecurring) async {
+  Future<TaskCreateResult> createTask(String name, String? description,
+      int points, int teamId, String refreshInterval, bool isRecurring) async {
     GraphQLResponse<CreateTask$Mutation> response = await _client.execute(
         CreateTaskMutation(
             variables: CreateTaskArguments(
