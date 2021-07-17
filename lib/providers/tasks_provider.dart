@@ -19,12 +19,12 @@ class TaskCompletion {
       ListTasksCompletions$Query$TaskInstanceCompletionType resp) {}
 }
 
-class CreateResult {
+class TaskCreateResult {
   bool status;
 
   GraphQLResponse<CreateTask$Mutation> response;
 
-  CreateResult(this.status, this.response);
+  TaskCreateResult(this.status, this.response);
 }
 
 class TasksProvider with ChangeNotifier {
@@ -91,7 +91,7 @@ class TasksProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<CreateResult> createTask(String name, String? description, int points,
+  Future<TaskCreateResult> createTask(String name, String? description, int points,
       int teamId, String refreshInterval, bool isRecurring) async {
     GraphQLResponse<CreateTask$Mutation> response = await _client.execute(
         CreateTaskMutation(
@@ -110,6 +110,6 @@ class TasksProvider with ChangeNotifier {
       notifyListeners();
     }
 
-    return CreateResult(response.hasErrors, response);
+    return TaskCreateResult(response.hasErrors, response);
   }
 }
