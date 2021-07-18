@@ -31,25 +31,29 @@ class _CreateTaskState extends State<CreateTask> {
             builder: (context, setState) {
               return Center(
                   child: Padding(
-                      padding: EdgeInsets.only(left: 40, right: 40),
+                      padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                       child: CommonContainer(
                           child: FractionallySizedBox(
                               heightFactor: 0.4,
                               child: Column(children: [
                                 Text(
                                     "Choose how many days the period will last"),
-                                NumberPicker(
-                                  minValue: 1,
-                                  maxValue: 60,
-                                  step: 1,
-                                  onChanged: (int value) {
-                                    setState(() {
-                                      period = value;
-                                    });
-                                  },
-                                  value: period,
-                                  itemCount: 5,
-                                )
+                                GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context, period);
+                                    },
+                                    child: NumberPicker(
+                                      minValue: 1,
+                                      maxValue: 60,
+                                      step: 1,
+                                      onChanged: (int value) {
+                                        setState(() {
+                                          period = value;
+                                        });
+                                      },
+                                      value: period,
+                                      itemCount: 5,
+                                    ))
                               ])))));
             },
           );
@@ -113,29 +117,22 @@ class _CreateTaskState extends State<CreateTask> {
           border: _isPeriodic ? null : InputBorder.none,
         ));
 
-    final _doCreateTask = () {
-      final form = formKey.currentState;
+    final _doCreateTask = () async {
+      final form = formKey.currentState!;
 
-      if (form?.validate() ?? false) {
-        form!.save();
+      if (form.validate()) {
+        form.save();
 
-        final Future<TaskCreateResult> successfulMessage =
-            tasksProvider.createTask(
-                _taskName,
-                _description,
-                _points,
-                int.parse(teamProvider.currentTeamInfo.id),
-                _period.toString(),
-                _isPeriodic);
+        final result = await tasksProvider.createTask(_taskName, _description,
+            _points, teamProvider.currentTeamInfo.id, _period, _isPeriodic);
 
-        successfulMessage.then((response) {
-          if (response.status) {
-            CommonFlushbar("Task created!").show(context);
-          } else {
-            CommonFlushbar(response.response.data!.createTask.toString())
-                .show(context);
-          }
-        });
+        if (result.isSuccessful) {
+          Navigator.pop(context);
+          CommonFlushbar("Task created!").show(context);
+        } else {
+          CommonFlushbar(result.errors ?? 'Task not created. No error returned')
+              .show(context);
+        }
       }
     };
 
@@ -143,7 +140,6 @@ class _CreateTaskState extends State<CreateTask> {
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
         },
-        behavior: HitTestBehavior.translucent,
         child: Center(
             child: SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(20, 40, 20, 20),

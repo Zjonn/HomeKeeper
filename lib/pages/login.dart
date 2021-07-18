@@ -49,10 +49,10 @@ class _LoginState extends State<Login> {
     );
 
     var doLogin = () {
-      final form = formKey.currentState;
+      final form = formKey.currentState!;
 
-      if (form?.validate() ?? false) {
-        form!.save();
+      if (form.validate()) {
+        form.save();
 
         final Future<LoginResult> successfulMessage =
             auth.login(_username, _password);

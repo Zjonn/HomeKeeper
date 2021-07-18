@@ -10,7 +10,7 @@ class GraphqlError<T1, T2> {
 abstract class GraphqlResult<T> {
   final T response;
   late final bool isSuccessful;
-  late final List<GraphqlError<String, String>>? errors;
+  late final String? errors;
 
   GraphqlResult(this.response) {
     isSuccessful = parseResponse(this.response);

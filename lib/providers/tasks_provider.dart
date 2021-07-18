@@ -2,6 +2,7 @@ import 'package:artemis/client.dart';
 import 'package:artemis/schema/graphql_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:home_keeper/abstracts/graphql_result.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 class Task {
@@ -19,12 +20,28 @@ class TaskCompletion {
       ListTasksCompletions$Query$TaskInstanceCompletionType resp) {}
 }
 
-class TaskCreateResult {
-  bool status;
+class TaskCreateResult
+    extends GraphqlResult<GraphQLResponse<CreateTask$Mutation>> {
+  TaskCreateResult(GraphQLResponse<CreateTask$Mutation> response)
+      : super(response);
 
-  GraphQLResponse<CreateTask$Mutation> response;
+  @override
+  bool parseResponse(GraphQLResponse<CreateTask$Mutation> response) {
+    bool isError =
+        response.hasErrors || response.data!.createTask!.errors!.isNotEmpty;
 
-  TaskCreateResult(this.status, this.response);
+    if (response.hasErrors) {
+      errors = response.errors!
+          .map((e) => GraphqlError<String, String>(e.message))
+          .join('\n');
+    } else {
+      errors = response.data!.createTask!.errors!
+          .map((e) => GraphqlError<String, String>(e!.messages.join('\n'),
+              field: e.field))
+          .join('\n');
+    }
+    return !isError;
+  }
 }
 
 class TasksProvider with ChangeNotifier {
@@ -92,24 +109,26 @@ class TasksProvider with ChangeNotifier {
   }
 
   Future<TaskCreateResult> createTask(String name, String? description,
-      int points, int teamId, String refreshInterval, bool isRecurring) async {
+      int points, String teamId, int? refreshInterval, bool isRecurring) async {
     GraphQLResponse<CreateTask$Mutation> response = await _client.execute(
         CreateTaskMutation(
             variables: CreateTaskArguments(
                 input: CreateTaskInput(
                     name: name,
                     description: description,
-                    team: teamId.toString(),
+                    team: teamId,
                     basePointsPrize: points,
-                    refreshInterval: refreshInterval,
+                    refreshInterval:
+                        refreshInterval != null ? "P${refreshInterval}D" : null,
                     isRecurring: isRecurring))));
 
-    if (!response.hasErrors &&
-        (response.data!.createTask!.errors?.isEmpty ?? false)) {
+    final result = TaskCreateResult(response);
+
+    if (result.isSuccessful) {
       tasks.add(Task.fromCreateResp(response.data!.createTask!.task!));
       notifyListeners();
     }
 
-    return TaskCreateResult(response.hasErrors, response);
+    return result;
   }
 }
