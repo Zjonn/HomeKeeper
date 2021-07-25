@@ -121,8 +121,17 @@ type MemberPointsType {
 }
 
 type Mutation {
-  createTask(input: CreateTaskInput!): CreateTaskPayload
-  submitTaskInstanceCompletion(input: SubmitTaskInstanceCompletionInput!): SubmitTaskInstanceCompletionPayload
+  createTask(input: TaskCreateGenericType!): TaskSerializerMutation
+  updateTask(input: TaskUpdateGenericType!): TaskSerializerMutation
+  deleteTask(
+    """Django object unique identification field"""
+    id: ID!
+  ): TaskSerializerMutation
+  submitTaskInstanceCompletion(input: TaskInstanceCompletionCreateGenericType!): TaskInstanceCompletionSerializerMutation
+  revertTaskInstanceCompletion(
+    """Django object unique identification field"""
+    id: ID!
+  ): TaskInstanceCompletionSerializerMutation
   register(input: RegisterInput!): RegisterPayload
   setProfileData(input: ProfileInput!): SetProfileData
   createTeam(input: CreateTeamInput!): CreateTeamPayload
@@ -135,10 +144,15 @@ type Mutation {
   refreshToken(token: String = null): Refresh
 }
 
-type CreateTaskPayload {
+"""DRF serializer based Mutation for Tasks."""
+type TaskSerializerMutation {
   task: TaskType
+
+  """Boolean field that return mutation result request."""
+  ok: Boolean
+
+  """Errors list for the field"""
   errors: [ErrorType]
-  clientMutationId: String
 }
 
 type ErrorType {
@@ -146,27 +160,66 @@ type ErrorType {
   messages: [String!]!
 }
 
-input CreateTaskInput {
-  name: String!
-  description: String
-  team: ID!
+"""Auto generated InputType for Task model"""
+input TaskCreateGenericType {
+  """base points prize"""
   basePointsPrize: Int!
-  refreshInterval: String
+
+  """name"""
+  name: String!
+
+  """team"""
+  team: ID!
+
+  """description"""
+  description: String
+
+  """"""
   isRecurring: Boolean
-  id: ID
-  clientMutationId: String
+
+  """refresh interval"""
+  refreshInterval: Float
 }
 
-type SubmitTaskInstanceCompletionPayload {
+"""Auto generated InputType for Task model"""
+input TaskUpdateGenericType {
+  """Django object unique identification field"""
+  id: ID!
+
+  """name"""
+  name: String
+
+  """description"""
+  description: String
+
+  """team"""
+  team: ID = null
+
+  """base points prize"""
+  basePointsPrize: Int
+
+  """refresh interval"""
+  refreshInterval: Float
+
+  """"""
+  isRecurring: Boolean
+}
+
+"""DRF serializer based Mutation for TaskInstanceCompletions."""
+type TaskInstanceCompletionSerializerMutation {
   taskInstanceCompletion: TaskInstanceCompletionType
+
+  """Boolean field that return mutation result request."""
+  ok: Boolean
+
+  """Errors list for the field"""
   errors: [ErrorType]
-  clientMutationId: String
 }
 
-input SubmitTaskInstanceCompletionInput {
+"""Auto generated InputType for TaskInstanceCompletion model"""
+input TaskInstanceCompletionCreateGenericType {
+  """task instance"""
   taskInstance: ID!
-  id: ID
-  clientMutationId: String
 }
 
 type RegisterPayload {
