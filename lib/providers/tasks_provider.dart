@@ -6,18 +6,59 @@ import 'package:home_keeper/abstracts/graphql_result.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 class Task {
-  Task.fromResp(ListTasks$Query$TaskType resp) {}
+  late String id;
+  late String name;
+  late String description;
 
-  Task.fromCreateResp(CreateTask$Mutation$CreateTaskPayload$TaskType resp) {}
+  late int points;
+  late int duration;
+
+  Task.fromResp(ListTasks$Query$TaskType resp) {
+    id = resp.id;
+    name = resp.name;
+    description = resp.description;
+    points = resp.basePointsPrize;
+  }
+
+  Task.fromCreateResp(CreateTask$Mutation$CreateTaskPayload$TaskType resp) {
+    id = resp.id;
+    name = resp.name;
+    description = resp.description;
+    points = resp.basePointsPrize;
+  }
 }
 
 class TaskInstance {
-  TaskInstance.fromResp(ListTasksInstances$Query$TaskInstanceType resp) {}
+  late final String id;
+  late final bool isActive;
+  late final Task relatedTask;
+  late final DateTime activeFrom;
+
+  TaskInstance.fromResp(ListTasksInstances$Query$TaskInstanceType resp,
+      final Map<String, Task> tasks) {
+    id = resp.id;
+    isActive = resp.active!;
+    activeFrom = resp.activeFrom;
+    relatedTask = tasks[resp.task.id]!;
+  }
 }
 
 class TaskCompletion {
+  late final int grantedPoints;
+  late final TaskInstance relatedTaskInstance;
+  late final DateTime modifiedTime;
+  late final String userId;
+
   TaskCompletion.fromResp(
-      ListTasksCompletions$Query$TaskInstanceCompletionType resp) {}
+      CompleteTask$Mutation$SubmitTaskInstanceCompletionPayload$TaskInstanceCompletionType
+          resp,
+      final List<TaskInstance> taskInstances) {
+    grantedPoints = resp.pointsGranted;
+    relatedTaskInstance = taskInstances
+        .firstWhere((element) => element.id == resp.taskInstance.id);
+    modifiedTime = resp.modifiedAt;
+    userId = resp.userWhoCompletedTask.id;
+  }
 }
 
 class TaskCreateResult
@@ -44,67 +85,112 @@ class TaskCreateResult
   }
 }
 
+class TaskCompletionResult
+    extends GraphqlResult<GraphQLResponse<CompleteTask$Mutation>> {
+  late final int grantedPoints;
+
+  TaskCompletionResult(GraphQLResponse<CompleteTask$Mutation> resp)
+      : super(resp);
+
+  @override
+  bool parseResponse(GraphQLResponse<CompleteTask$Mutation> response) {
+    bool isError = response.hasErrors;
+
+    if (response.hasErrors) {
+      errors = response.errors!
+          .map((e) => GraphqlError<String, String>(e.message))
+          .join('\n');
+    } else {
+      grantedPoints = response.data!.submitTaskInstanceCompletion!
+          .taskInstanceCompletion!.pointsGranted;
+    }
+
+    return !isError;
+  }
+}
+
+enum TasksState { InProgress, Initialized }
+
 class TasksProvider with ChangeNotifier {
   late final ArtemisClient _client;
 
-  List<Task> tasks = [];
-  List<TaskInstance> taskInstances = [];
-  List<TaskCompletion> taskCompletions = [];
+  TasksState _state = TasksState.InProgress;
+  Map<String, Task> _tasks = {};
+  List<TaskInstance> _taskInstances = [];
+  List<TaskCompletion> _taskCompletions = [];
+
+  TasksState get state => _state;
+  Map<String, Task> get tasks => _tasks;
+  List<TaskInstance> get taskInstances => _taskInstances;
+  List<TaskCompletion> get taskCompletions => _taskCompletions;
 
   TasksProvider(this._client);
 
-  Future<void> updateUserTasks(int teamId) async {
-    GraphQLResponse<ListTasks$Query> response = await _client
-        .execute(ListTasksQuery(variables: ListTasksArguments(teamId: teamId)));
+  void update(String teamId) {
+    Future.wait([
+      updateUserTasks(teamId),
+      updateUserTaskInstances(teamId),
+      updateUserTaskCompletions(teamId)
+    ]).then((value) {
+      _state = TasksState.Initialized;
+      notifyListeners();
+    });
+  }
+
+  Future<void> updateUserTasks(String teamId) async {
+    GraphQLResponse<ListTasks$Query> response = await _client.execute(
+        ListTasksQuery(
+            variables: ListTasksArguments(teamId: int.parse(teamId))));
     assert(!response.hasErrors, response.errors.toString());
 
-    List<Task> tasks_ = [
-      for (var task in response.data!.tasks!) Task.fromResp(task!)
-    ];
+    Map<String, Task> tasks_ = {
+      for (var task in response.data!.tasks ?? []) task.id: Task.fromResp(task!)
+    };
 
-    if (listEquals<Task>(tasks, tasks_)) {
+    if (mapEquals<String, Task>(_tasks, tasks_)) {
       return;
     }
 
-    tasks = tasks_;
+    _tasks = tasks_;
     notifyListeners();
   }
 
-  Future<void> updateUserTaskInstances(int teamId) async {
+  Future<void> updateUserTaskInstances(String teamId) async {
     GraphQLResponse<ListTasksInstances$Query> response = await _client.execute(
         ListTasksInstancesQuery(
-            variables: ListTasksInstancesArguments(teamId: teamId)));
+            variables: ListTasksInstancesArguments(teamId: int.parse(teamId))));
     assert(!response.hasErrors, response.errors.toString());
 
     List<TaskInstance> taskInstances_ = [
-      for (var task in response.data!.taskInstances!)
-        TaskInstance.fromResp(task!)
+      for (var task in response.data!.taskInstances ?? [])
+        TaskInstance.fromResp(task!, _tasks)
     ];
 
-    if (listEquals<TaskInstance>(taskInstances, taskInstances_)) {
+    if (listEquals<TaskInstance>(_taskInstances, taskInstances_)) {
       return;
     }
 
-    taskInstances = taskInstances_;
+    _taskInstances = taskInstances_;
     notifyListeners();
   }
 
-  Future<void> updateUserTaskCompletions(int teamId) async {
+  Future<void> updateUserTaskCompletions(String teamId) async {
     GraphQLResponse<ListTasksCompletions$Query> response =
         await _client.execute(ListTasksCompletionsQuery(
-            variables: ListTasksCompletionsArguments(teamId: teamId)));
+            variables:
+                ListTasksCompletionsArguments(teamId: int.parse(teamId))));
     assert(!response.hasErrors, response.errors.toString());
 
     List<TaskCompletion> taskCompletions_ = [
-      for (var completion in response.data!.completions!)
-        TaskCompletion.fromResp(completion!)
+      for (var completion in response.data!.completions ?? [])
+        TaskCompletion.fromResp(completion!, _taskInstances)
     ];
 
-    if (listEquals<TaskCompletion>(taskCompletions, taskCompletions_)) {
+    if (listEquals<TaskCompletion>(_taskCompletions, taskCompletions_)) {
       return;
     }
 
-    taskCompletions = taskCompletions_;
+    _taskCompletions = taskCompletions_;
     notifyListeners();
   }
 
@@ -125,7 +211,30 @@ class TasksProvider with ChangeNotifier {
     final result = TaskCreateResult(response);
 
     if (result.isSuccessful) {
-      tasks.add(Task.fromCreateResp(response.data!.createTask!.task!));
+      final task = response.data!.createTask!.task!;
+      _tasks[task.id] = Task.fromCreateResp(task);
+      updateUserTaskInstances(teamId);
+    }
+
+    return result;
+  }
+
+  Future<TaskCompletionResult> completeTask(
+      String instanceId, String teamId) async {
+    GraphQLResponse<CompleteTask$Mutation> response = await _client.execute(
+        CompleteTaskMutation(
+            variables: CompleteTaskArguments(
+                input: SubmitTaskInstanceCompletionInput(
+                    taskInstance: instanceId))));
+
+    final result = TaskCompletionResult(response);
+
+    if (result.isSuccessful) {
+      final completion =
+          response.data!.submitTaskInstanceCompletion!.taskInstanceCompletion!;
+      _taskCompletions.add(TaskCompletion.fromResp(completion, taskInstances));
+
+      updateUserTaskInstances(teamId);
       notifyListeners();
     }
 
