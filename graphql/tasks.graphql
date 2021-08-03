@@ -1,5 +1,5 @@
 query ListTasks($teamId: Int!) {
-    tasks(onlyActive: true, teamId: $teamId) {
+    tasks(onlyActive: false, teamId: $teamId) {
         id,
         name,
         description,
@@ -16,7 +16,7 @@ query ListTasksInstances($teamId: Int!) {
         activeFrom,
         task {
             id
-        }
+        },
     }
 }
 
@@ -45,6 +45,21 @@ mutation CreateTask($input : CreateTaskInput!) {
         errors {
             field,
             messages
+        }
+    }
+}
+
+mutation CompleteTask($input : SubmitTaskInstanceCompletionInput!) {
+    submitTaskInstanceCompletion(input: $input) {
+        taskInstanceCompletion {
+            userWhoCompletedTask {
+                id
+            }
+            taskInstance {
+                id
+            },
+            modifiedAt,
+            pointsGranted
         }
     }
 }

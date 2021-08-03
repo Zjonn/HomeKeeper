@@ -1,0 +1,6 @@
+query teamMembersPoints($teamId: Int!, $fromDateTime: DateTime!) {
+    teamMembersPoints(teamId: $teamId, fromDatetime: $fromDateTime) {
+        member {id},
+        points
+    }
+}
