@@ -27,7 +27,7 @@ class _Home extends State<Home> {
     }
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+      padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

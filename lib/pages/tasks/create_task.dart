@@ -80,6 +80,7 @@ class _CreateTaskState extends State<CreateTask> {
       decoration: const InputDecoration(
           labelText: "Description", hintText: "Description can be empty"),
       onSaved: (value) => _description = value ?? '',
+      maxLines: null,
     );
 
     final pointsField = TextFormField(

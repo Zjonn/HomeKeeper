@@ -21,7 +21,7 @@ class _SettingsState extends State<Settings> {
     };
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+      padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
       reverse: true,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Material(

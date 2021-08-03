@@ -57,7 +57,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
     ]));
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+      padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
