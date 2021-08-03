@@ -14,30 +14,19 @@ class DashBoardBuilder extends StatelessWidget {
         builder: (context, child) {
           final client = Provider.of<AuthClientProvider>(context);
 
-          switch (client.state) {
-            case ClientState.Uninitialized:
-              return FutureBuilder(
-                  future: client.initialize(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<void> snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.done:
-                      case ConnectionState.waiting:
-                        return Loading();
-                      default:
-                        throw "Unexpected snapshot state";
-                    }
-                  });
-            case ClientState.Initialized:
-              return MultiProvider(providers: [
-                ChangeNotifierProvider(
-                    create: (_) => TeamProvider(client.client)),
-                ChangeNotifierProvider(
-                    create: (_) => TasksProvider(client.client))
-              ], builder: (context, child) => DashBoard());
-            default:
-              throw "Unsupported state";
+          if (client.state == ClientState.InProgress) {
+            return Loading();
           }
+          return MultiProvider(providers: [
+            ChangeNotifierProvider(create: (_) => TeamProvider(client.client)),
+            ChangeNotifierProxyProvider<TeamProvider, TasksProvider>(
+              create: (_) => TasksProvider(client.client),
+              update: (context, value, previous) {
+                previous!.update(value.currentTeamInfo.id);
+                return previous;
+              },
+            )
+          ], builder: (context, child) => DashBoard());
         });
   }
 }

@@ -52,15 +52,8 @@ class _DashBoardState extends State<DashBoard>
     List<IconData> icons;
 
     switch (teamProvider.state) {
-      case TeamState.ToBeChecked:
-        return FutureBuilder(
-            future: teamProvider.updateUserTeamsInfo(),
-            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              if (snapshot.hasError) {
-                throw UnsupportedError(snapshot.error.toString());
-              }
-              return Scaffold(body: Loading());
-            });
+      case TeamState.InProgress:
+        return Scaffold(body: Loading());
       case TeamState.UserIsMember:
         tabs = _tabs;
         icons = _tabs_icons;
