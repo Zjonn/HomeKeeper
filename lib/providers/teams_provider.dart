@@ -36,7 +36,7 @@ class TeamInfo {
 }
 
 enum TeamState {
-  ToBeChecked,
+  InProgress,
   UserIsNotMember,
   UserIsMember,
 }
@@ -44,7 +44,7 @@ enum TeamState {
 class TeamProvider with ChangeNotifier {
   late final ArtemisClient _client;
 
-  TeamState _state = TeamState.ToBeChecked;
+  TeamState _state = TeamState.InProgress;
   Map<String, TeamInfo> _teamsInfo = {};
 
   String? _currentTeam = null;
@@ -65,7 +65,9 @@ class TeamProvider with ChangeNotifier {
     }
   }
 
-  TeamProvider(this._client);
+  TeamProvider(this._client) {
+    updateUserTeamsInfo().then((value) => null);
+  }
 
   Future<void> updateUserTeamsInfo() async {
     GraphQLResponse<ListUserTeamsInfo$Query> response =
@@ -78,7 +80,7 @@ class TeamProvider with ChangeNotifier {
     };
 
     if (mapEquals<String, TeamInfo>(info, _teamsInfo) &&
-        _state != TeamState.ToBeChecked) {
+        _state != TeamState.InProgress) {
       return;
     }
     _teamsInfo = info;
