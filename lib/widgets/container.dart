@@ -8,22 +8,49 @@ class CommonContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Material(
+      color: Theme.of(context).primaryColor,
+      type: MaterialType.card,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      elevation: 5,
+      child: Ink(
         padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         height: height,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).primaryColor,
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(0, 1), // changes position of shadow
-            ),
-          ],
-        ),
         width: MediaQuery.of(context).size.width,
-        child: child);
+        child: child,
+      ),
+    );
+  }
+}
+
+class CommonContainerWithInkWell extends StatelessWidget {
+  final child;
+  final void Function()? onTap;
+  final void Function()? onDoubleTap;
+  final void Function()? onLongPress;
+
+  CommonContainerWithInkWell(
+      {this.child, this.onTap, this.onDoubleTap, this.onLongPress});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).primaryColor,
+      type: MaterialType.card,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      elevation: 5,
+      child: InkWell(
+        onTap: onTap,
+        onDoubleTap: onDoubleTap,
+        onLongPress: onLongPress,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          child: child,
+        ),
+      ),
+    );
   }
 }
