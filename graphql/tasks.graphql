@@ -1,0 +1,97 @@
+query ListTasks($teamId: Int!) {
+    tasks(onlyActive: true, teamId: $teamId) {
+        id,
+        name,
+        description,
+        basePointsPrize,
+        refreshInterval,
+        isRecurring
+    }
+}
+
+query ListTasksInstances($teamId: Int!) {
+    taskInstances(onlyActive: true, teamId: $teamId) {
+        id,
+        active,
+        activeFrom,
+        task {
+            id,
+            name,
+            description,
+            basePointsPrize,
+            refreshInterval,
+            isRecurring
+        },
+    }
+}
+
+query ListTasksCompletions($teamId: Int!) {
+    completions(teamId: $teamId) {
+        id,
+        userWhoCompletedTask {
+            username
+        },
+        taskInstance {
+            id,
+            active,
+            activeFrom,
+            task {
+                id,
+                name,
+                description,
+                basePointsPrize,
+                refreshInterval,
+                isRecurring
+            }
+        },
+        createdAt,
+        pointsGranted
+    }
+}
+
+mutation CreateTask($input : TaskCreateGenericType!) {
+    createTask(input: $input) {
+        task {
+            id,
+            name,
+            description,
+            basePointsPrize,
+            refreshInterval,
+            isRecurring
+        },
+        errors {
+            field,
+            messages
+        }
+    }
+}
+
+mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
+    submitTaskInstanceCompletion(input: $input) {
+        taskInstanceCompletion {
+            id,
+            userWhoCompletedTask {
+                username
+            }
+            taskInstance {
+                id,
+                active,
+                activeFrom,
+                task {
+                    id,
+                    name,
+                    description,
+                    basePointsPrize,
+                    refreshInterval,
+                    isRecurring
+                }
+            },
+            createdAt,
+            pointsGranted
+        },
+        errors {
+            field,
+            messages
+        }
+    }
+}

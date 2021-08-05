@@ -85,5 +85,64 @@ void main() {
         verifyZeroInteractions(mockStorage);
       },
     );
+
+    test('missingToken', () async {
+      when(mockStorage.read(
+              key: anyNamed("key"),
+              iOptions: anyNamed("iOptions"),
+              lOptions: anyNamed("lOptions")))
+          .thenAnswer((realInvocation) async => null);
+
+      final res = await authProvider.isTokenValid();
+      expect(res, false);
+      expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+    });
+
+    test('invalidToken', () async {
+      when(mockStorage.read(
+              key: anyNamed("key"),
+              iOptions: anyNamed("iOptions"),
+              lOptions: anyNamed("lOptions")))
+          .thenAnswer((realInvocation) async => "BEE3");
+
+      when(mockHttpClient.send(any))
+          .thenAnswer((Invocation a) async => simpleResponse('''{
+            "errors": [
+              {
+                "message": ""
+              }
+            ],
+            "data": null
+          } '''));
+
+      final res = await authProvider.isTokenValid();
+      expect(res, false);
+      expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+    });
+
+    test('validToken', () async {
+      when(mockStorage.read(
+              key: anyNamed("key"),
+              iOptions: anyNamed("iOptions"),
+              lOptions: anyNamed("lOptions")))
+          .thenAnswer((realInvocation) async => "BEE3");
+
+      when(mockHttpClient.send(any))
+          .thenAnswer((Invocation a) async => simpleResponse('''{
+            "data": {
+              "__payload": ""
+            }
+          } '''));
+
+      final res = await authProvider.isTokenValid();
+      expect(res, true);
+    });
+
+    test('logout', () async {
+      await authProvider.logout();
+
+      expect(authProvider.loggedInStatus, Status.LoggedOut);
+      verify(mockStorage.delete(key: "token"));
+    });
   });
 }

@@ -49,10 +49,10 @@ class _LoginState extends State<Login> {
     );
 
     var doLogin = () {
-      final form = formKey.currentState;
+      final form = formKey.currentState!;
 
-      if (form?.validate() ?? false) {
-        form!.save();
+      if (form.validate()) {
+        form.save();
 
         final Future<LoginResult> successfulMessage =
             auth.login(_username, _password);
@@ -78,29 +78,27 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(40.0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 250.0),
-                  Text("Username"),
-                  SizedBox(height: 5.0),
-                  usernameField,
-                  SizedBox(height: 20.0),
-                  Text("Password"),
-                  SizedBox(height: 5.0),
-                  passwordField,
-                  SizedBox(height: 20.0),
-                  auth.loggedInStatus == Status.Authenticating
-                      ? Loading()
-                      : CommonMaterialButton("Login", onPressed: doLogin),
-                  SizedBox(height: 5.0),
-                  forgotLabel
-                ],
-              ),
+          padding: EdgeInsets.all(40.0),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 250.0),
+                Text("Username"),
+                SizedBox(height: 5.0),
+                usernameField,
+                SizedBox(height: 20.0),
+                Text("Password"),
+                SizedBox(height: 5.0),
+                passwordField,
+                SizedBox(height: 20.0),
+                auth.loggedInStatus == Status.Authenticating
+                    ? Loading()
+                    : CommonMaterialButton("Login", onPressed: doLogin),
+                SizedBox(height: 5.0),
+                forgotLabel
+              ],
             ),
           ),
         ),

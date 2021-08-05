@@ -66,20 +66,18 @@ class AuthProvider with ChangeNotifier {
     });
 
     if (!response.hasErrors) {
-      // TODO handle token expiration
-
       await this
           ._storage
           .write(key: "token", value: response.data!.tokenAuth!.token);
 
       _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
       result = LoginResult(true, response);
     } else {
       _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
       result = LoginResult(false, response);
     }
+
+    notifyListeners();
     return result;
   }
 
@@ -99,13 +97,13 @@ class AuthProvider with ChangeNotifier {
     final response = await this._client.execute(registerMutation);
 
     if (response.hasErrors) {
-      return onError(response);
+      return _onError(response);
     } else {
-      return onValue(response);
+      return _onValue(response);
     }
   }
 
-  Future<RegisterResult> onValue(
+  Future<RegisterResult> _onValue(
       GraphQLResponse<RegisterUser$Mutation> response) async {
     var result;
 
@@ -120,15 +118,29 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  RegisterResult onError(GraphQLResponse<RegisterUser$Mutation> response) {
+  RegisterResult _onError(GraphQLResponse<RegisterUser$Mutation> response) {
     _registeredInStatus = Status.NotRegistered;
     notifyListeners();
     return RegisterResult(false, response);
   }
 
   Future<void> logout() async {
-    await FlutterSecureStorage().delete(key: "token");
+    await _storage.delete(key: "token");
     _loggedInStatus = Status.LoggedOut;
     notifyListeners();
+  }
+
+  Future<bool> isTokenValid() async {
+    final token = await _storage.read(key: "token");
+    if (token?.isEmpty ?? true) {
+      return false;
+    }
+
+    final response = await _client.execute(
+        IsTokenValidMutation(variables: IsTokenValidArguments(token: token)));
+    if (response.hasErrors) {
+      return false;
+    }
+    return true;
   }
 }

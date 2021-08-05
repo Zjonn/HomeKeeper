@@ -1,0 +1,5 @@
+mutation IsTokenValid($token : String) {
+    verifyToken (token: $token) {
+        payload
+    }
+}

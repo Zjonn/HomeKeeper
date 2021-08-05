@@ -33,7 +33,7 @@ dependencies:
   graphql_flutter: ^5.0.0-nullsafety.2
 
   # artemis
-  artemis: ^7.0.0-beta.3 # only if you're using ArtemisClient!
+  artemis: ^7.1.0-beta.0 # only if you're using ArtemisClient!
   json_annotation: ^4.0.1
   equatable: ^2.0.0
   meta: '>=1.0.0 <2.0.0' # only if you have non nullable fields
@@ -44,6 +44,10 @@ dependencies:
   # login.dart
   another_flushbar: ^1.10.22
   expandable: ^5.0.1
+  fl_chart: ^0.36.2
+  random_color: ^1.0.6-nullsafety
+  numberpicker: ^2.1.1
+  intersperse: ^2.0.0
 
 dev_dependencies:
   flutter_test:

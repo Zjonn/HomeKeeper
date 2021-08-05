@@ -61,8 +61,7 @@ class _JoinTeam extends State<JoinTeam>
     };
 
     return SingleChildScrollView(
-        child: Container(
-      padding: EdgeInsets.all(40.0),
+      padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
       child: Form(
         key: formKey,
         child: Column(
@@ -85,7 +84,7 @@ class _JoinTeam extends State<JoinTeam>
           ],
         ),
       ),
-    ));
+    );
   }
 
   @override

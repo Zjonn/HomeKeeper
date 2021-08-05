@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:home_keeper/pages/join_team/join_team_builder.dart';
 import 'package:home_keeper/pages/settings.dart';
-import 'package:home_keeper/pages/tasks.dart';
-import 'package:home_keeper/pages/team.dart';
+import 'package:home_keeper/pages/tasks/tasks_builder.dart';
+import 'package:home_keeper/pages/team/team.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class _DashBoardState extends State<DashBoard>
     Icons.settings
   ];
 
-  final _tabs = [Home(), Tasks(), Team(), Settings()];
+  final _tabs = [Home(), TasksBuilder(), Team(), Settings()];
   final _tabs_icons = [
     Icons.home,
     Icons.rule_rounded,
@@ -52,15 +52,8 @@ class _DashBoardState extends State<DashBoard>
     List<IconData> icons;
 
     switch (teamProvider.state) {
-      case TeamState.ToBeChecked:
-        return FutureBuilder(
-            future: teamProvider.updateUserTeamsInfo(),
-            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              if (snapshot.hasError) {
-                throw UnsupportedError(snapshot.error.toString());
-              }
-              return Scaffold(body: Loading());
-            });
+      case TeamState.InProgress:
+        return Scaffold(body: Loading());
       case TeamState.UserIsMember:
         tabs = _tabs;
         icons = _tabs_icons;
