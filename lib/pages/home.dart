@@ -46,6 +46,5 @@ class _Home extends State<Home> {
               children: lastEvents),
         );
     }
-    ;
   }
 }
