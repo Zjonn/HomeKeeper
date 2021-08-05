@@ -4,22 +4,22 @@ import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 
 class TaskCompletion {
   late final String id;
-  late final String userWhoCompletedTaskId;
+  late final String userWhoCompletedTask;
   late final int grantedPoints;
 
   late final TaskInstance relatedTaskInstance;
-  late final DateTime modifiedTime;
+  late final DateTime completedAt;
 
-  TaskCompletion(this.id, this.userWhoCompletedTaskId, this.grantedPoints,
-      this.modifiedTime, this.relatedTaskInstance);
+  TaskCompletion(this.id, this.userWhoCompletedTask, this.grantedPoints,
+      this.completedAt, this.relatedTaskInstance);
 
   TaskCompletion.fromResp(
       ListTasksCompletions$Query$TaskInstanceCompletionType resp)
       : this(
             resp.id,
-            resp.userWhoCompletedTask.id,
+            resp.userWhoCompletedTask.username,
             resp.pointsGranted,
-            resp.modifiedAt,
+            resp.createdAt,
             TaskInstance(
                 resp.taskInstance.id,
                 resp.taskInstance.active ?? false,
@@ -31,13 +31,13 @@ class TaskCompletion {
                 resp.taskInstance.activeFrom));
 
   TaskCompletion.fromCompleteResp(
-      CompleteTask$Mutation$SubmitTaskInstanceCompletionPayload$TaskInstanceCompletionType
+      CompleteTask$Mutation$TaskInstanceCompletionSerializerMutation$TaskInstanceCompletionType
           resp)
       : this(
             resp.id,
-            resp.userWhoCompletedTask.id,
+            resp.userWhoCompletedTask.username,
             resp.pointsGranted,
-            resp.modifiedAt,
+            resp.createdAt,
             TaskInstance(
                 resp.taskInstance.id,
                 resp.taskInstance.active ?? false,

@@ -15,18 +15,20 @@ class TaskCreateResult
 
   @override
   bool parseResponse(GraphQLResponse<CreateTask$Mutation> response) {
-    bool isError =
-        response.hasErrors || response.data!.createTask!.errors!.isNotEmpty;
+    bool isError = response.hasErrors ||
+        (response.data!.createTask!.errors?.isEmpty ?? false);
 
-    if (response.hasErrors) {
-      errors = response.errors!
-          .map((e) => GraphqlError<String, String>(e.message))
-          .join('\n');
-    } else {
-      errors = response.data!.createTask!.errors!
-          .map((e) => GraphqlError<String, String>(e!.messages.join('\n'),
-              field: e.field))
-          .join('\n');
+    if (isError) {
+      if (response.hasErrors) {
+        errors = response.errors!
+            .map((e) => GraphqlError<String, String>(e.message))
+            .join('\n');
+      } else {
+        errors = response.data!.createTask!.errors!
+            .map((e) => GraphqlError<String, String>(e!.messages.join('\n'),
+                field: e.field))
+            .join('\n');
+      }
     }
     return !isError;
   }
@@ -66,8 +68,11 @@ class TasksProvider with ChangeNotifier {
   Map<String, TaskCompletion> _taskCompletions = {};
 
   TasksState get state => _state;
+
   Map<String, Task> get tasks => _tasks;
+
   Map<String, TaskInstance> get taskInstances => _taskInstances;
+
   Map<String, TaskCompletion> get taskCompletions => _taskCompletions;
 
   TasksProvider(this._client);
@@ -131,6 +136,7 @@ class TasksProvider with ChangeNotifier {
       for (var completion in response.data!.completions ?? [])
         completion.id: TaskCompletion.fromResp(completion)
     };
+    print(response.data!.completions);
 
     if (mapEquals<String, TaskCompletion>(_taskCompletions, taskCompletions_)) {
       return;
@@ -145,13 +151,14 @@ class TasksProvider with ChangeNotifier {
     GraphQLResponse<CreateTask$Mutation> response = await _client.execute(
         CreateTaskMutation(
             variables: CreateTaskArguments(
-                input: CreateTaskInput(
+                input: TaskCreateGenericType(
                     name: name,
                     description: description,
                     team: teamId,
                     basePointsPrize: points,
-                    refreshInterval:
-                        refreshInterval != null ? "P${refreshInterval}D" : null,
+                    refreshInterval: refreshInterval != null
+                        ? refreshInterval * 24.0 * 60 * 60
+                        : null,
                     isRecurring: isRecurring))));
 
     final result = TaskCreateResult(response);
@@ -170,7 +177,7 @@ class TasksProvider with ChangeNotifier {
     GraphQLResponse<CompleteTask$Mutation> response = await _client.execute(
         CompleteTaskMutation(
             variables: CompleteTaskArguments(
-                input: SubmitTaskInstanceCompletionInput(
+                input: TaskInstanceCompletionCreateGenericType(
                     taskInstance: instanceId))));
 
     final result = TaskCompleteResult(response);
@@ -181,7 +188,7 @@ class TasksProvider with ChangeNotifier {
       _taskCompletions[completion.id] = completion;
 
       final taskInstance = completion.relatedTaskInstance;
-      _taskInstances.remove(taskInstance);
+      _taskInstances.remove(taskInstance.id);
       notifyListeners();
     }
 
