@@ -1,5 +1,5 @@
 query ListTasks($teamId: Int!) {
-    tasks(onlyActive: false, teamId: $teamId) {
+    tasks(onlyActive: true, teamId: $teamId) {
         id,
         name,
         description,
@@ -10,29 +10,46 @@ query ListTasks($teamId: Int!) {
 }
 
 query ListTasksInstances($teamId: Int!) {
-    taskInstances(onlyActive: false, teamId: $teamId) {
+    taskInstances(onlyActive: true, teamId: $teamId) {
         id,
         active,
         activeFrom,
         task {
-            id
+            id,
+            name,
+            description,
+            basePointsPrize,
+            refreshInterval,
+            isRecurring
         },
     }
 }
 
 query ListTasksCompletions($teamId: Int!) {
     completions(teamId: $teamId) {
+        id,
         userWhoCompletedTask {
-            id
+            username
         },
         taskInstance {
-            id
+            id,
+            active,
+            activeFrom,
+            task {
+                id,
+                name,
+                description,
+                basePointsPrize,
+                refreshInterval,
+                isRecurring
+            }
         },
-        modifiedAt
+        createdAt,
+        pointsGranted
     }
 }
 
-mutation CreateTask($input : CreateTaskInput!) {
+mutation CreateTask($input : TaskCreateGenericType!) {
     createTask(input: $input) {
         task {
             id,
@@ -49,17 +66,32 @@ mutation CreateTask($input : CreateTaskInput!) {
     }
 }
 
-mutation CompleteTask($input : SubmitTaskInstanceCompletionInput!) {
+mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
     submitTaskInstanceCompletion(input: $input) {
         taskInstanceCompletion {
+            id,
             userWhoCompletedTask {
-                id
+                username
             }
             taskInstance {
-                id
+                id,
+                active,
+                activeFrom,
+                task {
+                    id,
+                    name,
+                    description,
+                    basePointsPrize,
+                    refreshInterval,
+                    isRecurring
+                }
             },
-            modifiedAt,
+            createdAt,
             pointsGranted
+        },
+        errors {
+            field,
+            messages
         }
     }
 }
