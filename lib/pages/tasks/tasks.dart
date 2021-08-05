@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:home_keeper/pages/tasks/task.dart';
-import 'package:home_keeper/providers/tasks_provider.dart';
+import 'package:home_keeper/pages/tasks/task_widget.dart';
+import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
-import 'package:provider/provider.dart';
 import 'package:intersperse/intersperse.dart';
+import 'package:provider/provider.dart';
 
 class Tasks extends StatefulWidget {
   @override
@@ -26,14 +26,16 @@ class _TasksState extends State<Tasks> {
         return Loading();
       case TasksState.Initialized:
         final activeTasks = Column(
-          children: tasksProvider.taskInstances
+          children: tasksProvider.taskInstances.entries
+              .map((e) => e.value)
               .where((element) => element.isActive)
               .map<Widget>((e) => TaskPage(e))
               .intersperse(SizedBox(height: 5.0))
               .toList(growable: false),
         );
         final inactiveTasks = Column(
-          children: tasksProvider.taskInstances
+          children: tasksProvider.taskInstances.entries
+              .map((e) => e.value)
               .where((element) => !element.isActive)
               .map<Widget>((e) => TaskPage(e))
               .intersperse(SizedBox(height: 5.0))

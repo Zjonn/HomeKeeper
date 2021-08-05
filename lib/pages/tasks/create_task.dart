@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:home_keeper/providers/tasks_provider.dart';
+import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/container.dart';

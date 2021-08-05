@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_keeper/pages/dashboard/dashboard.dart';
 import 'package:home_keeper/providers/auth_client_provider.dart';
-import 'package:home_keeper/providers/tasks_provider.dart';
+import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
