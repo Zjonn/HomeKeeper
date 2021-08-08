@@ -17,25 +17,27 @@ jobs:
           LATEST_BACKEND_ARTIFACT=$(python3 << END
           import requests
           import json
-          import time
+          import sys
+
           from requests.api import request
 
           URL = 'https://api.github.com/repos/MariuszBielecki288728/HomeKeeper-backend/actions'
 
-          last_succ_workflow = []
-          while not last_succ_workflow:
-              last_succ_workflow = json.loads(
-                  requests.get(
-                     URL + '/runs',
-                      params={
-                          'branch': 'main',
-                          'status': 'success',
-                          'event': 'push',
-                     },
-                     headers={
-                         'Accept': 'application/vnd.github.v3+json'
-                     }).text)
-              time.sleep(3)
+          last_succ_workflow = json.loads(
+              requests.get(
+                 URL + '/runs',
+                  params={
+                      'branch': 'main',
+                      'status': 'success',
+                      'event': 'push',
+                 },
+                 headers={
+                     'Accept': 'application/vnd.github.v3+json'
+                 }).text)
+
+          if not last_succ_workflow:
+              sys.exit(1)
+
 
           archive_download_url = json.loads(
               requests.get(
@@ -48,7 +50,8 @@ jobs:
                   }).text)
 
           print(archive_download_url['artifacts'][0]['archive_download_url'])
-          END)
+          END) || (echo "GitHub sometimes returns empty respose. \
+          So we asume there is no newer schema alvaible" && exit 0)
 
           SCHEMA_FILENAME="schema.zip"
           curl \

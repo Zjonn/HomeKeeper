@@ -55,6 +55,6 @@ jobs:
         if:  ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
-          name: HomeKeeper.apk
-          path: build\app\outputs\bundle\release\app-release.aab
+          name: HomeKeeper.aab
+          path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 7
