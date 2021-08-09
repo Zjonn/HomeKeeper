@@ -43,7 +43,7 @@ jobs:
         run: flutter test --coverage
 
       - name: Build app
-        run: flutter build appbundle
+        run: flutter build apk
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -51,10 +51,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
 
-      - name: Upload built appbundle
+      - name: Upload built apk
         if:  ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
-          name: HomeKeeper.aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: HomeKeeper.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
