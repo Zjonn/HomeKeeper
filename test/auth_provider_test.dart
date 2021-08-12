@@ -28,7 +28,7 @@ void main() {
   late AuthProvider authProvider;
   late MockFlutterSecureStorage mockStorage;
 
-  group('authProvider', () {
+  group('AuthProvider', () {
     setUp(() {
       mockHttpClient = MockClient();
       mockStorage = MockFlutterSecureStorage();
@@ -40,8 +40,8 @@ void main() {
     });
 
     test('initialState', () async {
-      expect(authProvider.loggedInStatus, Status.NotLoggedIn);
-      expect(authProvider.registeredInStatus, Status.NotRegistered);
+      expect(authProvider.loggedInStatus, Status.Uninitialized);
+      expect(authProvider.registeredInStatus, Status.Uninitialized);
     });
 
     test(
@@ -86,6 +86,13 @@ void main() {
       },
     );
 
+    test('logout', () async {
+      await authProvider.logout();
+
+      expect(authProvider.loggedInStatus, Status.LoggedOut);
+      verify(mockStorage.delete(key: "token"));
+    });
+
     test('missingToken', () async {
       when(mockStorage.read(
               key: anyNamed("key"),
@@ -93,9 +100,10 @@ void main() {
               lOptions: anyNamed("lOptions")))
           .thenAnswer((realInvocation) async => null);
 
-      final res = await authProvider.isTokenValid();
-      expect(res, false);
+      await authProvider.isTokenValid();
+
       expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
     });
 
     test('invalidToken', () async {
@@ -115,9 +123,10 @@ void main() {
             "data": null
           } '''));
 
-      final res = await authProvider.isTokenValid();
-      expect(res, false);
+      await authProvider.isTokenValid();
+
       expect(authProvider.loggedInStatus, Status.NotLoggedIn);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
     });
 
     test('validToken', () async {
@@ -134,15 +143,10 @@ void main() {
             }
           } '''));
 
-      final res = await authProvider.isTokenValid();
-      expect(res, true);
-    });
+      await authProvider.isTokenValid();
 
-    test('logout', () async {
-      await authProvider.logout();
-
-      expect(authProvider.loggedInStatus, Status.LoggedOut);
-      verify(mockStorage.delete(key: "token"));
+      expect(authProvider.loggedInStatus, Status.LoggedIn);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
     });
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_keeper/pages/dashboard/dashboard.dart';
+import 'package:home_keeper/providers/api_url_provider.dart';
 import 'package:home_keeper/providers/auth_client_provider.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
@@ -9,8 +10,9 @@ import 'package:provider/provider.dart';
 class DashBoardBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => AuthClientProvider(),
+    return ChangeNotifierProxyProvider<ApiUrlProvider, AuthClientProvider>(
+        create: (_) => AuthClientProvider(ApiUrlProvider.initialApiUrl),
+        update: (context, value, previous) => AuthClientProvider(value.apiUrl),
         builder: (context, child) {
           final client = Provider.of<AuthClientProvider>(context);
 

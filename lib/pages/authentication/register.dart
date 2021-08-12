@@ -20,16 +20,19 @@ class _RegisterState extends State<Register> {
     AuthProvider auth = Provider.of<AuthProvider>(context);
 
     final usernameField = TextFormField(
+      decoration: const InputDecoration(labelText: "Username"),
       autofocus: false,
       onSaved: (value) => _username = value ?? '',
     );
 
     final emailField = TextFormField(
+      decoration: const InputDecoration(labelText: "Email"),
       autofocus: false,
       onSaved: (value) => _email = value ?? '',
     );
 
     final passwordField = TextFormField(
+      decoration: const InputDecoration(labelText: "Password"),
       autofocus: false,
       obscureText: true,
       validator: (value) =>
@@ -38,6 +41,7 @@ class _RegisterState extends State<Register> {
     );
 
     final confirmPassword = TextFormField(
+      decoration: const InputDecoration(labelText: "Confirm Password"),
       autofocus: false,
       obscureText: true,
       validator: (value) =>
@@ -53,7 +57,7 @@ class _RegisterState extends State<Register> {
             .register(_username, _email, _password, _confirmPassword)
             .then((response) {
           if (response.status) {
-            Navigator.pushReplacementNamed(context, '/login');
+            Navigator.pushReplacementNamed(context, 'login');
             CommonFlushbar("Registration succeeded").show(context);
           } else {
             CommonFlushbar(response.response.hasErrors
@@ -83,20 +87,12 @@ class _RegisterState extends State<Register> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 215.0),
-                Text("Username"),
-                SizedBox(height: 5.0),
                 usernameField,
                 SizedBox(height: 20.0),
-                Text("Email"),
-                SizedBox(height: 5.0),
                 emailField,
                 SizedBox(height: 20.0),
-                Text("Password"),
-                SizedBox(height: 5.0),
                 passwordField,
                 SizedBox(height: 20.0),
-                Text("Confirm Password"),
-                SizedBox(height: 5.0),
                 confirmPassword,
                 SizedBox(height: 20.0),
                 auth.registeredInStatus == Status.Registering

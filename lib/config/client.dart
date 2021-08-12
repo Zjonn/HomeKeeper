@@ -1,6 +1,5 @@
 // based on https://hasura.io/learn/graphql/flutter-graphql/graphql-client/
 import 'package:artemis/artemis.dart';
-import 'package:home_keeper/config/api_url.dart';
 import 'package:http/http.dart' as http;
 
 class HttpClientWithToken extends http.BaseClient {
@@ -16,7 +15,6 @@ class HttpClientWithToken extends http.BaseClient {
   }
 }
 
-ArtemisClient initializeClient(String token) {
-  return ArtemisClient(ApiUrl.URL,
-      httpClient: HttpClientWithToken("JWT " + token));
+ArtemisClient initializeClient(String url, String token) {
+  return ArtemisClient(url, httpClient: HttpClientWithToken("JWT " + token));
 }

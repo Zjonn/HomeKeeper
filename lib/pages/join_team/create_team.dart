@@ -69,10 +69,8 @@ class _CreateTeam extends State<CreateTeam>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 250.0),
-            Text("Name"),
             usernameField,
             SizedBox(height: 20.0),
-            Text("Password"),
             passwordField,
             SizedBox(height: 20.0),
             CommonMaterialButton("Create new team", onPressed: doCreate),

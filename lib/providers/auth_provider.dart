@@ -10,6 +10,7 @@ import 'package:home_keeper/config/api_url.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 enum Status {
+  Uninitialized,
   NotLoggedIn,
   NotRegistered,
   LoggedIn,
@@ -37,16 +38,38 @@ class AuthProvider with ChangeNotifier {
   ArtemisClient _client = ArtemisClient(ApiUrl.URL);
   FlutterSecureStorage _storage = FlutterSecureStorage();
 
-  AuthProvider();
-
-  AuthProvider.withMocks(this._client, this._storage);
-
-  Status _loggedInStatus = Status.NotLoggedIn;
-  Status _registeredInStatus = Status.NotRegistered;
+  Status _loggedInStatus = Status.Uninitialized;
+  Status _registeredInStatus = Status.Uninitialized;
 
   Status get loggedInStatus => _loggedInStatus;
 
   Status get registeredInStatus => _registeredInStatus;
+
+  AuthProvider(String apiUrl) {
+    _client = ArtemisClient(apiUrl);
+    isTokenValid().then((value) => null);
+  }
+
+  AuthProvider.withMocks(this._client, this._storage);
+
+  Future<void> isTokenValid() async {
+    _loggedInStatus = Status.NotLoggedIn;
+    _registeredInStatus = Status.NotRegistered;
+
+    final token = await _storage.read(key: "token");
+    if (token?.isEmpty ?? true) {
+      notifyListeners();
+      return;
+    }
+
+    final response = await _client.execute(
+        IsTokenValidMutation(variables: IsTokenValidArguments(token: token)));
+    if (!response.hasErrors) {
+      _loggedInStatus = Status.LoggedIn;
+      _registeredInStatus = Status.NotRegistered;
+    }
+    notifyListeners();
+  }
 
   Future<LoginResult> login(String username, String password) async {
     var result;
@@ -128,19 +151,5 @@ class AuthProvider with ChangeNotifier {
     await _storage.delete(key: "token");
     _loggedInStatus = Status.LoggedOut;
     notifyListeners();
-  }
-
-  Future<bool> isTokenValid() async {
-    final token = await _storage.read(key: "token");
-    if (token?.isEmpty ?? true) {
-      return false;
-    }
-
-    final response = await _client.execute(
-        IsTokenValidMutation(variables: IsTokenValidArguments(token: token)));
-    if (response.hasErrors) {
-      return false;
-    }
-    return true;
   }
 }
