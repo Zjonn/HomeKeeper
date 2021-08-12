@@ -9,7 +9,7 @@ type Query {
   relatedTaskInstances(taskId: Int!, onlyActive: Boolean = false): [TaskInstanceType]
 
   """Lists history of TaskInsance completions in the given team."""
-  completions(teamId: Int!): [TaskInstanceCompletionType]
+  completions(teamId: Int!, onlyActive: Boolean = false): [TaskInstanceCompletionType]
 
   """
   Counts points for a given user in a given team.
@@ -99,20 +99,21 @@ type ProfileType {
 type TaskInstanceCompletionType {
   id: ID!
   createdAt: DateTime!
-  createdBy: UserType
-  modifiedAt: DateTime!
   deletedAt: DateTime
   taskInstance: TaskInstanceType!
   userWhoCompletedTask: UserType!
   pointsGranted: Int!
+  active: Boolean
 }
 
 type TaskInstanceType {
   id: ID!
+  deletedAt: DateTime
   task: TaskType!
   activeFrom: DateTime!
   completed: Boolean!
   active: Boolean
+  currentPrize: Int
 }
 
 type MemberPointsType {
@@ -174,7 +175,7 @@ input TaskCreateGenericType {
   """description"""
   description: String
 
-  """is_recurring"""
+  """"""
   isRecurring: Boolean
 
   """refresh interval"""
