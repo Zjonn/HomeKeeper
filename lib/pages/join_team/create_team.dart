@@ -23,13 +23,13 @@ class _CreateTeam extends State<CreateTeam>
 
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
 
-    final usernameField = TextFormField(
-      autofocus: false,
+    final teamNameField = TextFormField(
+      decoration: const InputDecoration(labelText: "Team name"),
       onSaved: (value) => _teamName = value ?? '',
     );
 
     final passwordField = TextFormField(
-      autofocus: false,
+      decoration: const InputDecoration(labelText: "Password"),
       obscureText: true,
       validator: (value) =>
           value?.isEmpty ?? true ? "Please enter password" : null,
@@ -69,7 +69,7 @@ class _CreateTeam extends State<CreateTeam>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 250.0),
-            usernameField,
+            teamNameField,
             SizedBox(height: 20.0),
             passwordField,
             SizedBox(height: 20.0),

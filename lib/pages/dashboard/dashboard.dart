@@ -48,12 +48,14 @@ class _DashBoardState extends State<DashBoard>
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context);
 
-    List<StatefulWidget> tabs;
-    List<IconData> icons;
+    if (teamProvider.state == TeamState.InProgress) {
+      return Scaffold(body: Loading());
+    }
+
+    List<StatefulWidget> tabs = [];
+    List<IconData> icons = [];
 
     switch (teamProvider.state) {
-      case TeamState.InProgress:
-        return Scaffold(body: Loading());
       case TeamState.UserIsMember:
         tabs = _tabs;
         icons = _tabs_icons;
@@ -64,6 +66,8 @@ class _DashBoardState extends State<DashBoard>
         icons = _no_team_tabs_icons;
         _changeController(tabs, false);
         break;
+      default:
+        throw Exception("Invalid state");
     }
     return Scaffold(
         body: TabBarView(

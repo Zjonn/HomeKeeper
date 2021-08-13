@@ -16,7 +16,6 @@ class _SettingsState extends State<Settings> {
 
     Function() doLogout = () async {
       await auth.logout();
-      Navigator.pushReplacementNamed(context, '/login');
       CommonFlushbar("Successful logout").show(context);
     };
 

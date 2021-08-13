@@ -21,19 +21,16 @@ class _RegisterState extends State<Register> {
 
     final usernameField = TextFormField(
       decoration: const InputDecoration(labelText: "Username"),
-      autofocus: false,
       onSaved: (value) => _username = value ?? '',
     );
 
     final emailField = TextFormField(
       decoration: const InputDecoration(labelText: "Email"),
-      autofocus: false,
       onSaved: (value) => _email = value ?? '',
     );
 
     final passwordField = TextFormField(
       decoration: const InputDecoration(labelText: "Password"),
-      autofocus: false,
       obscureText: true,
       validator: (value) =>
           (value?.isEmpty ?? true) ? "Please enter password" : null,
@@ -42,7 +39,6 @@ class _RegisterState extends State<Register> {
 
     final confirmPassword = TextFormField(
       decoration: const InputDecoration(labelText: "Confirm Password"),
-      autofocus: false,
       obscureText: true,
       validator: (value) =>
           (value?.isEmpty ?? true) ? "Your password is required" : null,
@@ -80,7 +76,7 @@ class _RegisterState extends State<Register> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(40.0),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Form(
             key: formKey,
             child: Column(

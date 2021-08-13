@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:home_keeper/config/api_url.dart';
 
-class ApiUrlProvider extends ChangeNotifier {
-  static final String initialApiUrl = ApiUrl.URL;
+class ApiURLProvider extends ChangeNotifier {
+  static final String initialApiURL = ApiUrl.URL;
 
-  String apiUrl = ApiUrl.URL;
+  String _apiURL = ApiUrl.URL;
+
+  String get apiURL => _apiURL;
+
+  set apiURL(String val) {
+    if (val != _apiURL) {
+      _apiURL = val;
+      notifyListeners();
+    }
+  }
 }

@@ -1,4 +1,3 @@
-// https://medium.com/@afegbua/flutter-thursday-13-building-a-user-registration-and-login-process-with-provider-and-external-api-1bb87811fd1d
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/auth_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
@@ -22,13 +21,11 @@ class _LoginState extends State<Login> {
 
     final usernameField = TextFormField(
       decoration: const InputDecoration(labelText: "Username"),
-      autofocus: false,
       onSaved: (value) => _username = value ?? '',
     );
 
     final passwordField = TextFormField(
       decoration: const InputDecoration(labelText: "Password"),
-      autofocus: false,
       obscureText: true,
       validator: (value) =>
           (value?.isEmpty ?? true) ? "Please enter password" : null,
@@ -76,12 +73,19 @@ class _LoginState extends State<Login> {
         return SafeArea(
           child: Scaffold(
             body: SingleChildScrollView(
-              padding: EdgeInsets.all(40.0),
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: Form(
                 key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          color: Theme.of(context).backgroundColor,
+                          onPressed: () => Navigator.pushNamed(context, 'url'),
+                          icon: Icon(Icons.settings_remote)),
+                    ),
                     SizedBox(height: 250.0),
                     usernameField,
                     SizedBox(height: 20.0),

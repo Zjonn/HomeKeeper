@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_keeper/pages/authentication/change_url.dart';
 import 'package:home_keeper/pages/authentication/login.dart';
 import 'package:home_keeper/pages/authentication/register.dart';
 
@@ -26,6 +27,9 @@ class _AuthenticationBuilderState extends State<AuthenticationBuilder> {
               case 'register':
                 return MaterialPageRoute(
                     builder: (context) => Register(), settings: settings);
+              case 'url':
+                return MaterialPageRoute(
+                    builder: (context) => ChangeURL(), settings: settings);
               default:
                 throw Exception("Invalid route");
             }

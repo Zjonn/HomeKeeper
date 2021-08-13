@@ -25,12 +25,12 @@ class _JoinTeam extends State<JoinTeam>
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
 
     final idField = TextFormField(
-      autofocus: false,
+      decoration: const InputDecoration(labelText: "Team ID"),
       onSaved: (value) => _teamId = int.parse(value ?? '0'),
     );
 
     final passwordField = TextFormField(
-      autofocus: false,
+      decoration: const InputDecoration(labelText: "Password"),
       obscureText: true,
       validator: (value) =>
           value?.isEmpty ?? true ? "Please enter password" : null,

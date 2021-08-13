@@ -18,10 +18,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => ApiUrlProvider()),
-          ChangeNotifierProxyProvider<ApiUrlProvider, AuthProvider>(
-            create: (value) => AuthProvider(ApiUrlProvider.initialApiUrl),
-            update: (context, value, previous) => AuthProvider(value.apiUrl),
+          ChangeNotifierProvider(create: (_) => ApiURLProvider()),
+          ChangeNotifierProxyProvider<ApiURLProvider, AuthProvider>(
+            create: (value) => AuthProvider(ApiURLProvider.initialApiURL),
+            update: (context, value, previous) => AuthProvider(value.apiURL),
           ),
         ],
         builder: (context, child) {

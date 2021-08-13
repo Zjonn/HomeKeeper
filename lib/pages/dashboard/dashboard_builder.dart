@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 class DashBoardBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProxyProvider<ApiUrlProvider, AuthClientProvider>(
-        create: (_) => AuthClientProvider(ApiUrlProvider.initialApiUrl),
-        update: (context, value, previous) => AuthClientProvider(value.apiUrl),
+    return ChangeNotifierProxyProvider<ApiURLProvider, AuthClientProvider>(
+        create: (_) => AuthClientProvider(ApiURLProvider.initialApiURL),
+        update: (context, value, previous) => AuthClientProvider(value.apiURL),
         builder: (context, child) {
           final client = Provider.of<AuthClientProvider>(context);
 
