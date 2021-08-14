@@ -11,7 +11,7 @@ class DashBoardBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProxyProvider<ApiURLProvider, AuthClientProvider>(
-        create: (_) => AuthClientProvider(ApiURLProvider.initialApiURL),
+        create: (_) => AuthClientProvider(ApiURLProvider.defaultApiURL),
         update: (context, value, previous) => AuthClientProvider(value.apiURL),
         builder: (context, child) {
           final client = Provider.of<AuthClientProvider>(context);

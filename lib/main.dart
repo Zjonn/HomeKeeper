@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_) => ApiURLProvider()),
           ChangeNotifierProxyProvider<ApiURLProvider, AuthProvider>(
-            create: (value) => AuthProvider(ApiURLProvider.initialApiURL),
+            create: (value) => AuthProvider(ApiURLProvider.defaultApiURL),
             update: (context, value, previous) => AuthProvider(value.apiURL),
           ),
         ],

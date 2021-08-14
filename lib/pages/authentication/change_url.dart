@@ -30,7 +30,7 @@ class _ChangeURLState extends State<ChangeURL> {
     };
 
     var restoreURL = () {
-      urlProvider.apiURL = ApiURLProvider.initialApiURL;
+      urlProvider.apiURL = ApiURLProvider.defaultApiURL;
       CommonFlushbar("URL restored").show(context);
       ;
     };
@@ -45,6 +45,7 @@ class _ChangeURLState extends State<ChangeURL> {
               children: [
                 TextField(
                   controller: _myController,
+                  keyboardType: TextInputType.url,
                 ),
                 SizedBox(height: 5.0),
                 CommonMaterialButton(

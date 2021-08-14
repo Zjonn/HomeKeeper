@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:home_keeper/pages/tasks/task_widget.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
-import 'package:intersperse/intersperse.dart';
 import 'package:provider/provider.dart';
 
 class Tasks extends StatefulWidget {
@@ -14,8 +13,6 @@ class Tasks extends StatefulWidget {
 
 class _TasksState extends State<Tasks> {
   static const SCROLL_OFFSET = 600.0;
-  ScrollController _scrollController =
-      ScrollController(initialScrollOffset: SCROLL_OFFSET);
 
   @override
   Widget build(BuildContext context) {
@@ -25,57 +22,51 @@ class _TasksState extends State<Tasks> {
       case TasksState.InProgress:
         return Loading();
       case TasksState.Initialized:
-        final activeTasks = Column(
-          children: tasksProvider.taskInstances.entries
-              .map((e) => e.value)
-              .where((element) => element.isActive)
-              .map<Widget>((e) => TaskPage(e))
-              .intersperse(SizedBox(height: 5.0))
-              .toList(growable: false),
-        );
-        final inactiveTasks = Column(
-          children: tasksProvider.taskInstances.entries
-              .map((e) => e.value)
-              .where((element) => !element.isActive)
-              .map<Widget>((e) => TaskPage(e))
-              .intersperse(SizedBox(height: 5.0))
-              .toList(growable: false),
-        );
+        final inactiveTasks = tasksProvider.taskInstances.entries
+            .map((e) => e.value)
+            .where((element) => !element.isActive);
+        final activeTasks = tasksProvider.taskInstances.entries
+            .map((e) => e.value)
+            .where((element) => element.isActive);
+
+        final sortedTasks =
+            activeTasks.followedBy(inactiveTasks).toList(growable: false);
+
+        final tasksList = ListView.separated(
+            padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
+            reverse: true,
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(height: 5.0),
+            itemCount: sortedTasks.length + 2,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == 0) {
+                return SizedBox(height: 100);
+              }
+              if (index == sortedTasks.length + 1) {
+                return SizedBox(height: SCROLL_OFFSET);
+              }
+              return TaskPage(sortedTasks[index - 1]);
+            });
+
+        final addButton = Align(
+            alignment: AlignmentDirectional.bottomCenter,
+            child: Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'create_task');
+                  },
+                  child: Icon(Icons.add),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Theme.of(context).accentColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(360),
+                      side:
+                          BorderSide(color: Theme.of(context).backgroundColor)),
+                )));
 
         return Stack(
-          children: [
-            SingleChildScrollView(
-                controller: _scrollController,
-                padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: SCROLL_OFFSET,
-                    ),
-                    activeTasks,
-                    inactiveTasks,
-                    SizedBox(
-                      height: 80,
-                    )
-                  ],
-                )),
-            Align(
-                alignment: AlignmentDirectional.bottomCenter,
-                child: Padding(
-                    padding: EdgeInsets.only(bottom: 20),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'create_task');
-                      },
-                      child: Icon(Icons.add),
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Theme.of(context).accentColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(360),
-                          side: BorderSide(
-                              color: Theme.of(context).backgroundColor)),
-                    )))
-          ],
+          children: [tasksList, addButton],
         );
     }
   }

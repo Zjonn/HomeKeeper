@@ -66,7 +66,7 @@ class TeamProvider with ChangeNotifier {
   }
 
   TeamProvider(this._client) {
-    updateUserTeamsInfo().then((value) => null);
+    updateUserTeamsInfo();
   }
 
   Future<void> updateUserTeamsInfo() async {

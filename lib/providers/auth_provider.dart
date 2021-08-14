@@ -47,7 +47,7 @@ class AuthProvider with ChangeNotifier {
 
   AuthProvider(String apiUrl) {
     _client = ArtemisClient(apiUrl);
-    isTokenValid().then((value) => null);
+    isTokenValid();
   }
 
   AuthProvider.withMocks(this._client, this._storage);

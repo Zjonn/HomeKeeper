@@ -18,9 +18,9 @@ class _CreateTaskState extends State<CreateTask> {
 
   String _taskName = '';
   String? _description;
-  int _points = 0;
   bool _isPeriodic = false;
   int? _period = 7;
+  int _points = 0;
 
   Future<int> _showIntegerDialog(BuildContext context, int period) async {
     await showDialog<int>(

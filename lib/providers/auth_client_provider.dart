@@ -17,7 +17,7 @@ class AuthClientProvider extends ChangeNotifier {
 
   AuthClientProvider(String apiUrl) {
     _storage = FlutterSecureStorage();
-    _initialize(apiUrl).then((value) => null);
+    _initialize(apiUrl);
   }
 
   AuthClientProvider.withMocks(this._storage);
