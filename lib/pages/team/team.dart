@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:home_keeper/pages/team/points_line_chart.dart';
 import 'package:home_keeper/pages/team/points_pie_chart.dart';
 import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
@@ -76,9 +77,16 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
             shrinkWrap: true,
             children: teamInfo.teamMembers
                 .map((e) => ListTile(
-                    title: Text(e,
-                        style:
-                            TextStyle(color: Theme.of(context).accentColor))))
+                        title: Row(
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          color: Color(0xff0293ee),
+                        ),
+                        SizedBox(width: 5.0),
+                        Text(e)
+                      ],
+                    )))
                 .toList(),
           ))
     ]));
@@ -100,7 +108,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                 Expanded(
                     flex: 1,
                     child: CommonMaterialButton(
-                      'Day',
+                      'Week',
                       onPressed: () => {},
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(40),
@@ -112,7 +120,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                 Expanded(
                   flex: 1,
                   child: CommonMaterialButton(
-                    'Week',
+                    'Month',
                     onPressed: () => {},
                     borderRadius: BorderRadius.zero,
                     textColor:
@@ -122,7 +130,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                 Expanded(
                     flex: 1,
                     child: CommonMaterialButton(
-                      'Month',
+                      'Year',
                       onPressed: () => {},
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(40),
@@ -138,20 +146,23 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
 
     return Container(
       padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
-      child: Column(
+      child: SingleChildScrollView(child:Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             currentTeam,
             SizedBox(height: 5.0),
             UserPointsPieChart(),
-            Spacer(),
+            SizedBox(height: 5.0),
+            LineChartSample1(),
+            // Spacer(),
             SizedBox(height: 5.0),
             teamMembers,
             SizedBox(height: 5.0),
             timePeriod
           ]),
-    );
+    ));
   }
 
   @override

@@ -45,7 +45,7 @@ class _TasksState extends State<Tasks> {
               if (index == sortedTasks.length + 1) {
                 return SizedBox(height: SCROLL_OFFSET);
               }
-              return TaskPage(sortedTasks[index - 1]);
+              return TaskWidget(sortedTasks[index - 1]);
             });
 
         final addButton = Align(

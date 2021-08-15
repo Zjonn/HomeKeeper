@@ -7,7 +7,7 @@ import 'package:home_keeper/providers/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
-import '../home.dart';
+import '../home/home.dart';
 
 class DashBoard extends StatefulWidget {
   @override

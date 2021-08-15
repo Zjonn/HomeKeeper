@@ -8,24 +8,24 @@ import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';
 
-class TaskPage extends StatefulWidget {
+class TaskWidget extends StatefulWidget {
   final TaskInstance _task;
 
-  TaskPage(this._task);
+  TaskWidget(this._task);
 
   @override
-  State<StatefulWidget> createState() => _TaskPageState(_task);
+  State<StatefulWidget> createState() => _TaskWidgetState(_task);
 }
 
-enum _TaskState { Default, Expanded, Finalize }
+enum _State { Default, Expanded, Finalize }
 
-class _TaskPageState extends State<TaskPage> {
+class _TaskWidgetState extends State<TaskWidget> {
   static const DAYS_TO_RANK_UP = 14;
 
   final TaskInstance _task;
-  _TaskState _isExpanded = _TaskState.Default;
+  _State _isExpanded = _State.Default;
 
-  _TaskPageState(this._task);
+  _TaskWidgetState(this._task);
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +58,8 @@ class _TaskPageState extends State<TaskPage> {
     final descriptionAnimatedContainer = AnimatedContainer(
         duration: const Duration(seconds: 1),
         curve: Curves.fastOutSlowIn,
-        height: _isExpanded == _TaskState.Expanded ? 100 : 0,
-        child: _isExpanded == _TaskState.Expanded
+        height: _isExpanded == _State.Expanded ? 100 : 0,
+        child: _isExpanded == _State.Expanded
             ? Align(
                 alignment: Alignment.center,
                 child: Column(
@@ -105,24 +105,24 @@ class _TaskPageState extends State<TaskPage> {
     final completeAnimatedContainer = AnimatedContainer(
         duration: const Duration(seconds: 1),
         curve: Curves.fastOutSlowIn,
-        width: _isExpanded == _TaskState.Finalize ? 80 : 0,
-        child: _isExpanded == _TaskState.Finalize
+        width: _isExpanded == _State.Finalize ? 80 : 0,
+        child: _isExpanded == _State.Finalize
             ? CommonIconButton(Icon(Icons.check), onPressed: onComplete)
             : SizedBox.shrink());
 
     return CommonContainerWithInkWell(
         onTap: () {
           setState(() {
-            _isExpanded = _isExpanded == _TaskState.Default
-                ? _TaskState.Expanded
-                : _TaskState.Default;
+            _isExpanded = _isExpanded == _State.Default
+                ? _State.Expanded
+                : _State.Default;
           });
         },
         onLongPress: () {
           setState(() {
-            _isExpanded = _isExpanded != _TaskState.Finalize
-                ? _TaskState.Finalize
-                : _TaskState.Default;
+            _isExpanded = _isExpanded != _State.Finalize
+                ? _State.Finalize
+                : _State.Default;
           });
         },
         child: Row(
