@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_keeper/pages/team/points_line_chart.dart';
 import 'package:home_keeper/pages/team/points_pie_chart.dart';
-import 'package:home_keeper/providers/teams_provider.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:provider/provider.dart';
@@ -81,22 +81,35 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                       children: [
                         Icon(
                           Icons.circle,
-                          color: Color(0xff0293ee),
+                          color: e.color,
                         ),
                         SizedBox(width: 5.0),
-                        Text(e)
+                        Text(e.username)
                       ],
                     )))
                 .toList(),
           ))
     ]));
 
+    final charts = CommonContainer(
+      child: Column(
+        children: [
+          Text(
+            'Points',
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          UsersPointsPieChart(),
+          Divider(),
+          UsersPointsLineChart(LineChartPeriods.Week),
+        ],
+      ),
+    );
+
     final timePeriod = CommonContainer(
       child: Column(children: [
-        Text(
-          'Period',
-          style: TextStyle(fontSize: 20),
-        ),
         SizedBox(height: 5.0),
         Container(
             decoration: BoxDecoration(
@@ -145,24 +158,23 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
     );
 
     return Container(
-      padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
-      child: SingleChildScrollView(child:Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            currentTeam,
-            SizedBox(height: 5.0),
-            UserPointsPieChart(),
-            SizedBox(height: 5.0),
-            LineChartSample1(),
-            // Spacer(),
-            SizedBox(height: 5.0),
-            teamMembers,
-            SizedBox(height: 5.0),
-            timePeriod
-          ]),
-    ));
+        padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
+        child: SingleChildScrollView(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                currentTeam,
+                SizedBox(height: 5.0),
+                charts,
+                SizedBox(height: 5.0),
+                timePeriod,
+                // Spacer(),
+                SizedBox(height: 5.0),
+                teamMembers,
+              ]),
+        ));
   }
 
   @override

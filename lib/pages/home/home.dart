@@ -17,9 +17,9 @@ class _Home extends State<Home> {
     final taskProvider = Provider.of<TasksProvider>(context);
 
     switch (taskProvider.state) {
-      case TasksState.InProgress:
+      case TasksProviderState.InProgress:
         return Loading();
-      case TasksState.Initialized:
+      case TasksProviderState.Initialized:
         var lastEvents = taskProvider.taskCompletions.entries
             .map((e) => e.value)
             .toList(growable: false);

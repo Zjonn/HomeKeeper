@@ -2,10 +2,10 @@ import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/providers/tasks_provider/task.dart';
 
 class TaskInstance {
-  late final String id;
-  late final bool isActive;
-  late final Task relatedTask;
-  late final DateTime activeFrom;
+  final String id;
+  final bool isActive;
+  final Task relatedTask;
+  final DateTime activeFrom;
 
   TaskInstance(this.id, this.isActive, this.relatedTask, this.activeFrom);
 

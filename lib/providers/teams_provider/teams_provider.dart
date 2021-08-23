@@ -1,41 +1,15 @@
-// https://medium.com/@afegbua/flutter-thursday-13-building-a-user-registration-and-login-process-with-provider-and-external-api-1bb87811fd1d
-
 import 'dart:async';
 
 import 'package:artemis/artemis.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
+import 'package:home_keeper/providers/teams_provider/team_info.dart';
 
-class JoinResult {
-  bool status;
-  GraphQLResponse<JoinTeam$Mutation> response;
+import 'create_result.dart';
+import 'join_result.dart';
 
-  JoinResult(this.status, this.response);
-}
-
-class CreateResult {
-  bool status;
-  GraphQLResponse<CreateTeam$Mutation> response;
-
-  CreateResult(this.status, this.response);
-}
-
-class TeamInfo {
-  late final String id;
-  late final String name;
-  late final List<String> teamMembers;
-
-  TeamInfo(this.id, this.name, this.teamMembers);
-
-  TeamInfo.fromResp(ListUserTeamsInfo$Query$TeamType response) {
-    id = response.id;
-    name = response.name;
-    teamMembers = response.members.map((e) => e.username).toList();
-  }
-}
-
-enum TeamState {
+enum TeamProviderState {
   InProgress,
   UserIsNotMember,
   UserIsMember,
@@ -44,12 +18,12 @@ enum TeamState {
 class TeamProvider with ChangeNotifier {
   late final ArtemisClient _client;
 
-  TeamState _state = TeamState.InProgress;
+  TeamProviderState _state = TeamProviderState.InProgress;
   Map<String, TeamInfo> _teamsInfo = {};
 
   String? _currentTeam = null;
 
-  TeamState get state => _state;
+  TeamProviderState get state => _state;
 
   TeamInfo get currentTeamInfo => _teamsInfo[_currentTeam]!;
 
@@ -80,18 +54,18 @@ class TeamProvider with ChangeNotifier {
     };
 
     if (mapEquals<String, TeamInfo>(info, _teamsInfo) &&
-        _state != TeamState.InProgress) {
+        _state != TeamProviderState.InProgress) {
       return;
     }
     _teamsInfo = info;
 
     if (_teamsInfo.isNotEmpty) {
-      _state = TeamState.UserIsMember;
+      _state = TeamProviderState.UserIsMember;
       if (_currentTeam == null) {
         _currentTeam = _teamsInfo.entries.first.key;
       }
     } else {
-      _state = TeamState.UserIsNotMember;
+      _state = TeamProviderState.UserIsNotMember;
       _currentTeam = null;
     }
     notifyListeners();
@@ -102,7 +76,7 @@ class TeamProvider with ChangeNotifier {
         JoinTeamMutation(
             variables: JoinTeamArguments(teamId: teamId, password: password)));
 
-    if (!response.hasErrors && _state != TeamState.UserIsMember) {
+    if (!response.hasErrors && _state != TeamProviderState.UserIsMember) {
       await updateUserTeamsInfo();
     }
     return JoinResult(!response.hasErrors, response);
@@ -115,7 +89,7 @@ class TeamProvider with ChangeNotifier {
     bool hasData = !response.hasErrors &&
         (response.data!.createTeam!.errors?.isEmpty ?? false);
 
-    if (hasData && _state != TeamState.UserIsMember) {
+    if (hasData && _state != TeamProviderState.UserIsMember) {
       await updateUserTeamsInfo();
     }
     return CreateResult(hasData, response);

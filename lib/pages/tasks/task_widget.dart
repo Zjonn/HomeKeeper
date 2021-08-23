@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
-import 'package:home_keeper/providers/teams_provider.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
@@ -34,16 +34,16 @@ class _TaskWidgetState extends State<TaskWidget> {
 
     final elapsedTime = DateTime.now().difference(_task.activeFrom);
     final percentToRankUp =
-    (elapsedTime.inDays / DAYS_TO_RANK_UP).clamp(0.0, 1.0);
+        (elapsedTime.inDays / DAYS_TO_RANK_UP).clamp(0.0, 1.0);
 
     final points = _task.relatedTask.points;
     final pointsText = RichText(
         text: TextSpan(children: <TextSpan>[
-          TextSpan(text: '${points} ${points == 1 ? 'point' : 'points'}'),
-          TextSpan(
-              text: '${percentToRankUp == 1 ? ' + bonus' : ''}',
+      TextSpan(text: '${points} ${points == 1 ? 'point' : 'points'}'),
+      TextSpan(
+          text: '${percentToRankUp == 1 ? ' + bonus' : ''}',
           style: TextStyle(color: Colors.amber))
-        ]));
+    ]));
 
     final durationColor = Color.lerp(
         Theme.of(context).textTheme.bodyText1!.color,
@@ -82,7 +82,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                         ),
                         CommonIconButton(
                           Icon(Icons.delete),
-                          onPressed: () => {},
+                          onPressed: () => {taskProvider.deleteTask(_task.id)},
                           color: Colors.red,
                         ),
                       ],
@@ -129,24 +129,24 @@ class _TaskWidgetState extends State<TaskWidget> {
           children: [
             Expanded(
                 child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    _task.relatedTask.name,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                Row(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _task.relatedTask.name,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        pointsText,
-                        Spacer(),
-                        durationText,
-                      ],
-                    ),
-                    descriptionAnimatedContainer
+                    pointsText,
+                    Spacer(),
+                    durationText,
                   ],
-                )),
+                ),
+                descriptionAnimatedContainer
+              ],
+            )),
             completeAnimatedContainer
           ],
         ));

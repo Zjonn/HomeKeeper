@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:home_keeper/providers/teams_provider.dart';
+import 'package:home_keeper/providers/teams_provider/join_result.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';

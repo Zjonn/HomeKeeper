@@ -1,11 +1,11 @@
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 class Task {
-  late final String id;
-  late final String name;
-  late final String description;
+  final String id;
+  final String name;
+  final String description;
 
-  late final int points;
+  final int points;
 
   Task(this.id, this.name, this.description, this.points);
 

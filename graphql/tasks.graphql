@@ -95,3 +95,19 @@ mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
         }
     }
 }
+
+mutation DeleteTask($id : ID!) {
+    deleteTask(id: $id) {
+        ok,
+        task {
+            id,
+            team {
+                id
+            }
+        },
+        errors {
+            field,
+            messages
+        }
+    }
+}

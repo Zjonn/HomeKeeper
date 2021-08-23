@@ -1,13 +1,31 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:home_keeper/widgets/container.dart';
+import 'package:home_keeper/providers/teams_provider/team_member.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
+import 'package:provider/provider.dart';
 
-class LineChartSample1 extends StatefulWidget {
+enum LineChartPeriods { Week, Month, Year }
+
+class UsersPointsLineChart extends StatefulWidget {
+  final LineChartPeriods period;
+  UsersPointsLineChart(this.period);
+
   @override
-  State<StatefulWidget> createState() => LineChartSample1State();
+  State<StatefulWidget> createState() {
+    switch (period) {
+      case LineChartPeriods.Week:
+        return _UsersPointsWeekLineChartState();
+      case LineChartPeriods.Month:
+        return _UsersPointsWeekLineChartState();
+      case LineChartPeriods.Year:
+        return _UsersPointsWeekLineChartState();
+    }
+  }
 }
 
-class LineChartSample1State extends State<LineChartSample1> {
+class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
   late bool isShowingMainData;
 
   @override
@@ -18,30 +36,25 @@ class LineChartSample1State extends State<LineChartSample1> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.23,
-      child: CommonContainer(
+    TeamProvider teamProvider = Provider.of<TeamProvider>(context);
+
+    return Container(
+      child: AspectRatio(
+        aspectRatio: 1.5,
         child: Stack(
           children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const SizedBox(
-                  height: 37,
-                ),
-                const Text(
-                  'Points per period',
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 37,
+                SizedBox(
+                  height: 20,
                 ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: LineChart(
-                      sampleData1(),
+                      _userPointsChart(
+                          teamProvider.currentTeamInfo.teamMembers),
                       swapAnimationDuration: const Duration(milliseconds: 250),
                     ),
                   ),
@@ -57,7 +70,7 @@ class LineChartSample1State extends State<LineChartSample1> {
     );
   }
 
-  LineChartData sampleData1() {
+  LineChartData _userPointsChart(List<TeamMember> teamMembers) {
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
@@ -76,7 +89,7 @@ class LineChartSample1State extends State<LineChartSample1> {
           getTextStyles: (value) => const TextStyle(
             color: Color(0xff72719b),
             fontWeight: FontWeight.bold,
-            fontSize: 16,
+            fontSize: 11,
           ),
           margin: 10,
           getTitles: (value) {
@@ -130,81 +143,37 @@ class LineChartSample1State extends State<LineChartSample1> {
       ),
       minX: 0,
       maxX: 7,
-      maxY: 4,
       minY: 0,
-      lineBarsData: linesBarData1(),
+      lineBarsData: userPointsData(teamMembers),
     );
   }
 
-  List<LineChartBarData> linesBarData1() {
-    final lineChartBarData1 = LineChartBarData(
-      spots: [
-        FlSpot(0, 1.8),
-        FlSpot(1, 1),
-        FlSpot(2, 1.5),
-        FlSpot(3, 1.4),
-        FlSpot(4, 3.4),
-        FlSpot(5, 2),
-        FlSpot(6, 2.2),
-      ],
-      isCurved: true,
-      colors: [
-        const Color(0xff0293ee),
-      ],
-      barWidth: 8,
-      isStrokeCapRound: true,
-      dotData: FlDotData(
-        show: false,
-      ),
-      belowBarData: BarAreaData(
-        show: false,
-      ),
-    );
-    final lineChartBarData2 = LineChartBarData(
-      spots: [
-        FlSpot(1, 1),
-        FlSpot(3, 2.8),
-        FlSpot(7, 1.2),
-        FlSpot(10, 2.8),
-        FlSpot(12, 2.6),
-        FlSpot(13, 3.9),
-      ],
-      isCurved: true,
-      colors: [
-        const Color(0xff0293ee),
-      ],
-      barWidth: 8,
-      isStrokeCapRound: true,
-      dotData: FlDotData(
-        show: false,
-      ),
-      belowBarData: BarAreaData(show: false, colors: [
-        const Color(0xff0293ee),
-      ]),
-    );
-    final lineChartBarData3 = LineChartBarData(
-      spots: [
-        FlSpot(1, 2.8),
-        FlSpot(3, 1.9),
-        FlSpot(6, 3),
-        FlSpot(10, 1.3),
-        FlSpot(13, 2.5),
-      ],
-      isCurved: true,
-      colors: const [
-        Color(0xff0293ee),
-      ],
-      barWidth: 8,
-      isStrokeCapRound: true,
-      dotData: FlDotData(
-        show: false,
-      ),
-      belowBarData: BarAreaData(
-        show: false,
-      ),
-    );
-    return [
-      lineChartBarData1,
-    ];
+  List<LineChartBarData> userPointsData(List<TeamMember> teamMembers) {
+    return teamMembers
+        .map<LineChartBarData>((e) => LineChartBarData(
+              spots: [
+                FlSpot(0, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(1, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(2, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(3, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(4, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(5, (Random().nextDouble() * 10).truncateToDouble()),
+                FlSpot(6, (Random().nextDouble() * 10).truncateToDouble()),
+              ],
+              isCurved: true,
+              curveSmoothness: 0.3,
+              colors: [
+                e.color,
+              ],
+              barWidth: 2,
+              isStrokeCapRound: true,
+              dotData: FlDotData(
+                show: true,
+              ),
+              belowBarData: BarAreaData(
+                show: false,
+              ),
+            ))
+        .toList(growable: false);
   }
 }

@@ -1,31 +1,26 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:home_keeper/widgets/container.dart';
+import 'package:home_keeper/providers/teams_provider/team_member.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
+import 'package:home_keeper/utils/enumerate.dart';
+import 'package:provider/provider.dart';
 
-import '../../widgets/indicator.dart';
-
-class UserPointsPieChart extends StatefulWidget {
+class UsersPointsPieChart extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => UserPointsPieChartState();
+  State<StatefulWidget> createState() => UsersPointsPieChartState();
 }
 
-class UserPointsPieChartState extends State {
-  // final RandomColor _randomColor = RandomColor();
+class UsersPointsPieChartState extends State {
   int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
-    // final teamsProvider = Provider.of<TeamProvider>(context);
+    final teamsProvider = Provider.of<TeamProvider>(context);
 
-    return CommonContainer(
+    return Container(
         child: Column(
       children: [
-        Text(
-          'Percent of points',
-          style: TextStyle(fontSize: 20),
-        ),
-        SizedBox(height: 5.0),
         AspectRatio(
           aspectRatio: 1.7,
           child: PieChart(
@@ -49,33 +44,30 @@ class UserPointsPieChartState extends State {
                 ),
                 sectionsSpace: 0,
                 centerSpaceRadius: 40,
-                sections: showingSections()),
+                sections: showingSections(teamsProvider)),
           ),
         ),
       ],
     ));
   }
 
-  List<PieChartSectionData> showingSections() {
-    return List.generate(1, (i) {
+  List<PieChartSectionData> showingSections(TeamProvider teamProvider) {
+    return enumerate<PieChartSectionData, TeamMember>(
+        teamProvider.currentTeamInfo.teamMembers, (i, member) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 25.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: const Color(0xff0293ee),
-            value: 100,
-            title: '100%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        default:
-          throw Error();
-      }
-    });
+
+      return PieChartSectionData(
+          color: member.color,
+          value: 100,
+          title: '33%',
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff),
+          ));
+    }).toList(growable: false);
   }
 }
