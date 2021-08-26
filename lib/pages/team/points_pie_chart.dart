@@ -52,11 +52,14 @@ class _UsersPointsPieChartState extends State<UsersPointsPieChart> {
           aspectRatio: 1.7,
           child: PieChart(
             PieChartData(
-                pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+                pieTouchData:
+                    PieTouchData(touchCallback: (event, pieTouchResponse) {
+                  if (pieTouchResponse == null) {
+                    return;
+                  }
                   setState(() {
                     final desiredTouch =
-                        pieTouchResponse.touchInput is! PointerExitEvent &&
-                            pieTouchResponse.touchInput is! PointerUpEvent;
+                        event is! PointerExitEvent && event is! PointerUpEvent;
                     if (desiredTouch &&
                         pieTouchResponse.touchedSection != null) {
                       touchedIndex =

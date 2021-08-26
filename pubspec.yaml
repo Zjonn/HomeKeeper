@@ -39,12 +39,12 @@ dependencies:
   meta: '>=1.0.0 <2.0.0' # only if you have non nullable fields
   gql: '>=0.12.3 <1.0.0'
 
-  provider: ^5.0.0
+  provider: ^6.0.0
 
   # login.dart
   another_flushbar: ^1.10.22
   expandable: ^5.0.1
-  fl_chart: ^0.36.2
+  fl_chart: ^0.40.0
   random_color: ^1.0.6-nullsafety
   numberpicker: ^2.1.1
   intersperse: ^2.0.0
