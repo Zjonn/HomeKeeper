@@ -93,7 +93,6 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         touchTooltipData: LineTouchTooltipData(
           tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
         ),
-        touchCallback: (LineTouchResponse touchResponse) {},
         handleBuiltInTouches: true,
       ),
       gridData: FlGridData(
@@ -103,7 +102,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           reservedSize: 22,
-          getTextStyles: (value) => const TextStyle(
+          getTextStyles: (_, value) => const TextStyle(
             color: Color(0xff72719b),
             fontWeight: FontWeight.bold,
             fontSize: 11,
@@ -117,7 +116,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         ),
         leftTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (value) => const TextStyle(
+          getTextStyles: (_, value) => const TextStyle(
             color: Color(0xff75729e),
             fontWeight: FontWeight.bold,
             fontSize: 14,
