@@ -6,27 +6,24 @@ import 'package:home_keeper/widgets/container.dart';
 import 'package:provider/provider.dart';
 
 class HomeWidget extends StatefulWidget {
-  final TaskCompletion _completion;
+  final TaskCompletion completion;
 
-  HomeWidget(this._completion);
+  HomeWidget(this.completion);
 
   @override
-  State<StatefulWidget> createState() => _HomeWidgetState(_completion);
+  State<StatefulWidget> createState() => _HomeWidgetState();
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  final TaskCompletion _completion;
-
-  _HomeWidgetState(this._completion);
-
   @override
   Widget build(BuildContext context) {
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
+    final completion = widget.completion;
 
     final completedBy = teamProvider.currentTeamInfo.teamMembers.firstWhere(
-        (element) => element.username == _completion.userWhoCompletedTask);
-    final taskName = _completion.relatedTaskInstance.relatedTask.name;
-    final grantedPoints = _completion.grantedPoints;
+        (element) => element.username == completion.userWhoCompletedTask);
+    final taskName = completion.relatedTaskInstance.relatedTask.name;
+    final grantedPoints = completion.grantedPoints;
 
     return CommonContainer(
         child: RichText(

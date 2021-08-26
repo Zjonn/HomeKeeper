@@ -9,12 +9,12 @@ import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';
 
 class TaskWidget extends StatefulWidget {
-  final TaskInstance _task;
+  final TaskInstance task;
 
-  TaskWidget(this._task);
+  TaskWidget(this.task);
 
   @override
-  State<StatefulWidget> createState() => _TaskWidgetState(_task);
+  State<StatefulWidget> createState() => _TaskWidgetState();
 }
 
 enum _State { Default, Expanded, Finalize }
@@ -22,21 +22,19 @@ enum _State { Default, Expanded, Finalize }
 class _TaskWidgetState extends State<TaskWidget> {
   static const DAYS_TO_RANK_UP = 14;
 
-  final TaskInstance _task;
   _State _isExpanded = _State.Default;
-
-  _TaskWidgetState(this._task);
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TasksProvider>(context);
     final teamProvider = Provider.of<TeamProvider>(context);
+    final task = widget.task;
 
-    final elapsedTime = DateTime.now().difference(_task.activeFrom);
+    final elapsedTime = DateTime.now().difference(task.activeFrom);
     final percentToRankUp =
         (elapsedTime.inDays / DAYS_TO_RANK_UP).clamp(0.0, 1.0);
 
-    final points = _task.relatedTask.points;
+    final points = task.relatedTask.points;
     final pointsText = RichText(
         text: TextSpan(children: <TextSpan>[
       TextSpan(text: '${points} ${points == 1 ? 'point' : 'points'}'),
@@ -76,13 +74,13 @@ class _TaskWidgetState extends State<TaskWidget> {
                         Expanded(
                           child: SingleChildScrollView(
                               child: Text(
-                            _task.relatedTask.description,
+                            task.relatedTask.description,
                             textAlign: TextAlign.center,
                           )),
                         ),
                         CommonIconButton(
                           Icon(Icons.delete),
-                          onPressed: () => {taskProvider.deleteTask(_task.id)},
+                          onPressed: () => {taskProvider.deleteTask(task.id)},
                           color: Colors.red,
                         ),
                       ],
@@ -94,10 +92,10 @@ class _TaskWidgetState extends State<TaskWidget> {
 
     final onComplete = () async {
       final resp = await taskProvider.completeTask(
-          _task.id, teamProvider.currentTeamInfo.id);
+          task.id, teamProvider.currentTeamInfo.id);
       if (resp.isSuccessful) {
         CommonFlushbar(
-                "${_task.relatedTask.name} completed. Granted ${resp.grantedPoints} points!")
+                "${task.relatedTask.name} completed. Granted ${resp.grantedPoints} points!")
             .show(context);
       }
     };
@@ -133,7 +131,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _task.relatedTask.name,
+                    task.relatedTask.name,
                     style: Theme.of(context).textTheme.headline6,
                   ),
                 ),

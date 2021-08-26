@@ -8,7 +8,9 @@ query ListUserTeamsInfo {
     myTeams {
         id,
         name,
-        members {username}
+        members {
+            id,
+            username}
     }
 }
 

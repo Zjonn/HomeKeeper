@@ -2,8 +2,11 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:home_keeper/providers/points_provider/points_provider.dart';
 import 'package:home_keeper/providers/teams_provider/team_member.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
+import 'package:home_keeper/utils/enumerate.dart';
+import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 enum LineChartPeriods { Week, Month, Year }
@@ -13,16 +16,7 @@ class UsersPointsLineChart extends StatefulWidget {
   UsersPointsLineChart(this.period);
 
   @override
-  State<StatefulWidget> createState() {
-    switch (period) {
-      case LineChartPeriods.Week:
-        return _UsersPointsWeekLineChartState();
-      case LineChartPeriods.Month:
-        return _UsersPointsWeekLineChartState();
-      case LineChartPeriods.Year:
-        return _UsersPointsWeekLineChartState();
-    }
-  }
+  State<StatefulWidget> createState() => _UsersPointsWeekLineChartState();
 }
 
 class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
@@ -37,6 +31,25 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
   @override
   Widget build(BuildContext context) {
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
+    PointsProvider pointsProvider = Provider.of<PointsProvider>(context);
+
+    if (teamProvider.state == TeamProviderState.InProgress ||
+        pointsProvider.state == PointsProviderState.Uninitialized) {
+      return Loading();
+    }
+
+    Points points;
+    switch (widget.period) {
+      case LineChartPeriods.Week:
+        points = pointsProvider.weekPoints;
+        break;
+      case LineChartPeriods.Month:
+        points = pointsProvider.monthPoints;
+        break;
+      case LineChartPeriods.Year:
+        points = pointsProvider.yearPoints;
+        break;
+    }
 
     return Container(
       child: AspectRatio(
@@ -54,7 +67,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: LineChart(
                       _userPointsChart(
-                          teamProvider.currentTeamInfo.teamMembers),
+                          teamProvider.currentTeamInfo.teamMembers, points),
                       swapAnimationDuration: const Duration(milliseconds: 250),
                     ),
                   ),
@@ -70,7 +83,11 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
     );
   }
 
-  LineChartData _userPointsChart(List<TeamMember> teamMembers) {
+  LineChartData _userPointsChart(List<TeamMember> teamMembers, Points points) {
+    final maxPointsVal = points.membersPoints.values
+        .map((e) => e.points.reduce(max))
+        .reduce(max);
+
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
@@ -93,23 +110,9 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
           ),
           margin: 10,
           getTitles: (value) {
-            switch (value.toInt()) {
-              case 0:
-                return 'MON';
-              case 1:
-                return 'TUE';
-              case 2:
-                return 'WED';
-              case 3:
-                return 'THU';
-              case 4:
-                return 'FRI';
-              case 5:
-                return 'SAT';
-              case 6:
-                return 'SUN';
-            }
-            return '';
+            return value.toInt() < points.pointsDescription.length
+                ? points.pointsDescription[value.toInt()]
+                : '';
           },
         ),
         leftTitles: SideTitles(
@@ -120,6 +123,10 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
             fontSize: 14,
           ),
           margin: 8,
+          interval: maxPointsVal / 8,
+          getTitles: (value) {
+            return value.toInt().toString();
+          },
           reservedSize: 30,
         ),
       ),
@@ -141,27 +148,21 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
           ),
         ),
       ),
-      minX: 0,
-      maxX: 7,
       minY: 0,
-      lineBarsData: userPointsData(teamMembers),
+      lineBarsData: userPointsData(teamMembers, points),
     );
   }
 
-  List<LineChartBarData> userPointsData(List<TeamMember> teamMembers) {
+  List<LineChartBarData> userPointsData(
+      List<TeamMember> teamMembers, Points points) {
     return teamMembers
         .map<LineChartBarData>((e) => LineChartBarData(
-              spots: [
-                FlSpot(0, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(1, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(2, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(3, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(4, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(5, (Random().nextDouble() * 10).truncateToDouble()),
-                FlSpot(6, (Random().nextDouble() * 10).truncateToDouble()),
-              ],
+              spots: enumerate<FlSpot, int>(points.membersPoints[e.id]!.points,
+                      (i, v) => FlSpot(i.toDouble(), v.toDouble()))
+                  .toList(growable: false),
               isCurved: true,
-              curveSmoothness: 0.3,
+              preventCurveOverShooting: true,
+              curveSmoothness: 0.5,
               colors: [
                 e.color,
               ],

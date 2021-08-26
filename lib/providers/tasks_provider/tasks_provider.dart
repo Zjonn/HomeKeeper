@@ -28,15 +28,14 @@ class TasksProvider with ChangeNotifier {
 
   TasksProvider(this._client);
 
-  void update(String teamId) {
-    Future.wait([
+  void update(String teamId) async {
+    await Future.wait([
       updateTasks(teamId),
       updateTaskInstances(teamId),
       updateTaskCompletions(teamId)
-    ]).then((value) {
-      _state = TasksProviderState.Initialized;
-      notifyListeners();
-    });
+    ]);
+    _state = TasksProviderState.Initialized;
+    notifyListeners();
   }
 
   Future<void> updateTasks(String teamId) async {

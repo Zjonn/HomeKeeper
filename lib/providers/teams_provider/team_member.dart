@@ -5,13 +5,14 @@ import 'package:crypto/crypto.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 class TeamMember {
+  final String id;
   final String username;
   final Color color;
 
-  TeamMember(this.username, this.color);
+  TeamMember(this.id, this.username, this.color);
 
   TeamMember.fromResp(ListUserTeamsInfo$Query$TeamType$UserType resp)
-      : this(resp.username, generateColor(resp));
+      : this(resp.id, resp.username, generateColor(resp));
 
   static Color generateColor(final object) {
     final hash = md5.convert(utf8.encode(object.toString())).toString();

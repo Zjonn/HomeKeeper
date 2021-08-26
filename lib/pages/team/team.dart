@@ -91,23 +91,6 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           ))
     ]));
 
-    final charts = CommonContainer(
-      child: Column(
-        children: [
-          Text(
-            'Points',
-            style: TextStyle(fontSize: 20),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          UsersPointsPieChart(),
-          Divider(),
-          UsersPointsLineChart(LineChartPeriods.Week),
-        ],
-      ),
-    );
-
     final timePeriod = CommonContainer(
       child: Column(children: [
         SizedBox(height: 5.0),
@@ -122,7 +105,11 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                     flex: 1,
                     child: CommonMaterialButton(
                       'Week',
-                      onPressed: () => {},
+                      onPressed: () => {
+                        setState(() {
+                          _setPeriod = 0;
+                        })
+                      },
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(40),
                           bottomLeft: Radius.circular(40)),
@@ -134,7 +121,11 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                   flex: 1,
                   child: CommonMaterialButton(
                     'Month',
-                    onPressed: () => {},
+                    onPressed: () => {
+                      setState(() {
+                        _setPeriod = 1;
+                      })
+                    },
                     borderRadius: BorderRadius.zero,
                     textColor:
                         _setPeriod == 1 ? Theme.of(context).accentColor : null,
@@ -144,7 +135,11 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
                     flex: 1,
                     child: CommonMaterialButton(
                       'Year',
-                      onPressed: () => {},
+                      onPressed: () => {
+                        setState(() {
+                          _setPeriod = 2;
+                        })
+                      },
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(40),
                           bottomRight: Radius.circular(40)),
@@ -167,10 +162,9 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
               children: [
                 currentTeam,
                 SizedBox(height: 5.0),
-                charts,
+                _getCharts(),
                 SizedBox(height: 5.0),
                 timePeriod,
-                // Spacer(),
                 SizedBox(height: 5.0),
                 teamMembers,
               ]),
@@ -179,4 +173,42 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
 
   @override
   bool get wantKeepAlive => true;
+
+  CommonContainer _getCharts() {
+    var pieChartPeriod;
+    var lineChartPeriod;
+
+    switch (_setPeriod) {
+      case 1:
+        pieChartPeriod = PieChartPeriods.Month;
+        lineChartPeriod = LineChartPeriods.Month;
+        break;
+      case 2:
+        pieChartPeriod = PieChartPeriods.Year;
+        lineChartPeriod = LineChartPeriods.Year;
+        break;
+      case 0:
+      default:
+        pieChartPeriod = PieChartPeriods.Week;
+        lineChartPeriod = LineChartPeriods.Week;
+        break;
+    }
+
+    return CommonContainer(
+      child: Column(
+        children: [
+          Text(
+            'Points',
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          UsersPointsPieChart(pieChartPeriod),
+          Divider(),
+          UsersPointsLineChart(lineChartPeriod),
+        ],
+      ),
+    );
+  }
 }
