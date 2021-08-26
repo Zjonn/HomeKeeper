@@ -19,9 +19,9 @@ class _TasksState extends State<Tasks> {
     TasksProvider tasksProvider = Provider.of<TasksProvider>(context);
 
     switch (tasksProvider.state) {
-      case TasksState.InProgress:
+      case TasksProviderState.InProgress:
         return Loading();
-      case TasksState.Initialized:
+      case TasksProviderState.Initialized:
         final inactiveTasks = tasksProvider.taskInstances.entries
             .map((e) => e.value)
             .where((element) => !element.isActive);
@@ -45,7 +45,7 @@ class _TasksState extends State<Tasks> {
               if (index == sortedTasks.length + 1) {
                 return SizedBox(height: SCROLL_OFFSET);
               }
-              return TaskPage(sortedTasks[index - 1]);
+              return TaskWidget(sortedTasks[index - 1]);
             });
 
         final addButton = Align(

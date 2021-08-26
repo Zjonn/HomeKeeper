@@ -3,12 +3,12 @@ import 'package:home_keeper/providers/tasks_provider/task.dart';
 import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 
 class TaskCompletion {
-  late final String id;
-  late final String userWhoCompletedTask;
-  late final int grantedPoints;
+  final String id;
+  final String userWhoCompletedTask;
+  final int grantedPoints;
 
-  late final TaskInstance relatedTaskInstance;
-  late final DateTime completedAt;
+  final TaskInstance relatedTaskInstance;
+  final DateTime completedAt;
 
   TaskCompletion(this.id, this.userWhoCompletedTask, this.grantedPoints,
       this.completedAt, this.relatedTaskInstance);

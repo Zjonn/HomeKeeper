@@ -3,11 +3,11 @@ import 'package:home_keeper/pages/join_team/join_team_builder.dart';
 import 'package:home_keeper/pages/settings.dart';
 import 'package:home_keeper/pages/tasks/tasks_builder.dart';
 import 'package:home_keeper/pages/team/team.dart';
-import 'package:home_keeper/providers/teams_provider.dart';
+import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
-import '../home.dart';
+import '../home/home.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -48,7 +48,7 @@ class _DashBoardState extends State<DashBoard>
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context);
 
-    if (teamProvider.state == TeamState.InProgress) {
+    if (teamProvider.state == TeamProviderState.InProgress) {
       return Scaffold(body: Loading());
     }
 
@@ -56,12 +56,12 @@ class _DashBoardState extends State<DashBoard>
     List<IconData> icons = [];
 
     switch (teamProvider.state) {
-      case TeamState.UserIsMember:
+      case TeamProviderState.UserIsMember:
         tabs = _tabs;
         icons = _tabs_icons;
         _changeController(tabs, true);
         break;
-      case TeamState.UserIsNotMember:
+      case TeamProviderState.UserIsNotMember:
         tabs = _no_team_tabs;
         icons = _no_team_tabs_icons;
         _changeController(tabs, false);

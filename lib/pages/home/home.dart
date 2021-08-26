@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:home_keeper/pages/home/home_widget.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/loading.dart';
@@ -11,20 +12,14 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
-  static const SCROLL_OFFSET = 600.0;
-
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TasksProvider>(context);
 
-    if (taskProvider.state == TasksState.InProgress) {
-      return Loading();
-    }
-
     switch (taskProvider.state) {
-      case TasksState.InProgress:
+      case TasksProviderState.InProgress:
         return Loading();
-      case TasksState.Initialized:
+      case TasksProviderState.Initialized:
         var lastEvents = taskProvider.taskCompletions.entries
             .map((e) => e.value)
             .toList(growable: false);
@@ -42,13 +37,7 @@ class _Home extends State<Home> {
                   textAlign: TextAlign.center,
                 ));
               }
-
-              var e = lastEvents[index];
-              return CommonContainer(
-                  child: Text('${e.userWhoCompletedTask} completed '
-                      '${e.relatedTaskInstance.relatedTask.name} '
-                      'at ${e.completedAt}. '
-                      '${e.grantedPoints} points granted.'));
+              return HomeWidget(lastEvents[index]);
             });
     }
   }

@@ -2,72 +2,23 @@ import 'package:artemis/client.dart';
 import 'package:artemis/schema/graphql_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:home_keeper/abstracts/graphql_result.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
+import 'package:home_keeper/providers/tasks_provider/responses.dart';
 import 'package:home_keeper/providers/tasks_provider/task.dart';
 import 'package:home_keeper/providers/tasks_provider/task_completion.dart';
 import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 
-class TaskCreateResult
-    extends GraphqlResult<GraphQLResponse<CreateTask$Mutation>> {
-  TaskCreateResult(GraphQLResponse<CreateTask$Mutation> response)
-      : super(response);
-
-  @override
-  bool parseResponse(GraphQLResponse<CreateTask$Mutation> response) {
-    bool isError = response.hasErrors ||
-        (response.data!.createTask!.errors?.isEmpty ?? false);
-
-    if (isError) {
-      if (response.hasErrors) {
-        errors = response.errors!
-            .map((e) => GraphqlError<String, String>(e.message))
-            .join('\n');
-      } else {
-        errors = response.data!.createTask!.errors!
-            .map((e) => GraphqlError<String, String>(e!.messages.join('\n'),
-                field: e.field))
-            .join('\n');
-      }
-    }
-    return !isError;
-  }
-}
-
-class TaskCompleteResult
-    extends GraphqlResult<GraphQLResponse<CompleteTask$Mutation>> {
-  late final int grantedPoints;
-
-  TaskCompleteResult(GraphQLResponse<CompleteTask$Mutation> resp) : super(resp);
-
-  @override
-  bool parseResponse(GraphQLResponse<CompleteTask$Mutation> response) {
-    bool isError = response.hasErrors;
-
-    if (response.hasErrors) {
-      errors = response.errors!
-          .map((e) => GraphqlError<String, String>(e.message))
-          .join('\n');
-    } else {
-      grantedPoints = response.data!.submitTaskInstanceCompletion!
-          .taskInstanceCompletion!.pointsGranted;
-    }
-
-    return !isError;
-  }
-}
-
-enum TasksState { InProgress, Initialized }
+enum TasksProviderState { InProgress, Initialized }
 
 class TasksProvider with ChangeNotifier {
   late final ArtemisClient _client;
 
-  TasksState _state = TasksState.InProgress;
+  TasksProviderState _state = TasksProviderState.InProgress;
   Map<String, Task> _tasks = {};
   Map<String, TaskInstance> _taskInstances = {};
   Map<String, TaskCompletion> _taskCompletions = {};
 
-  TasksState get state => _state;
+  TasksProviderState get state => _state;
 
   Map<String, Task> get tasks => _tasks;
 
@@ -77,15 +28,14 @@ class TasksProvider with ChangeNotifier {
 
   TasksProvider(this._client);
 
-  void update(String teamId) {
-    Future.wait([
+  void update(String teamId) async {
+    await Future.wait([
       updateTasks(teamId),
       updateTaskInstances(teamId),
       updateTaskCompletions(teamId)
-    ]).then((value) {
-      _state = TasksState.Initialized;
-      notifyListeners();
-    });
+    ]);
+    _state = TasksProviderState.Initialized;
+    notifyListeners();
   }
 
   Future<void> updateTasks(String teamId) async {
@@ -193,5 +143,22 @@ class TasksProvider with ChangeNotifier {
     }
 
     return result;
+  }
+
+  Future<bool> deleteTask(String taskId) async {
+    GraphQLResponse<DeleteTask$Mutation> response = await _client.execute(
+        DeleteTaskMutation(variables: DeleteTaskArguments(id: taskId)));
+
+    final result = TaskDeleteResult(response);
+
+    final taskDeleted = result.isSuccessful && result.isDeleted;
+    if (taskDeleted) {
+      _taskInstances.remove(result.taskId);
+
+      notifyListeners();
+    } else {
+      updateTasks(result.teamId);
+    }
+    return taskDeleted;
   }
 }
