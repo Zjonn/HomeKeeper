@@ -50,8 +50,8 @@ jobs:
                   }).text)
 
           print(archive_download_url['artifacts'][0]['archive_download_url'])
-          END) || (echo "GitHub sometimes returns empty respose. \
-          So we asume there is no newer schema alvaible" && exit 0)
+          END) || echo "GitHub sometimes returns empty respose. \
+          So we asume there is no newer schema alvaible" && exit 0
 
           SCHEMA_FILENAME="schema.zip"
           curl \
