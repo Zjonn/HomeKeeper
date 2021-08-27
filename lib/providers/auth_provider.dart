@@ -1,12 +1,9 @@
-// https://medium.com/@afegbua/flutter-thursday-13-building-a-user-registration-and-login-process-with-provider-and-external-api-1bb87811fd1d
-
 import 'dart:async';
 
 import 'package:artemis/artemis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:home_keeper/config/api_url.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 
 enum Status {
@@ -35,8 +32,8 @@ class LoginResult {
 }
 
 class AuthProvider with ChangeNotifier {
-  ArtemisClient _client = ArtemisClient(ApiUrl.URL);
-  FlutterSecureStorage _storage = FlutterSecureStorage();
+  late final ArtemisClient _client;
+  late final FlutterSecureStorage _storage;
 
   Status _loggedInStatus = Status.Uninitialized;
   Status _registeredInStatus = Status.Uninitialized;
@@ -45,8 +42,10 @@ class AuthProvider with ChangeNotifier {
 
   Status get registeredInStatus => _registeredInStatus;
 
-  AuthProvider(String apiUrl) {
-    _client = ArtemisClient(apiUrl);
+  AuthProvider(String apiUrl, [client, storage]) {
+    _client = client == null ? ArtemisClient(apiUrl) : client;
+    _storage = storage == null ? FlutterSecureStorage() : storage;
+
     isTokenValid();
   }
 
