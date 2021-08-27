@@ -39,6 +39,12 @@ void main() {
       authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
     });
 
+    test('AuthProviderConstructor', () {
+      when(mockStorage.read(key: anyNamed('key')))
+          .thenAnswer((realInvocation) async => null);
+      AuthProvider("123", artemisClient, mockStorage);
+    });
+
     test('initialState', () async {
       expect(authProvider.loggedInStatus, Status.Uninitialized);
       expect(authProvider.registeredInStatus, Status.Uninitialized);
@@ -66,7 +72,7 @@ void main() {
     );
 
     test(
-      'failingLoginUser',
+      'errorLoginUser',
       () async {
         when(mockHttpClient.send(any))
             .thenAnswer((Invocation a) async => simpleResponse('''{
@@ -85,6 +91,64 @@ void main() {
         verifyZeroInteractions(mockStorage);
       },
     );
+
+    test('registerUser', () async {
+      when(mockHttpClient.send(any))
+          .thenAnswer((Invocation a) async => simpleResponse('''{
+            "data": {
+              "register": {
+                "username": "username",
+                "errors": []
+              }
+            }
+          } '''));
+
+      final res = await authProvider.register(
+          "username", "email", "password", "password");
+      expect(res.status, true);
+      expect(authProvider.registeredInStatus, Status.Registered);
+    });
+
+    test('errorRegisterUser', () async {
+      when(mockHttpClient.send(any))
+          .thenAnswer((Invocation a) async => simpleResponse('''{
+            "errors": [
+              {
+                "message": ""
+              }
+            ],
+            "data": null
+          } '''));
+
+      final res = await authProvider.register(
+          "username", "email", "password", "password");
+      expect(res.status, false);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
+    });
+
+    test('dataErrorRegisterUser', () async {
+      when(mockHttpClient.send(any))
+          .thenAnswer((Invocation a) async => simpleResponse('''{
+            "data": {
+              "register": {
+                "username": "username",
+                "errors": [
+                  {
+                    "field": "username",
+                    "messages": [
+                      "A user with that username already exists."
+                    ]
+                  }
+                ]
+              }
+            }
+          } '''));
+
+      final res = await authProvider.register(
+          "username", "email", "password", "password");
+      expect(res.status, false);
+      expect(authProvider.registeredInStatus, Status.NotRegistered);
+    });
 
     test('logout', () async {
       await authProvider.logout();
