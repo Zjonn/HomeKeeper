@@ -10,9 +10,8 @@ class RegisterResult
   @override
   Iterable<GraphqlError> getDataErrors(
       GraphQLResponse<RegisterUser$Mutation> response) {
-    return response.data!.register!.errors?.map(
-            (e) => GraphqlError(e!.messages.join('\n'), field: e.field)) ??
-        [];
+    return response.data!.register!.errors!
+        .map((e) => GraphqlError(e!.messages.join('\n'), field: e.field));
   }
 
   @override
