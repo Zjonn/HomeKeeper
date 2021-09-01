@@ -13,7 +13,12 @@ class TaskInstance {
       : this(
             resp.id,
             resp.active ?? false,
-            Task(resp.task.id, resp.task.name, resp.task.description,
-                resp.task.basePointsPrize),
+            Task(
+                resp.task.id,
+                resp.task.name,
+                resp.task.description,
+                resp.task.basePointsPrize,
+                resp.task.isRecurring,
+                resp.task.refreshInterval),
             resp.activeFrom);
 }

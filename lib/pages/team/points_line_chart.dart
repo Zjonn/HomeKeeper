@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:home_keeper/providers/points_provider/Points.dart';
 import 'package:home_keeper/providers/points_provider/points_provider.dart';
 import 'package:home_keeper/providers/teams_provider/team_member.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
@@ -33,8 +32,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
     TeamProvider teamProvider = Provider.of<TeamProvider>(context);
     PointsProvider pointsProvider = Provider.of<PointsProvider>(context);
 
-    if (teamProvider.state == TeamProviderState.InProgress ||
-        pointsProvider.state == PointsProviderState.Uninitialized) {
+    if (pointsProvider.state == PointsProviderState.Uninitialized) {
       return Loading();
     }
 
@@ -84,10 +82,6 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
   }
 
   LineChartData _userPointsChart(List<TeamMember> teamMembers, Points points) {
-    final maxPointsVal = points.membersPoints.values
-        .map((e) => e.points.reduce(max))
-        .reduce(max);
-
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
@@ -114,6 +108,8 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
                 : '';
           },
         ),
+        topTitles: SideTitles(showTitles: false),
+        rightTitles: SideTitles(showTitles: false),
         leftTitles: SideTitles(
           showTitles: true,
           getTextStyles: (_, value) => const TextStyle(
@@ -122,10 +118,6 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
             fontSize: 14,
           ),
           margin: 8,
-          interval: maxPointsVal / 8,
-          getTitles: (value) {
-            return value.toInt().toString();
-          },
           reservedSize: 30,
         ),
       ),
@@ -148,6 +140,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         ),
       ),
       minY: 0,
+      maxY: points.membersPointsSum > 0 ? null : 10,
       lineBarsData: userPointsData(teamMembers, points),
     );
   }

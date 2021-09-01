@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
-import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
@@ -27,7 +26,6 @@ class _TaskWidgetState extends State<TaskWidget> {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TasksProvider>(context);
-    final teamProvider = Provider.of<TeamProvider>(context);
     final task = widget.task;
 
     final elapsedTime = DateTime.now().difference(task.activeFrom);
@@ -58,8 +56,7 @@ class _TaskWidgetState extends State<TaskWidget> {
         curve: Curves.fastOutSlowIn,
         height: _isExpanded == _State.Expanded ? 100 : 0,
         child: _isExpanded == _State.Expanded
-            ? Align(
-                alignment: Alignment.center,
+            ? Center(
                 child: Column(
                   children: [
                     Divider(),
@@ -69,7 +66,10 @@ class _TaskWidgetState extends State<TaskWidget> {
                       children: [
                         CommonIconButton(
                           Icon(Icons.edit),
-                          onPressed: () => {},
+                          onLongPress: () => {
+                            Navigator.pushNamed(context, 'edit_task',
+                                arguments: widget.task.relatedTask)
+                          },
                         ),
                         Expanded(
                           child: SingleChildScrollView(
@@ -80,7 +80,17 @@ class _TaskWidgetState extends State<TaskWidget> {
                         ),
                         CommonIconButton(
                           Icon(Icons.delete),
-                          onPressed: () => {taskProvider.deleteTask(task.id)},
+                          onLongPress: () async {
+                            if (await taskProvider
+                                .deleteTask(task.relatedTask)) {
+                              CommonFlushbar(
+                                      'Task ${task.relatedTask.name} deleted.')
+                                  .show(context);
+                            } else {
+                              CommonFlushbar('Something went wrong.')
+                                  .show(context);
+                            }
+                          },
                           color: Colors.red,
                         ),
                       ],
@@ -91,8 +101,7 @@ class _TaskWidgetState extends State<TaskWidget> {
             : SizedBox.shrink());
 
     final onComplete = () async {
-      final resp = await taskProvider.completeTask(
-          task.id, teamProvider.currentTeamInfo.id);
+      final resp = await taskProvider.completeTask(task);
       if (resp.isSuccessful) {
         CommonFlushbar(
                 "${task.relatedTask.name} completed. Granted ${resp.grantedPoints} points!")

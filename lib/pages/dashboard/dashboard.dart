@@ -48,7 +48,7 @@ class _DashBoardState extends State<DashBoard>
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context);
 
-    if (teamProvider.state == TeamProviderState.InProgress) {
+    if (teamProvider.state == TeamProviderState.Uninitialized) {
       return Scaffold(body: Loading());
     }
 

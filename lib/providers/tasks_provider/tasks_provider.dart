@@ -1,26 +1,24 @@
-import 'package:artemis/client.dart';
 import 'package:artemis/schema/graphql_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
-import 'package:home_keeper/providers/tasks_provider/responses.dart';
+import 'package:home_keeper/providers/tasks_provider/results.dart';
 import 'package:home_keeper/providers/tasks_provider/task.dart';
 import 'package:home_keeper/providers/tasks_provider/task_completion.dart';
 import 'package:home_keeper/providers/tasks_provider/task_instance.dart';
 
-enum TasksProviderState { InProgress, Initialized }
+enum TasksProviderState { Uninitialized, Initialized }
 
 class TasksProvider with ChangeNotifier {
-  late final ArtemisClient _client;
+  late final ArtemisClientWithTimeout _client;
 
-  TasksProviderState _state = TasksProviderState.InProgress;
-  Map<String, Task> _tasks = {};
+  TasksProviderState _state = TasksProviderState.Uninitialized;
+
   Map<String, TaskInstance> _taskInstances = {};
   Map<String, TaskCompletion> _taskCompletions = {};
 
   TasksProviderState get state => _state;
-
-  Map<String, Task> get tasks => _tasks;
 
   Map<String, TaskInstance> get taskInstances => _taskInstances;
 
@@ -29,30 +27,9 @@ class TasksProvider with ChangeNotifier {
   TasksProvider(this._client);
 
   void update(String teamId) async {
-    await Future.wait([
-      updateTasks(teamId),
-      updateTaskInstances(teamId),
-      updateTaskCompletions(teamId)
-    ]);
+    await Future.wait(
+        [updateTaskInstances(teamId), updateTaskCompletions(teamId)]);
     _state = TasksProviderState.Initialized;
-    notifyListeners();
-  }
-
-  Future<void> updateTasks(String teamId) async {
-    GraphQLResponse<ListTasks$Query> response = await _client.execute(
-        ListTasksQuery(
-            variables: ListTasksArguments(teamId: int.parse(teamId))));
-    assert(!response.hasErrors, response.errors.toString());
-
-    Map<String, Task> tasks_ = {
-      for (var task in response.data!.tasks ?? []) task.id: Task.fromResp(task!)
-    };
-
-    if (mapEquals<String, Task>(_tasks, tasks_)) {
-      return;
-    }
-
-    _tasks = tasks_;
     notifyListeners();
   }
 
@@ -63,8 +40,9 @@ class TasksProvider with ChangeNotifier {
     assert(!response.hasErrors, response.errors.toString());
 
     Map<String, TaskInstance> taskInstances_ = {
-      for (var task in response.data!.taskInstances ?? [])
-        task.id: TaskInstance.fromResp(task)
+      for (var instance in response.data!.taskInstances ??
+          List<ListTasksInstances$Query$TaskInstanceType?>.empty())
+        instance!.id: TaskInstance.fromResp(instance)
     };
 
     if (mapEquals<String, TaskInstance>(_taskInstances, taskInstances_)) {
@@ -83,10 +61,10 @@ class TasksProvider with ChangeNotifier {
     assert(!response.hasErrors, response.errors.toString());
 
     Map<String, TaskCompletion> taskCompletions_ = {
-      for (var completion in response.data!.completions ?? [])
-        completion.id: TaskCompletion.fromResp(completion)
+      for (var completion in response.data!.completions ??
+          List<ListTasksCompletions$Query$TaskInstanceCompletionType?>.empty())
+        completion!.id: TaskCompletion.fromResp(completion)
     };
-    print(response.data!.completions);
 
     if (mapEquals<String, TaskCompletion>(_taskCompletions, taskCompletions_)) {
       return;
@@ -114,21 +92,18 @@ class TasksProvider with ChangeNotifier {
     final result = TaskCreateResult(response);
 
     if (result.isSuccessful) {
-      final task = response.data!.createTask!.task!;
-      _tasks[task.id] = Task.fromCreateResp(task);
       updateTaskInstances(teamId);
     }
 
     return result;
   }
 
-  Future<TaskCompleteResult> completeTask(
-      String instanceId, String teamId) async {
+  Future<TaskCompleteResult> completeTask(TaskInstance taskInstance) async {
     GraphQLResponse<CompleteTask$Mutation> response = await _client.execute(
         CompleteTaskMutation(
             variables: CompleteTaskArguments(
                 input: TaskInstanceCompletionCreateGenericType(
-                    taskInstance: instanceId))));
+                    taskInstance: taskInstance.id))));
 
     final result = TaskCompleteResult(response);
 
@@ -145,20 +120,42 @@ class TasksProvider with ChangeNotifier {
     return result;
   }
 
-  Future<bool> deleteTask(String taskId) async {
-    GraphQLResponse<DeleteTask$Mutation> response = await _client.execute(
-        DeleteTaskMutation(variables: DeleteTaskArguments(id: taskId)));
+  Future<bool> updateTask(String id, String name, String? description,
+      int points, int? refreshInterval, bool isRecurring) async {
+    GraphQLResponse<UpdateTask$Mutation> response = await _client.execute(
+        UpdateTaskMutation(
+            variables: UpdateTaskArguments(
+                input: TaskUpdateGenericType(
+                    id: id,
+                    name: name,
+                    description: description,
+                    basePointsPrize: points,
+                    refreshInterval: refreshInterval != null
+                        ? refreshInterval * 24.0 * 60 * 60
+                        : null,
+                    isRecurring: isRecurring))));
 
-    final result = TaskDeleteResult(response);
+    final result = TaskUpdateResult(response);
 
-    final taskDeleted = result.isSuccessful && result.isDeleted;
-    if (taskDeleted) {
-      _taskInstances.remove(result.taskId);
-
+    if (result.isSuccessful) {
+      await updateTaskInstances(result.teamId!);
       notifyListeners();
     } else {
-      updateTasks(result.teamId);
+      print(result.errors);
     }
-    return taskDeleted;
+    return result.isSuccessful && result.isUpdated!;
+  }
+
+  Future<bool> deleteTask(Task task) async {
+    GraphQLResponse<DeleteTask$Mutation> response = await _client.execute(
+        DeleteTaskMutation(variables: DeleteTaskArguments(id: task.id)));
+    final result = TaskDeleteResult(response);
+    if (result.isSuccessful) {
+      await updateTaskInstances(result.teamId!);
+      notifyListeners();
+    } else {
+      print(result.errors);
+    }
+    return result.isSuccessful && result.isDeleted!;
   }
 }

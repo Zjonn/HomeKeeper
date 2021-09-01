@@ -19,7 +19,7 @@ class _TasksState extends State<Tasks> {
     TasksProvider tasksProvider = Provider.of<TasksProvider>(context);
 
     switch (tasksProvider.state) {
-      case TasksProviderState.InProgress:
+      case TasksProviderState.Uninitialized:
         return Loading();
       case TasksProviderState.Initialized:
         final inactiveTasks = tasksProvider.taskInstances.entries

@@ -66,6 +66,37 @@ mutation CreateTask($input : TaskCreateGenericType!) {
     }
 }
 
+mutation UpdateTask($input: TaskUpdateGenericType!){
+    updateTask(input: $input) {
+        ok,
+        task {
+            team {
+                id
+            }
+        },
+        errors {
+            field,
+            messages,
+        }
+    }
+}
+
+mutation DeleteTask($id : ID!) {
+    deleteTask(id: $id) {
+        ok,
+        task {
+            id,
+            team {
+                id
+            }
+        },
+        errors {
+            field,
+            messages
+        }
+    }
+}
+
 mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
     submitTaskInstanceCompletion(input: $input) {
         taskInstanceCompletion {
@@ -88,22 +119,6 @@ mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
             },
             createdAt,
             pointsGranted
-        },
-        errors {
-            field,
-            messages
-        }
-    }
-}
-
-mutation DeleteTask($id : ID!) {
-    deleteTask(id: $id) {
-        ok,
-        task {
-            id,
-            team {
-                id
-            }
         },
         errors {
             field,

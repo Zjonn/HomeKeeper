@@ -17,7 +17,7 @@ class _Home extends State<Home> {
     final taskProvider = Provider.of<TasksProvider>(context);
 
     switch (taskProvider.state) {
-      case TasksProviderState.InProgress:
+      case TasksProviderState.Uninitialized:
         return Loading();
       case TasksProviderState.Initialized:
         var lastEvents = taskProvider.taskCompletions.entries

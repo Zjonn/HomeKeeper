@@ -24,3 +24,6 @@ class CommonFlushbar extends Flushbar {
     return super.show(context);
   }
 }
+
+final NO_INTERNET_CONNECTION_FLUSHBAR =
+    CommonFlushbar("No internet connection.");

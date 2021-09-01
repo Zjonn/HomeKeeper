@@ -1,6 +1,10 @@
-// based on https://hasura.io/learn/graphql/flutter-graphql/graphql-client/
+import 'dart:async';
+
 import 'package:artemis/artemis.dart';
+import 'package:gql_exec/gql_exec.dart';
+import 'package:gql_http_link/gql_http_link.dart';
 import 'package:http/http.dart' as http;
+import 'package:json_annotation/json_annotation.dart';
 
 class HttpClientWithToken extends http.BaseClient {
   HttpClientWithToken(this.token);
@@ -10,12 +14,35 @@ class HttpClientWithToken extends http.BaseClient {
 
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     request.headers['Authorization'] = token;
-    print(_client);
     print(token);
     return _client.send(request);
   }
 }
 
-ArtemisClient initializeClient(String url, String token) {
-  return ArtemisClient(url, httpClient: HttpClientWithToken("JWT " + token));
+class ArtemisClientWithTimeout extends ArtemisClient {
+  final Duration timeout;
+  final Function()? onTimeout;
+
+  ArtemisClientWithTimeout(String url,
+      {http.Client? httpClient,
+      this.timeout = const Duration(seconds: 3),
+      this.onTimeout})
+      : super.fromLink(HttpLink(
+          url,
+          httpClient: httpClient,
+        ));
+
+  @override
+  Future<GraphQLResponse<T>> execute<T, U extends JsonSerializable>(
+      GraphQLQuery<T, U> query,
+      {Context context = const Context()}) {
+    return super.execute<T, U>(query, context: context).timeout(timeout,
+        onTimeout: () {
+      if (onTimeout != null) {
+        onTimeout!();
+      }
+      return GraphQLResponse(
+          errors: [GraphQLError(message: "No internet connection")]);
+    });
+  }
 }

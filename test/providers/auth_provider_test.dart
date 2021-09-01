@@ -1,14 +1,12 @@
 import 'dart:convert';
-
-import 'package:artemis/client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/config/client.dart';
+import 'package:home_keeper/providers/auth_provider/auth_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 @TestOn("vm")
 import 'package:test/test.dart';
-
 import 'auth_provider_test.mocks.dart';
 
 http.StreamedResponse simpleResponse(String body, {int? status}) {
@@ -23,7 +21,7 @@ http.StreamedResponse simpleResponse(String body, {int? status}) {
 
 @GenerateMocks([http.Client, FlutterSecureStorage])
 void main() {
-  late ArtemisClient artemisClient;
+  late ArtemisClientWithTimeout artemisClient;
   late MockClient mockHttpClient;
   late AuthProvider authProvider;
   late MockFlutterSecureStorage mockStorage;
@@ -33,7 +31,7 @@ void main() {
       mockHttpClient = MockClient();
       mockStorage = MockFlutterSecureStorage();
 
-      artemisClient = ArtemisClient('http://localhost:3001/graphql',
+      artemisClient = ArtemisClientWithTimeout('http://localhost:3001/graphql',
           httpClient: mockHttpClient);
 
       authProvider = AuthProvider.withMocks(artemisClient, mockStorage);
@@ -45,7 +43,7 @@ void main() {
       AuthProvider("123", artemisClient, mockStorage);
     });
 
-    test('initialState', () async {
+    test('initialState', () {
       expect(authProvider.loggedInStatus, Status.Uninitialized);
       expect(authProvider.registeredInStatus, Status.Uninitialized);
     });
@@ -64,7 +62,7 @@ void main() {
           } '''));
 
         final res = await authProvider.login("username", "password");
-        expect(res.status, true);
+        expect(res.isSuccessful, true);
         expect(authProvider.loggedInStatus, Status.LoggedIn);
 
         verify(mockStorage.write(key: "token", value: "token_value"));
@@ -85,7 +83,7 @@ void main() {
           } '''));
 
         final res = await authProvider.login("username", "password");
-        expect(res.status, false);
+        expect(res.isSuccessful, false);
         expect(authProvider.loggedInStatus, Status.NotLoggedIn);
 
         verifyZeroInteractions(mockStorage);
@@ -105,7 +103,7 @@ void main() {
 
       final res = await authProvider.register(
           "username", "email", "password", "password");
-      expect(res.status, true);
+      expect(res.isSuccessful, true);
       expect(authProvider.registeredInStatus, Status.Registered);
     });
 
@@ -122,7 +120,7 @@ void main() {
 
       final res = await authProvider.register(
           "username", "email", "password", "password");
-      expect(res.status, false);
+      expect(res.isSuccessful, false);
       expect(authProvider.registeredInStatus, Status.NotRegistered);
     });
 
@@ -146,7 +144,7 @@ void main() {
 
       final res = await authProvider.register(
           "username", "email", "password", "password");
-      expect(res.status, false);
+      expect(res.isSuccessful, false);
       expect(authProvider.registeredInStatus, Status.NotRegistered);
     });
 
@@ -159,9 +157,7 @@ void main() {
 
     test('missingToken', () async {
       when(mockStorage.read(
-              key: anyNamed("key"),
-              iOptions: anyNamed("iOptions"),
-              lOptions: anyNamed("lOptions")))
+              key: anyNamed("key")))
           .thenAnswer((realInvocation) async => null);
 
       await authProvider.isTokenValid();
@@ -172,9 +168,7 @@ void main() {
 
     test('invalidToken', () async {
       when(mockStorage.read(
-              key: anyNamed("key"),
-              iOptions: anyNamed("iOptions"),
-              lOptions: anyNamed("lOptions")))
+              key: anyNamed("key")))
           .thenAnswer((realInvocation) async => "BEE3");
 
       when(mockHttpClient.send(any))
@@ -195,9 +189,7 @@ void main() {
 
     test('validToken', () async {
       when(mockStorage.read(
-              key: anyNamed("key"),
-              iOptions: anyNamed("iOptions"),
-              lOptions: anyNamed("lOptions")))
+              key: anyNamed("key")))
           .thenAnswer((realInvocation) async => "BEE3");
 
       when(mockHttpClient.send(any))
@@ -211,6 +203,10 @@ void main() {
 
       expect(authProvider.loggedInStatus, Status.LoggedIn);
       expect(authProvider.registeredInStatus, Status.NotRegistered);
+    });
+
+    test('dispose', () async {
+      authProvider.dispose();
     });
   });
 }

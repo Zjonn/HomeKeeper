@@ -5,7 +5,7 @@ import 'package:home_keeper/config/api_url.dart';
 class ApiURLProvider extends ChangeNotifier {
   static final String defaultApiURL = ApiUrl.URL;
 
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final FlutterSecureStorage _storage;
 
   String _apiURL = ApiUrl.URL;
 
@@ -19,7 +19,7 @@ class ApiURLProvider extends ChangeNotifier {
     }
   }
 
-  ApiURLProvider() {
+  ApiURLProvider([this._storage = const FlutterSecureStorage()]) {
     _storage.read(key: 'api_url').then((value) {
       if (value?.isEmpty ?? true) {
         _storage.write(key: 'api_url', value: _apiURL);

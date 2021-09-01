@@ -1,33 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_keeper/pages/tasks/number_picker_widget.dart';
+import 'package:home_keeper/providers/tasks_provider/task.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
-import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';
 
-import 'number_picker_widget.dart';
+class EditTask extends StatefulWidget {
+  final Task task;
 
-class CreateTask extends StatefulWidget {
+  EditTask(this.task);
+
   @override
-  State<StatefulWidget> createState() => _CreateTaskState();
+  State<StatefulWidget> createState() => _EditTaskState();
 }
 
-class _CreateTaskState extends State<CreateTask> {
+class _EditTaskState extends State<EditTask> {
   final formKey = new GlobalKey<FormState>();
 
   String _taskName = '';
   String? _description;
-  bool _isPeriodic = false;
-  int? _period = 7;
+  bool? _isPeriodic;
+  int? _period;
   int _points = 0;
 
   @override
   Widget build(BuildContext context) {
     final tasksProvider = Provider.of<TasksProvider>(context);
-    final teamProvider = Provider.of<TeamProvider>(context);
+
+    if (_isPeriodic == null || _period == null) {
+      setState(() {
+        _isPeriodic = widget.task.isPeriodic;
+        _period = widget.task.period == 0 ? 7 : widget.task.period;
+      });
+    }
 
     final taskNameField = TextFormField(
+      initialValue: widget.task.name,
       decoration: const InputDecoration(labelText: "Task name"),
       onSaved: (value) => _taskName = value ?? '',
       validator: (value) {
@@ -38,6 +48,7 @@ class _CreateTaskState extends State<CreateTask> {
     );
 
     final descriptionField = TextFormField(
+      initialValue: widget.task.description,
       decoration: const InputDecoration(
           labelText: "Description", hintText: "Description can be empty"),
       onSaved: (value) => _description = value ?? '',
@@ -45,6 +56,7 @@ class _CreateTaskState extends State<CreateTask> {
     );
 
     final pointsField = TextFormField(
+      initialValue: widget.task.points.toString(),
       decoration: const InputDecoration(labelText: "Points for completion"),
       onSaved: (value) => _points = int.parse(value!),
       keyboardType: TextInputType.number,
@@ -62,7 +74,7 @@ class _CreateTaskState extends State<CreateTask> {
             }));
 
     final textController =
-        TextEditingController(text: _isPeriodic ? _period.toString() : '');
+        TextEditingController(text: _isPeriodic! ? _period.toString() : '');
 
     final periodField = TextField(
         controller: textController,
@@ -76,7 +88,7 @@ class _CreateTaskState extends State<CreateTask> {
         },
         enabled: _isPeriodic,
         decoration: new InputDecoration(
-          border: _isPeriodic ? null : InputBorder.none,
+          border: _isPeriodic! ? null : InputBorder.none,
         ));
 
     final _doCreateTask = () async {
@@ -85,15 +97,19 @@ class _CreateTaskState extends State<CreateTask> {
       if (form.validate()) {
         form.save();
 
-        final result = await tasksProvider.createTask(_taskName, _description,
-            _points, teamProvider.currentTeamInfo.id, _period, _isPeriodic);
+        final result = await tasksProvider.updateTask(
+            widget.task.id,
+            _taskName,
+            _description,
+            _points,
+            _period,
+            _isPeriodic!);
 
-        if (result.isSuccessful) {
+        if (result) {
           Navigator.pop(context);
-          CommonFlushbar("Task created!").show(context);
+          CommonFlushbar("Task updated!").show(context);
         } else {
-          CommonFlushbar(result.errors ?? 'Task not created. No error returned')
-              .show(context);
+          CommonFlushbar('Something went wrong.').show(context);
         }
       }
     };
@@ -124,7 +140,7 @@ class _CreateTaskState extends State<CreateTask> {
                         AnimatedContainer(
                             duration: const Duration(seconds: 1),
                             curve: Curves.fastOutSlowIn,
-                            height: _isPeriodic ? 60 : 0,
+                            height: _isPeriodic! ? 60 : 0,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -139,7 +155,7 @@ class _CreateTaskState extends State<CreateTask> {
                               ],
                             )),
                         CommonMaterialButton(
-                          "Submit",
+                          "Edit",
                           onPressed: _doCreateTask,
                         )
                       ],

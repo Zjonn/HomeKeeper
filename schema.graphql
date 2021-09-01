@@ -24,7 +24,7 @@ type Query {
               Logged in user has to be member of the given team.
           
   """
-  teamMembersPoints(teamId: Int!, fromDatetime: DateTime = null, toDatetime: DateTime = null): [MemberPointsType]
+  teamMembersPoints(teamId: Int!, fromDatetime: DateTime = nullable, toDatetime: DateTime = null): [MemberPointsType]
   me: UserType
   myTeams: [TeamType]
   teams: [TeamType]

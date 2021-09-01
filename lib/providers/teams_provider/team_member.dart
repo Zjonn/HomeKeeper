@@ -14,8 +14,8 @@ class TeamMember {
   TeamMember.fromResp(ListUserTeamsInfo$Query$TeamType$UserType resp)
       : this(resp.id, resp.username, generateColor(resp));
 
-  static Color generateColor(final object) {
-    final hash = md5.convert(utf8.encode(object.toString())).toString();
+  static Color generateColor<T>(final T) {
+    final hash = md5.convert(utf8.encode(T.hashCode.toString())).toString();
     final elemPerColor = hash.length ~/ 3;
 
     final r = hash.substring(0, elemPerColor).hashCode % 255;

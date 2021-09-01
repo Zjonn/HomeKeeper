@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:home_keeper/providers/points_provider/Points.dart';
 import 'package:home_keeper/providers/points_provider/points_provider.dart';
 import 'package:home_keeper/providers/teams_provider/team_member.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
@@ -27,8 +28,7 @@ class _UsersPointsPieChartState extends State<UsersPointsPieChart> {
     final teamProvider = Provider.of<TeamProvider>(context);
     final pointsProvider = Provider.of<PointsProvider>(context);
 
-    if (teamProvider.state == TeamProviderState.InProgress ||
-        pointsProvider.state == PointsProviderState.Uninitialized) {
+    if (pointsProvider.state == PointsProviderState.Uninitialized) {
       return Loading();
     }
 
@@ -84,12 +84,20 @@ class _UsersPointsPieChartState extends State<UsersPointsPieChart> {
 
   List<PieChartSectionData> showingSections(
       List<TeamMember> teamMembers, Points points) {
+    final membersNum = teamMembers.length;
+
     return enumerate<PieChartSectionData, TeamMember>(teamMembers, (i, member) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 25.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
-      final memberPoints = points.membersPoints[member.id]!.pointsSum;
-      final pointsPercent = (memberPoints / points.membersPointsSum) * 100;
+
+      final memberPointsSum = points.membersPoints[member.id]!.pointsSum;
+      final memberPoints = memberPointsSum > 0 ? memberPointsSum : 1;
+
+      final membersPointsSum = points.membersPointsSum;
+      final pointsPercent = membersPointsSum > 0
+          ? (memberPoints / membersPointsSum) * 100
+          : 100 / membersNum;
 
       return PieChartSectionData(
           color: member.color,

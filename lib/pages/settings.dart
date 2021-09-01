@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/providers/auth_provider/auth_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';

@@ -5,6 +5,7 @@ import 'package:home_keeper/providers/auth_client_provider.dart';
 import 'package:home_keeper/providers/points_provider/points_provider.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
+import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -17,9 +18,19 @@ class DashBoardBuilder extends StatelessWidget {
         builder: (context, child) {
           final client = Provider.of<AuthClientProvider>(context);
 
-          if (client.state == AuthClientProviderState.InProgress) {
-            return Loading();
+          switch (client.state) {
+            case AuthClientProviderState.InProgress:
+              return Loading();
+            case AuthClientProviderState.NoConnectionWithBackend:
+              return CommonContainer(
+                child: Center(child: Text("Server is under maintenance 😢")),
+              );
+            case AuthClientProviderState.NoInternetConnection:
+              return CommonContainer(
+                child: Center(child: Text("No internet connection 😐")),
+              );
           }
+
           return MultiProvider(providers: [
             ChangeNotifierProvider(create: (_) => TeamProvider(client.client)),
             ChangeNotifierProxyProvider<TeamProvider, TasksProvider>(
