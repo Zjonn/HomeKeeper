@@ -97,13 +97,8 @@ class _EditTaskState extends State<EditTask> {
       if (form.validate()) {
         form.save();
 
-        final result = await tasksProvider.updateTask(
-            widget.task.id,
-            _taskName,
-            _description,
-            _points,
-            _period,
-            _isPeriodic!);
+        final result = await tasksProvider.updateTask(widget.task.id, _taskName,
+            _description, _points, _period, _isPeriodic!);
 
         if (result) {
           Navigator.pop(context);

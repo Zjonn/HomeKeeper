@@ -156,8 +156,7 @@ void main() {
     });
 
     test('missingToken', () async {
-      when(mockStorage.read(
-              key: anyNamed("key")))
+      when(mockStorage.read(key: anyNamed("key")))
           .thenAnswer((realInvocation) async => null);
 
       await authProvider.isTokenValid();
@@ -167,8 +166,7 @@ void main() {
     });
 
     test('invalidToken', () async {
-      when(mockStorage.read(
-              key: anyNamed("key")))
+      when(mockStorage.read(key: anyNamed("key")))
           .thenAnswer((realInvocation) async => "BEE3");
 
       when(mockHttpClient.send(any))
@@ -188,8 +186,7 @@ void main() {
     });
 
     test('validToken', () async {
-      when(mockStorage.read(
-              key: anyNamed("key")))
+      when(mockStorage.read(key: anyNamed("key")))
           .thenAnswer((realInvocation) async => "BEE3");
 
       when(mockHttpClient.send(any))
