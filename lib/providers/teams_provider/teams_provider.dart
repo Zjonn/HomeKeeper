@@ -3,22 +3,21 @@ import 'dart:async';
 import 'package:artemis/artemis.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
+import 'package:home_keeper/providers/teams_provider/results.dart';
 import 'package:home_keeper/providers/teams_provider/team_info.dart';
 
-import 'create_result.dart';
-import 'join_result.dart';
-
 enum TeamProviderState {
-  InProgress,
+  Uninitialized,
   UserIsNotMember,
   UserIsMember,
 }
 
 class TeamProvider with ChangeNotifier {
-  late final ArtemisClient _client;
+  late final ArtemisClientWithTimeout _client;
 
-  TeamProviderState _state = TeamProviderState.InProgress;
+  TeamProviderState _state = TeamProviderState.Uninitialized;
   Map<String, TeamInfo> _teamsInfo = {};
 
   String? _currentTeam = null;
@@ -54,7 +53,7 @@ class TeamProvider with ChangeNotifier {
     };
 
     if (mapEquals<String, TeamInfo>(info, _teamsInfo) &&
-        _state != TeamProviderState.InProgress) {
+        _state != TeamProviderState.Uninitialized) {
       return;
     }
     _teamsInfo = info;
@@ -75,23 +74,23 @@ class TeamProvider with ChangeNotifier {
     GraphQLResponse<JoinTeam$Mutation> response = await _client.execute(
         JoinTeamMutation(
             variables: JoinTeamArguments(teamId: teamId, password: password)));
+    final resp = JoinResult(response);
 
-    if (!response.hasErrors && _state != TeamProviderState.UserIsMember) {
+    if (resp.isSuccessful && _state != TeamProviderState.UserIsMember) {
       await updateUserTeamsInfo();
     }
-    return JoinResult(!response.hasErrors, response);
+    return resp;
   }
 
   Future<CreateResult> createTeam(String name, String password) async {
     GraphQLResponse<CreateTeam$Mutation> response = await _client.execute(
         CreateTeamMutation(
             variables: CreateTeamArguments(name: name, password: password)));
-    bool hasData = !response.hasErrors &&
-        (response.data!.createTeam!.errors?.isEmpty ?? false);
+    final resp = CreateResult(response);
 
-    if (hasData && _state != TeamProviderState.UserIsMember) {
+    if (resp.isSuccessful && _state != TeamProviderState.UserIsMember) {
       await updateUserTeamsInfo();
     }
-    return CreateResult(hasData, response);
+    return resp;
   }
 }

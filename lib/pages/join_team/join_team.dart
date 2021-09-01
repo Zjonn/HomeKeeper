@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:home_keeper/providers/teams_provider/join_result.dart';
+import 'package:home_keeper/providers/teams_provider/results.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
@@ -47,7 +47,7 @@ class _JoinTeam extends State<JoinTeam>
             teamProvider.joinTeam(_teamId, _teamPassword);
 
         successfulMessage.then((response) {
-          if (response.status) {
+          if (response.isSuccessful) {
             CommonFlushbar("Joined to a team").show(context);
           } else {
             CommonFlushbar(response.response.errors!

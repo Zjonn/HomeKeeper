@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_keeper/providers/auth_provider.dart';
+import 'package:home_keeper/providers/auth_provider/auth_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:home_keeper/widgets/loading.dart';
@@ -46,30 +46,19 @@ class _RegisterState extends State<Register> {
     );
 
     var doRegister = () {
-      final form = formKey.currentState;
-      if (form?.validate() ?? false) {
-        form!.save();
+      final form = formKey.currentState!;
+      if (form.validate()) {
+        form.save();
         auth
             .register(_username, _email, _password, _confirmPassword)
             .then((response) {
-          if (response.status) {
+          if (response.isSuccessful) {
             Navigator.pushReplacementNamed(context, 'login');
             CommonFlushbar("Registration succeeded").show(context);
           } else {
-            CommonFlushbar(response.response.hasErrors
-                    ? response.response.errors!
-                        .map((err) => err.message)
-                        .join("\n")
-                    : response.response.data!.register!.errors!
-                        .map((err) => err != null
-                            ? [err.field, err.messages.join(",")].join(": ")
-                            : '')
-                        .join("\n"))
-                .show(context);
+            CommonFlushbar(response.errors!).show(context);
           }
         });
-      } else {
-        CommonFlushbar("Invalid form").show(context);
       }
     };
 
@@ -91,7 +80,7 @@ class _RegisterState extends State<Register> {
                 SizedBox(height: 20.0),
                 confirmPassword,
                 SizedBox(height: 20.0),
-                auth.registeredInStatus == Status.Registering
+                auth.loggedInStatus == Status.Authenticating
                     ? Loading()
                     : CommonMaterialButton("Register", onPressed: doRegister)
               ],

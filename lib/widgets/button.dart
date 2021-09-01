@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:home_keeper/widgets/loading.dart';
 
-class CommonMaterialButton extends StatelessWidget {
+class CommonMaterialButton extends StatefulWidget {
   final String label;
-  final void Function()? onPressed;
+  final Function()? onPressed;
   final BorderRadius? borderRadius;
   final Color? textColor;
 
@@ -10,18 +11,41 @@ class CommonMaterialButton extends StatelessWidget {
       {this.onPressed, this.borderRadius, this.textColor});
 
   @override
+  State<StatefulWidget> createState() => _CommonMaterialButtonState();
+}
+
+class _CommonMaterialButtonState extends State<CommonMaterialButton> {
+  bool _waitingTillResponse = false;
+
+  @override
   Widget build(BuildContext context) {
+    if (_waitingTillResponse) {
+      return Loading();
+    }
+
     return MaterialButton(
       elevation: 5.0,
       shape: RoundedRectangleBorder(
-          borderRadius: borderRadius ?? BorderRadius.circular(40)),
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(40)),
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
       minWidth: MediaQuery.of(context).size.width,
       color: Theme.of(context).primaryColor,
-      textColor: textColor,
-      onPressed: onPressed,
+      textColor: widget.textColor,
+      onPressed: () async {
+        setState(() {
+          _waitingTillResponse = true;
+        });
+
+        if (widget.onPressed != null) {
+          await widget.onPressed!();
+        }
+
+        setState(() {
+          _waitingTillResponse = false;
+        });
+      },
       child: Text(
-        label,
+        widget.label,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 16),
       ),
@@ -49,9 +73,10 @@ class CommonButton extends StatelessWidget {
 class CommonIconButton extends StatelessWidget {
   final Icon icon;
   final void Function()? onPressed;
+  final void Function()? onLongPress;
   final Color? color;
 
-  CommonIconButton(this.icon, {this.onPressed, this.color});
+  CommonIconButton(this.icon, {this.onPressed, this.onLongPress, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +85,14 @@ class CommonIconButton extends StatelessWidget {
           border: Border.all(color: Theme.of(context).backgroundColor),
           shape: BoxShape.circle,
         ),
-        child: IconButton(
-          alignment: Alignment.center,
-          icon: icon,
-          color: color ?? Theme.of(context).accentColor,
-          onPressed: onPressed,
-        ));
+        child: GestureDetector(
+            onLongPress: onLongPress,
+            child: IconButton(
+              alignment: Alignment.center,
+              icon: icon,
+              color: color ?? Theme.of(context).accentColor,
+              onPressed:
+                  onPressed == null && onLongPress != null ? () {} : onPressed,
+            )));
   }
 }

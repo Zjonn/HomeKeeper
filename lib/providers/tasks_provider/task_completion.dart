@@ -27,7 +27,9 @@ class TaskCompletion {
                     resp.taskInstance.task.id,
                     resp.taskInstance.task.name,
                     resp.taskInstance.task.description,
-                    resp.taskInstance.task.basePointsPrize),
+                    resp.taskInstance.task.basePointsPrize,
+                    resp.taskInstance.task.isRecurring,
+                    resp.taskInstance.task.refreshInterval),
                 resp.taskInstance.activeFrom));
 
   TaskCompletion.fromCompleteResp(
@@ -45,6 +47,8 @@ class TaskCompletion {
                     resp.taskInstance.task.id,
                     resp.taskInstance.task.name,
                     resp.taskInstance.task.description,
-                    resp.taskInstance.task.basePointsPrize),
+                    resp.taskInstance.task.basePointsPrize,
+                    resp.taskInstance.task.isRecurring,
+                    resp.taskInstance.task.refreshInterval),
                 resp.taskInstance.activeFrom));
 }

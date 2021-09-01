@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:artemis/artemis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
+import 'package:home_keeper/providers/auth_provider/results.dart';
 
 enum Status {
   Uninitialized,
@@ -17,23 +17,11 @@ enum Status {
   LoggedOut
 }
 
-class RegisterResult {
-  bool status;
-  GraphQLResponse<RegisterUser$Mutation> response;
-
-  RegisterResult(this.status, this.response);
-}
-
-class LoginResult {
-  bool status;
-  GraphQLResponse<LoginUser$Mutation> response;
-
-  LoginResult(this.status, this.response);
-}
-
 class AuthProvider with ChangeNotifier {
-  late final ArtemisClient _client;
+  late final ArtemisClientWithTimeout _client;
   late final FlutterSecureStorage _storage;
+
+  bool _isDisposed = false;
 
   Status _loggedInStatus = Status.Uninitialized;
   Status _registeredInStatus = Status.Uninitialized;
@@ -43,7 +31,7 @@ class AuthProvider with ChangeNotifier {
   Status get registeredInStatus => _registeredInStatus;
 
   AuthProvider(String apiUrl, [client, storage]) {
-    _client = client == null ? ArtemisClient(apiUrl) : client;
+    _client = client == null ? ArtemisClientWithTimeout(apiUrl) : client;
     _storage = storage == null ? FlutterSecureStorage() : storage;
 
     isTokenValid();
@@ -57,7 +45,7 @@ class AuthProvider with ChangeNotifier {
 
     final token = await _storage.read(key: "token");
     if (token?.isEmpty ?? true) {
-      notifyListeners();
+      _disposeSafeNotifyListeners();
       return;
     }
 
@@ -67,36 +55,27 @@ class AuthProvider with ChangeNotifier {
       _loggedInStatus = Status.LoggedIn;
       _registeredInStatus = Status.NotRegistered;
     }
-    notifyListeners();
+    _disposeSafeNotifyListeners();
   }
 
   Future<LoginResult> login(String username, String password) async {
-    var result;
-
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
 
     final loginMutation = LoginUserMutation(
         variables: LoginUserArguments(username: username, password: password));
 
-    final response = await this
-        ._client
-        .execute(loginMutation)
-        .timeout(Duration(seconds: 2), onTimeout: () {
-      return GraphQLResponse(
-          errors: [GraphQLError(message: "No internet connection")]);
-    });
+    final response = await this._client.execute(loginMutation);
+    final result = LoginResult(response);
 
-    if (!response.hasErrors) {
+    if (result.isSuccessful) {
       await this
           ._storage
           .write(key: "token", value: response.data!.tokenAuth!.token);
 
       _loggedInStatus = Status.LoggedIn;
-      result = LoginResult(true, response);
     } else {
       _loggedInStatus = Status.NotLoggedIn;
-      result = LoginResult(false, response);
     }
 
     notifyListeners();
@@ -118,37 +97,31 @@ class AuthProvider with ChangeNotifier {
 
     final response = await this._client.execute(registerMutation);
 
-    if (response.hasErrors) {
-      return _onError(response);
-    } else {
-      return _onValue(response);
-    }
-  }
-
-  Future<RegisterResult> _onValue(
-      GraphQLResponse<RegisterUser$Mutation> response) async {
-    var result;
-
-    if (response.data!.register!.errors?.isEmpty ?? true) {
+    final result = RegisterResult(response);
+    if (result.isSuccessful) {
       _registeredInStatus = Status.Registered;
-      result = RegisterResult(true, response);
     } else {
       _registeredInStatus = Status.NotRegistered;
-      result = RegisterResult(false, response);
     }
     notifyListeners();
     return result;
-  }
-
-  RegisterResult _onError(GraphQLResponse<RegisterUser$Mutation> response) {
-    _registeredInStatus = Status.NotRegistered;
-    notifyListeners();
-    return RegisterResult(false, response);
   }
 
   Future<void> logout() async {
     await _storage.delete(key: "token");
     _loggedInStatus = Status.LoggedOut;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  void _disposeSafeNotifyListeners() {
+    if (!_isDisposed) {
+      notifyListeners();
+    }
   }
 }

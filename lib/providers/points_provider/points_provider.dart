@@ -1,34 +1,17 @@
 import 'package:artemis/artemis.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/utils/pair.dart';
 import 'package:intl/intl.dart';
 
-class Points {
-  final Map<String, MemberPoints> membersPoints;
-  final List<String> pointsDescription;
-  late final int membersPointsSum;
-
-  Points(this.membersPoints, this.pointsDescription) {
-    membersPointsSum =
-        membersPoints.values.map((e) => e.pointsSum).fold(0, (v, e) => v + e);
-  }
-}
-
-class MemberPoints {
-  final String userId;
-  final List<int> points;
-  late final int pointsSum;
-
-  MemberPoints(this.userId, this.points) {
-    pointsSum = points.fold(0, (v, e) => v + e);
-  }
-}
+import 'points.dart';
+import 'member_points.dart';
 
 enum PointsProviderState { Initialized, Uninitialized }
 
 class PointsProvider extends ChangeNotifier {
-  final ArtemisClient _client;
+  final ArtemisClientWithTimeout _client;
   PointsProviderState _state = PointsProviderState.Uninitialized;
 
   Points _week = Points({}, []);
@@ -49,7 +32,7 @@ class PointsProvider extends ChangeNotifier {
     var periodsPoints = await Future.wait([
       _getWeekPoints(teamId),
       _getMonthPoints(teamId),
-      _getYearPoints(teamId)
+      _getYearPoints(teamId),
     ]);
 
     _week = periodsPoints[0];
@@ -100,8 +83,13 @@ class PointsProvider extends ChangeNotifier {
 
       currentDay = prevDay;
     }
+    final membersPoints = await _transposeData(await Future.wait(futurePoints));
 
-    var points = await Future.wait(futurePoints);
+    return Points(membersPoints, description.reversed.toList(growable: false));
+  }
+
+  Future<Map<String, MemberPoints>> _transposeData(
+      List<List<Pair<String, int>>> points) async {
     var membersPoints = <String, MemberPoints>{};
     for (var i = 0; i < points[0].length; i++) {
       var memberId = points[0][i].a;
@@ -109,8 +97,7 @@ class PointsProvider extends ChangeNotifier {
           [for (var x in points) x[i].b].reversed.toList(growable: false);
       membersPoints[memberId] = MemberPoints(memberId, memberPoints);
     }
-
-    return Points(membersPoints, description.reversed.toList(growable: false));
+    return membersPoints;
   }
 
   Future<List<Pair<String, int>>> _getPoints(
@@ -122,9 +109,14 @@ class PointsProvider extends ChangeNotifier {
                 fromDateTime: from.toUtc(),
                 toDateTime: to.toUtc())));
 
-    assert(!response.hasErrors);
-    return response.data!.teamMembersPoints!
-        .map((e) => Pair(e!.member!.id, e.points!))
-        .toList(growable: false);
+    if (response.hasErrors) {
+      print(response.errors.toString());
+    }
+
+    return response.hasErrors
+        ? []
+        : response.data!.teamMembersPoints!
+            .map((e) => Pair(e!.member!.id, e.points!))
+            .toList(growable: false);
   }
 }

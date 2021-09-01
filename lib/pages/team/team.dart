@@ -2,12 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:home_keeper/pages/team/members.dart';
 import 'package:home_keeper/pages/team/points_line_chart.dart';
 import 'package:home_keeper/pages/team/points_pie_chart.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
+import 'package:home_keeper/utils/enumerate.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:provider/provider.dart';
+
+enum _Periods { Week, Month, Year }
 
 class Team extends StatefulWidget {
   @override
@@ -15,14 +19,33 @@ class Team extends StatefulWidget {
 }
 
 class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
-  int _setPeriod = 0;
+  _Periods _setPeriod = _Periods.Week;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final teamProvider = Provider.of<TeamProvider>(context);
-    final teamInfo = teamProvider.currentTeamInfo;
+    final teamInfo = Provider.of<TeamProvider>(context).currentTeamInfo;
+
+    var pieChartPeriod, lineChartPeriod, pointsPeriod;
+    switch (_setPeriod) {
+      case _Periods.Month:
+        pieChartPeriod = PieChartPeriods.Month;
+        lineChartPeriod = LineChartPeriods.Month;
+        pointsPeriod = PointsPeriods.Month;
+        break;
+      case _Periods.Year:
+        pieChartPeriod = PieChartPeriods.Year;
+        lineChartPeriod = LineChartPeriods.Year;
+        pointsPeriod = PointsPeriods.Year;
+        break;
+      case _Periods.Week:
+      default:
+        pieChartPeriod = PieChartPeriods.Week;
+        lineChartPeriod = LineChartPeriods.Week;
+        pointsPeriod = PointsPeriods.Week;
+        break;
+    }
 
     final currentTeam = CommonContainer(
       child: Column(children: [
@@ -62,96 +85,6 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
       ]),
     );
 
-    final teamMembers = CommonContainer(
-        child: Column(children: [
-      Text(
-        "Members",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20),
-      ),
-      Container(
-          constraints: new BoxConstraints(maxHeight: 200),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: teamInfo.teamMembers
-                .map((e) => ListTile(
-                        title: Row(
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          color: e.color,
-                        ),
-                        SizedBox(width: 5.0),
-                        Text(e.username)
-                      ],
-                    )))
-                .toList(),
-          ))
-    ]));
-
-    final timePeriod = CommonContainer(
-      child: Column(children: [
-        SizedBox(height: 5.0),
-        Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).backgroundColor),
-                borderRadius: BorderRadius.circular(40)),
-            child: Flex(
-              direction: Axis.horizontal,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: CommonMaterialButton(
-                      'Week',
-                      onPressed: () => {
-                        setState(() {
-                          _setPeriod = 0;
-                        })
-                      },
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          bottomLeft: Radius.circular(40)),
-                      textColor: _setPeriod == 0
-                          ? Theme.of(context).accentColor
-                          : null,
-                    )),
-                Expanded(
-                  flex: 1,
-                  child: CommonMaterialButton(
-                    'Month',
-                    onPressed: () => {
-                      setState(() {
-                        _setPeriod = 1;
-                      })
-                    },
-                    borderRadius: BorderRadius.zero,
-                    textColor:
-                        _setPeriod == 1 ? Theme.of(context).accentColor : null,
-                  ),
-                ),
-                Expanded(
-                    flex: 1,
-                    child: CommonMaterialButton(
-                      'Year',
-                      onPressed: () => {
-                        setState(() {
-                          _setPeriod = 2;
-                        })
-                      },
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(40),
-                          bottomRight: Radius.circular(40)),
-                      textColor: _setPeriod == 2
-                          ? Theme.of(context).accentColor
-                          : null,
-                    )),
-              ],
-            ))
-      ]),
-    );
-
     return Container(
         padding: EdgeInsets.fromLTRB(5, 40, 5, 20),
         child: SingleChildScrollView(
@@ -162,11 +95,11 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
               children: [
                 currentTeam,
                 SizedBox(height: 5.0),
-                _getCharts(),
+                _getCharts(pieChartPeriod, lineChartPeriod),
                 SizedBox(height: 5.0),
-                timePeriod,
+                _getTimePeriodPicker(),
                 SizedBox(height: 5.0),
-                teamMembers,
+                TeamMembers(pointsPeriod),
               ]),
         ));
   }
@@ -174,26 +107,7 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
   @override
   bool get wantKeepAlive => true;
 
-  CommonContainer _getCharts() {
-    var pieChartPeriod;
-    var lineChartPeriod;
-
-    switch (_setPeriod) {
-      case 1:
-        pieChartPeriod = PieChartPeriods.Month;
-        lineChartPeriod = LineChartPeriods.Month;
-        break;
-      case 2:
-        pieChartPeriod = PieChartPeriods.Year;
-        lineChartPeriod = LineChartPeriods.Year;
-        break;
-      case 0:
-      default:
-        pieChartPeriod = PieChartPeriods.Week;
-        lineChartPeriod = LineChartPeriods.Week;
-        break;
-    }
-
+  CommonContainer _getCharts(var pieChartPeriod, var lineChartPeriod) {
     return CommonContainer(
       child: Column(
         children: [
@@ -209,6 +123,45 @@ class _Team extends State<Team> with AutomaticKeepAliveClientMixin<Team> {
           UsersPointsLineChart(lineChartPeriod),
         ],
       ),
+    );
+  }
+
+  CommonContainer _getTimePeriodPicker() {
+    final periods = ['Week', 'Month', 'Year'];
+    final bordersRadius = [
+      BorderRadius.only(
+          topLeft: Radius.circular(40), bottomLeft: Radius.circular(40)),
+      BorderRadius.zero,
+      BorderRadius.only(
+          topRight: Radius.circular(40), bottomRight: Radius.circular(40))
+    ];
+
+    return CommonContainer(
+      child: Column(children: [
+        SizedBox(height: 5.0),
+        Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).backgroundColor),
+                borderRadius: BorderRadius.circular(40)),
+            child: Flex(
+                direction: Axis.horizontal,
+                children: enumerate<Widget, String>(
+                    periods,
+                    (i, v) => Expanded(
+                        flex: 1,
+                        child: CommonMaterialButton(
+                          v,
+                          onPressed: () => {
+                            setState(() {
+                              _setPeriod = _Periods.values[i];
+                            })
+                          },
+                          borderRadius: bordersRadius[i],
+                          textColor: _setPeriod == _Periods.values[i]
+                              ? Theme.of(context).accentColor
+                              : null,
+                        ))).toList(growable: false)))
+      ]),
     );
   }
 }

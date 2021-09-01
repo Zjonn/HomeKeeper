@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_keeper/pages/tasks/create_task.dart';
 import 'package:home_keeper/pages/tasks/tasks.dart';
+import 'package:home_keeper/providers/tasks_provider/task.dart';
+
+import 'update_task.dart';
 
 class TasksBuilder extends StatefulWidget {
   @override
@@ -33,6 +36,10 @@ class _TasksBuilderState extends State<TasksBuilder>
               case 'create_task':
                 return MaterialPageRoute(
                     builder: (context) => CreateTask(), settings: settings);
+              case 'edit_task':
+                return MaterialPageRoute(
+                    builder: (context) => EditTask(settings.arguments as Task),
+                    settings: settings);
               default:
                 throw Exception("Invalid route");
             }
