@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:home_keeper/providers/points_provider/Points.dart';
+import 'package:home_keeper/providers/points_provider/points.dart';
 import 'package:home_keeper/providers/points_provider/points_provider.dart';
 import 'package:home_keeper/providers/teams_provider/team_member.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';

@@ -5,7 +5,7 @@ import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/utils/pair.dart';
 import 'package:intl/intl.dart';
 
-import 'Points.dart';
+import 'points.dart';
 import 'member_points.dart';
 
 enum PointsProviderState { Initialized, Uninitialized }
