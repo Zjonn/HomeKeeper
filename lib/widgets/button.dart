@@ -26,24 +26,26 @@ class _CommonMaterialButtonState extends State<CommonMaterialButton> {
     return MaterialButton(
       elevation: 5.0,
       shape: RoundedRectangleBorder(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(40)),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(40),
+        side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+      ),
       padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
       minWidth: MediaQuery.of(context).size.width,
       color: Theme.of(context).primaryColor,
       textColor: widget.textColor,
-      onPressed: () async {
-        setState(() {
-          _waitingTillResponse = true;
-        });
+      onPressed: widget.onPressed != null
+          ? () async {
+              setState(() {
+                _waitingTillResponse = true;
+              });
 
-        if (widget.onPressed != null) {
-          await widget.onPressed!();
-        }
+              await widget.onPressed!();
 
-        setState(() {
-          _waitingTillResponse = false;
-        });
-      },
+              setState(() {
+                _waitingTillResponse = false;
+              });
+            }
+          : null,
       child: Text(
         widget.label,
         textAlign: TextAlign.center,

@@ -36,7 +36,7 @@ class _TasksBuilderState extends State<TasksBuilder>
               case 'create_task':
                 return MaterialPageRoute(
                     builder: (context) => CreateTask(), settings: settings);
-              case 'edit_task':
+              case 'update_task':
                 return MaterialPageRoute(
                     builder: (context) => EditTask(settings.arguments as Task),
                     settings: settings);

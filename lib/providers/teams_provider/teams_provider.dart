@@ -93,4 +93,16 @@ class TeamProvider with ChangeNotifier {
     }
     return resp;
   }
+
+  Future<LeaveResult> leaveTeam(int teamId) async {
+    GraphQLResponse<LeaveTeam$Mutation> response = await _client.execute(
+        LeaveTeamMutation(variables: LeaveTeamArguments(teamId: teamId)));
+    final resp = LeaveResult(response);
+
+    if (resp.isSuccessful) {
+      _state = TeamProviderState.UserIsNotMember;
+      await updateUserTeamsInfo();
+    }
+    return resp;
+  }
 }

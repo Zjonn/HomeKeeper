@@ -102,9 +102,9 @@ class _EditTaskState extends State<EditTask> {
 
         if (result) {
           Navigator.pop(context);
-          CommonFlushbar("Task updated!").show(context);
+          CommonFlushbar("Task updated").show(context);
         } else {
-          CommonFlushbar('Something went wrong.').show(context);
+          SOMETHING_WENT_WRONG_FLUSHBAR.show(context);
         }
       }
     };

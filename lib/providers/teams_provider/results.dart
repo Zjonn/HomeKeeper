@@ -28,3 +28,16 @@ class JoinResult extends GraphqlResult<GraphQLResponse<JoinTeam$Mutation>> {
   @override
   void parseData(GraphQLResponse<JoinTeam$Mutation> response) {}
 }
+
+class LeaveResult extends GraphqlResult<GraphQLResponse<LeaveTeam$Mutation>> {
+  LeaveResult(GraphQLResponse<LeaveTeam$Mutation> response) : super(response);
+
+  @override
+  Iterable<GraphqlError> getDataErrors(
+      GraphQLResponse<LeaveTeam$Mutation> response) {
+    return [];
+  }
+
+  @override
+  void parseData(GraphQLResponse<LeaveTeam$Mutation> response) {}
+}
