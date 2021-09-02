@@ -87,8 +87,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                                       'Task ${task.relatedTask.name} deleted')
                                   .show(context);
                             } else {
-                              SOMETHING_WENT_WRONG_FLUSHBAR
-                                  .show(context);
+                              SOMETHING_WENT_WRONG_FLUSHBAR.show(context);
                             }
                           },
                           color: Colors.red,
