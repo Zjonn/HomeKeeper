@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:home_keeper/config/api_url.dart';
+import 'package:home_keeper/config/constants.dart';
 
 class ApiURLProvider extends ChangeNotifier {
-  static final String defaultApiURL = ApiUrl.URL;
+  static final String defaultApiURL = Constants.API_URL;
 
   final FlutterSecureStorage _storage;
 
-  String _apiURL = ApiUrl.URL;
+  String _apiURL = Constants.API_URL;
 
   String get apiURL => _apiURL;
 

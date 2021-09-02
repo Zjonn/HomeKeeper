@@ -27,3 +27,5 @@ class CommonFlushbar extends Flushbar {
 
 final NO_INTERNET_CONNECTION_FLUSHBAR =
     CommonFlushbar("No internet connection.");
+
+final SOMETHING_WENT_WRONG_FLUSHBAR = CommonFlushbar("Something went wrong");

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:home_keeper/pages/home/home.dart';
 import 'package:home_keeper/pages/join_team/join_team_builder.dart';
 import 'package:home_keeper/pages/settings.dart';
 import 'package:home_keeper/pages/tasks/tasks_builder.dart';
 import 'package:home_keeper/pages/team/team.dart';
+import 'package:home_keeper/providers/auth_client_provider.dart';
+import 'package:home_keeper/providers/points_provider/points_provider.dart';
+import 'package:home_keeper/providers/sync_provider.dart';
+import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/providers/teams_provider/teams_provider.dart';
 import 'package:home_keeper/widgets/loading.dart';
 import 'package:provider/provider.dart';
-
-import '../home/home.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -47,43 +50,66 @@ class _DashBoardState extends State<DashBoard>
   @override
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context);
-
-    if (teamProvider.state == TeamProviderState.Uninitialized) {
-      return Scaffold(body: Loading());
-    }
-
-    List<StatefulWidget> tabs = [];
-    List<IconData> icons = [];
+    final client = Provider.of<AuthClientProvider>(context).client;
 
     switch (teamProvider.state) {
       case TeamProviderState.UserIsMember:
-        tabs = _tabs;
-        icons = _tabs_icons;
+        final tabs = _tabs;
         _changeController(tabs, true);
-        break;
+        return MultiProvider(
+            providers: [
+              ChangeNotifierProxyProvider2<TeamProvider, SyncProvider,
+                  TasksProvider>(
+                create: (_) => TasksProvider(client),
+                update: (_, teamProvider, syncProvider, previous) {
+                  previous!.update(teamProvider.currentTeamInfo.id);
+                  return previous;
+                },
+              ),
+              ChangeNotifierProxyProvider3<TeamProvider, SyncProvider,
+                      TasksProvider, PointsProvider>(
+                  create: (_) => PointsProvider(client),
+                  update:
+                      (_, teamProvider, syncProvider, tasksProvider, previous) {
+                    previous!.update(teamProvider.currentTeamInfo.id);
+                    return previous;
+                  })
+            ],
+            child: Scaffold(
+                body: TabBarView(
+                  children: tabs,
+                  controller: _controller,
+                ),
+                bottomNavigationBar: TabBar(
+                  tabs: _tabs_icons
+                      .map((e) => Container(
+                            margin: EdgeInsets.all(15),
+                            child: Icon(e),
+                          ))
+                      .toList(),
+                  controller: _controller,
+                )));
+
       case TeamProviderState.UserIsNotMember:
-        tabs = _no_team_tabs;
-        icons = _no_team_tabs_icons;
+        final tabs = _no_team_tabs;
         _changeController(tabs, false);
-        break;
-      default:
-        throw Exception("Invalid state");
+        return Scaffold(
+            body: TabBarView(
+              children: tabs,
+              controller: _controller,
+            ),
+            bottomNavigationBar: TabBar(
+              tabs: _no_team_tabs_icons
+                  .map((e) => Container(
+                        margin: EdgeInsets.all(15),
+                        child: Icon(e),
+                      ))
+                  .toList(),
+              controller: _controller,
+            ));
+      case TeamProviderState.Uninitialized:
+        return Scaffold(body: Loading());
     }
-    return Scaffold(
-        body: TabBarView(
-          children: tabs,
-          controller: _controller,
-        ),
-        bottomNavigationBar: TabBar(
-          tabs: icons
-              .map((e) => Container(
-                  margin: EdgeInsets.all(15),
-                  child: Icon(
-                    e,
-                  )))
-              .toList(),
-          controller: _controller,
-        ));
   }
 
   void _changeController(final List<StatefulWidget> tabs, isUserMemberOfTeam) {

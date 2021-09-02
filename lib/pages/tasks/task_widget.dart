@@ -67,7 +67,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                         CommonIconButton(
                           Icon(Icons.edit),
                           onLongPress: () => {
-                            Navigator.pushNamed(context, 'edit_task',
+                            Navigator.pushNamed(context, 'update_task',
                                 arguments: widget.task.relatedTask)
                           },
                         ),
@@ -84,11 +84,10 @@ class _TaskWidgetState extends State<TaskWidget> {
                             if (await taskProvider
                                 .deleteTask(task.relatedTask)) {
                               CommonFlushbar(
-                                      'Task ${task.relatedTask.name} deleted.')
+                                      'Task ${task.relatedTask.name} deleted')
                                   .show(context);
                             } else {
-                              CommonFlushbar('Something went wrong.')
-                                  .show(context);
+                              SOMETHING_WENT_WRONG_FLUSHBAR.show(context);
                             }
                           },
                           color: Colors.red,

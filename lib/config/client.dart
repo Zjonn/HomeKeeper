@@ -14,7 +14,7 @@ class HttpClientWithToken extends http.BaseClient {
 
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     request.headers['Authorization'] = token;
-    print(token);
+    print(request.url);
     return _client.send(request);
   }
 }
