@@ -52,6 +52,14 @@ class _CreateTaskState extends State<CreateTask> {
         if (value?.isEmpty ?? true) {
           return "Please provide how many points this task is worth";
         }
+
+        final parsedValue = int.tryParse(value!);
+        if (parsedValue == null){
+          return "Only integers values are accepted";
+        }
+        if(parsedValue < 1) {
+          return "Only non-negative values are accepted";
+        }
       },
     );
 

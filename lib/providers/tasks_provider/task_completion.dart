@@ -9,9 +9,12 @@ class TaskCompletion {
 
   final TaskInstance relatedTaskInstance;
   final DateTime completedAt;
+  late final bool isActive;
 
   TaskCompletion(this.id, this.userWhoCompletedTask, this.grantedPoints,
-      this.completedAt, this.relatedTaskInstance);
+      this.completedAt, DateTime? deletedAt, this.relatedTaskInstance) {
+    isActive = deletedAt == null;
+  }
 
   TaskCompletion.fromResp(
       ListTasksCompletions$Query$TaskInstanceCompletionType resp)
@@ -20,6 +23,7 @@ class TaskCompletion {
             resp.userWhoCompletedTask.username,
             resp.pointsGranted,
             resp.createdAt,
+            resp.deletedAt,
             TaskInstance(
                 resp.taskInstance.id,
                 resp.taskInstance.active ?? false,
@@ -40,6 +44,7 @@ class TaskCompletion {
             resp.userWhoCompletedTask.username,
             resp.pointsGranted,
             resp.createdAt,
+            null,
             TaskInstance(
                 resp.taskInstance.id,
                 resp.taskInstance.active ?? false,

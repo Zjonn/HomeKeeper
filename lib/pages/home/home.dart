@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_keeper/pages/home/home_widget.dart';
+import 'package:home_keeper/pages/home/inactive_home_widget.dart';
 import 'package:home_keeper/providers/tasks_provider/tasks_provider.dart';
 import 'package:home_keeper/widgets/container.dart';
 import 'package:home_keeper/widgets/loading.dart';
@@ -37,7 +38,9 @@ class _Home extends State<Home> {
                   textAlign: TextAlign.center,
                 ));
               }
-              return HomeWidget(lastEvents[index]);
+              return lastEvents[index].isActive
+                  ? HomeWidget(lastEvents[index])
+                  : InactiveHomeWidget(lastEvents[index]);
             });
     }
   }

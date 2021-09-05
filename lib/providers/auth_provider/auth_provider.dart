@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/providers/auth_provider/results.dart';
+import 'package:home_keeper/providers/connection_provider.dart';
 
 enum Status {
   Uninitialized,
@@ -30,8 +31,8 @@ class AuthProvider with ChangeNotifier {
 
   Status get registeredInStatus => _registeredInStatus;
 
-  AuthProvider(String apiUrl, [client, storage]) {
-    _client = client == null ? ArtemisClientWithTimeout(apiUrl) : client;
+  AuthProvider(ConnectionProvider provider, [client, storage]) {
+    _client = client == null ? provider.createClient() : client;
     _storage = storage == null ? FlutterSecureStorage() : storage;
 
     isTokenValid();

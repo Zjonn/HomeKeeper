@@ -26,7 +26,7 @@ query ListTasksInstances($teamId: Int!) {
 }
 
 query ListTasksCompletions($teamId: Int!) {
-    completions(teamId: $teamId, onlyActive: true) {
+    completions(teamId: $teamId, onlyActive: false) {
         id,
         userWhoCompletedTask {
             username
@@ -45,7 +45,8 @@ query ListTasksCompletions($teamId: Int!) {
             }
         },
         createdAt,
-        pointsGranted
+        deletedAt,
+        pointsGranted,
     }
 }
 
@@ -114,12 +115,22 @@ mutation CompleteTask($input : TaskInstanceCompletionCreateGenericType!) {
                     description,
                     basePointsPrize,
                     refreshInterval,
-                    isRecurring
+                    isRecurring,
                 }
             },
             createdAt,
             pointsGranted
         },
+        errors {
+            field,
+            messages
+        }
+    }
+}
+
+mutation RevokeTaskCompletion($id: ID!) {
+    revertTaskInstanceCompletion(id: $id){
+        ok,
         errors {
             field,
             messages

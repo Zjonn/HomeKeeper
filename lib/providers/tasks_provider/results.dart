@@ -90,3 +90,25 @@ class TaskDeleteResult
     isDeleted = deleteTask.ok!;
   }
 }
+
+class RevokeTaskCompletionResult
+    extends GraphqlResult<GraphQLResponse<RevokeTaskCompletion$Mutation>> {
+  late final bool? isRevoked;
+
+  RevokeTaskCompletionResult(
+      GraphQLResponse<RevokeTaskCompletion$Mutation> response)
+      : super(response);
+
+  @override
+  Iterable<GraphqlError> getDataErrors(
+      GraphQLResponse<RevokeTaskCompletion$Mutation> response) {
+    return response.data!.revertTaskInstanceCompletion!.errors?.map(
+            (e) => GraphqlError(e!.messages.join('\n'), field: e.field)) ??
+        [];
+  }
+
+  @override
+  void parseData(GraphQLResponse<RevokeTaskCompletion$Mutation> response) {
+    isRevoked = response.data!.revertTaskInstanceCompletion!.ok!;
+  }
+}

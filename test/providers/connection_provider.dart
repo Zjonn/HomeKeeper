@@ -1,11 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:home_keeper/config/constants.dart';
-import 'package:home_keeper/providers/api_url_provider.dart';
+import 'package:home_keeper/providers/connection_provider.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'api_url_provider.mocks.dart';
+import 'connection_provider.mocks.dart';
 
 class MockCallbackFunction extends Mock {
   call();
@@ -15,7 +15,7 @@ class MockCallbackFunction extends Mock {
 void main() {
   final notifyListenerCallback = MockCallbackFunction();
   late MockFlutterSecureStorage mockStorage;
-  late ApiURLProvider apiURLProvider;
+  late ConnectionProvider apiURLProvider;
 
   group('ApiURLProvider', () {
     setUp(() {
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('Default value is from api_url', () {
-      expect(ApiURLProvider.defaultApiURL, Constants.API_URL);
+      expect(ConnectionProvider.defaultApiURL, Constants.API_URL);
     });
 
     test(
@@ -33,7 +33,7 @@ void main() {
         when(mockStorage.read(key: anyNamed('key')))
             .thenAnswer((Invocation a) async => '');
 
-        apiURLProvider = ApiURLProvider(mockStorage);
+        apiURLProvider = ConnectionProvider(mockStorage);
         await Future.delayed(Duration(milliseconds: 10));
 
         expect(apiURLProvider.apiURL, Constants.API_URL);
@@ -47,7 +47,7 @@ void main() {
         when(mockStorage.read(key: anyNamed('key')))
             .thenAnswer((Invocation a) async => '8.8.8.8');
 
-        apiURLProvider = ApiURLProvider(mockStorage);
+        apiURLProvider = ConnectionProvider(mockStorage);
         apiURLProvider.addListener(notifyListenerCallback);
         await Future.delayed(Duration(milliseconds: 10));
 
@@ -60,7 +60,7 @@ void main() {
       when(mockStorage.read(key: anyNamed('key')))
           .thenAnswer((Invocation a) async => '8.8.8.8');
 
-      apiURLProvider = ApiURLProvider(mockStorage);
+      apiURLProvider = ConnectionProvider(mockStorage);
       apiURLProvider.addListener(notifyListenerCallback);
 
       apiURLProvider.apiURL = '7.7.7.7';

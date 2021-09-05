@@ -1,5 +1,5 @@
 import 'package:artemis/artemis.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/graphql/graphql_api.dart';
 import 'package:home_keeper/utils/pair.dart';
@@ -73,7 +73,9 @@ class PointsProvider extends ChangeNotifier {
         .subtract(Duration(milliseconds: 100))
         .subtract(periodDuration - Duration(days: 1));
 
-    var futurePoints = [_getPoints(teamId, currentDay, now)];
+    var futurePoints = [
+      _getPoints(teamId, currentDay, now.add(Duration(hours: 1)))
+    ];
     var description = [format.format(now)];
     for (var i = 0; i < periods - 1; i++) {
       var prevDay = currentDay.subtract(periodDuration);

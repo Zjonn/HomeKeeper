@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_keeper/providers/api_url_provider.dart';
+import 'package:home_keeper/providers/connection_provider.dart';
 import 'package:home_keeper/widgets/button.dart';
 import 'package:home_keeper/widgets/flushbar.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +21,7 @@ class _ChangeURLState extends State<ChangeURL> {
 
   @override
   Widget build(BuildContext context) {
-    final urlProvider = Provider.of<ApiURLProvider>(context);
+    final urlProvider = Provider.of<ConnectionProvider>(context);
 
     var changeURL = () {
       urlProvider.apiURL = _myController.text;
@@ -30,7 +30,7 @@ class _ChangeURLState extends State<ChangeURL> {
     };
 
     var restoreURL = () {
-      urlProvider.apiURL = ApiURLProvider.defaultApiURL;
+      urlProvider.apiURL = ConnectionProvider.defaultApiURL;
       CommonFlushbar("URL restored").show(context);
       ;
     };

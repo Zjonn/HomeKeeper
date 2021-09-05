@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/config/client.dart';
 import 'package:home_keeper/providers/auth_provider/auth_provider.dart';
+import 'package:home_keeper/providers/connection_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -19,7 +20,7 @@ http.StreamedResponse simpleResponse(String body, {int? status}) {
   return r;
 }
 
-@GenerateMocks([http.Client, FlutterSecureStorage])
+@GenerateMocks([http.Client, FlutterSecureStorage, ConnectionProvider])
 void main() {
   late ArtemisClientWithTimeout artemisClient;
   late MockClient mockHttpClient;
@@ -38,9 +39,11 @@ void main() {
     });
 
     test('AuthProviderConstructor', () {
+      var mockConnectionProvider = MockConnectionProvider();
       when(mockStorage.read(key: anyNamed('key')))
           .thenAnswer((realInvocation) async => null);
-      AuthProvider("123", artemisClient, mockStorage);
+
+      AuthProvider(mockConnectionProvider, artemisClient, mockStorage);
     });
 
     test('initialState', () {
