@@ -54,10 +54,10 @@ class _CreateTaskState extends State<CreateTask> {
         }
 
         final parsedValue = int.tryParse(value!);
-        if (parsedValue == null){
+        if (parsedValue == null) {
           return "Only integers values are accepted";
         }
-        if(parsedValue < 1) {
+        if (parsedValue < 1) {
           return "Only non-negative values are accepted";
         }
       },

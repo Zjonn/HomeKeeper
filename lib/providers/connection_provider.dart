@@ -59,8 +59,7 @@ class ConnectionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await InternetAddress.lookup('google.com')
-          .timeout(Constants.TIMEOUT);
+      await InternetAddress.lookup('google.com').timeout(Constants.TIMEOUT);
     } catch (e) {
       print(e);
       _state = ConnectionProviderState.NoInternetConnection;

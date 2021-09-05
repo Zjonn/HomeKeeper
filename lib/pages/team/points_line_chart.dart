@@ -116,7 +116,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
           getTextStyles: (_, value) => TextStyle(
             color: Color(0xff75729e),
             fontWeight: FontWeight.bold,
-            fontSize:  textStyle.bodyText2!.fontSize,
+            fontSize: textStyle.bodyText2!.fontSize,
           ),
           margin: 8,
           reservedSize: 35,

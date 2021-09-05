@@ -45,7 +45,7 @@ class TeamProvider with ChangeNotifier {
   Future<void> updateUserTeamsInfo() async {
     GraphQLResponse<ListUserTeamsInfo$Query> response =
         await _client.execute(ListUserTeamsInfoQuery());
-    if(response.hasErrors) {
+    if (response.hasErrors) {
       return;
     }
 
