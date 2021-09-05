@@ -2,17 +2,19 @@
 # HomeKeeper
 ![CI](https://github.com/Zjonn/HomeKeeper/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/Zjonn/HomeKeeper/branch/main/graph/badge.svg?token=DWQNZHRVE3)](https://codecov.io/gh/Zjonn/HomeKeeper)
 
-HomeKeeper is an open-source housework management application for families and cotenants.
+HomeKeeper is a frontend of an open-source housework management application for families and cotenants.
 
-## Getting Started
+## Instalation
 
-This project is a starting point for a Flutter application.
+### User requirements
+Same as Flutter 2.2, that is:
+- Android version >= 4.4
 
-A few resources to get you started if this is your first Flutter project:
+### Instruction
+1. Go to the [releases](https://github.com/Zjonn/HomeKeeper/releases) page
+2. Download latest release
+3. Install it on you smartphone
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Custom server
+If you want host the server by your own download it from [here](https://github.com/MariuszBielecki288728/HomeKeeper-backend).
+To change used backend address just click the icon at the top right corner of the main page of the app.
