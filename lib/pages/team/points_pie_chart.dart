@@ -91,18 +91,20 @@ class _UsersPointsPieChartState extends State<UsersPointsPieChart> {
       final fontSize = isTouched ? 25.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
 
-      final memberPointsSum = points.membersPoints[member.id]!.pointsSum;
-      final memberPoints = memberPointsSum > 0 ? memberPointsSum : 1;
-
       final membersPointsSum = points.membersPointsSum;
+      final memberPoints = points.membersPoints[member.id]!.pointsSum;
+
       final pointsPercent = membersPointsSum > 0
           ? (memberPoints / membersPointsSum) * 100
           : 100 / membersNum;
+      final title =
+          pointsPercent >= 1 ? '${pointsPercent.toStringAsFixed(0)}%' : '';
+      final double value = membersPointsSum > 0 ? memberPoints.toDouble() : 1;
 
       return PieChartSectionData(
           color: member.color,
-          value: memberPoints.toDouble(),
-          title: '${pointsPercent.toStringAsFixed(0)}%',
+          value: value,
+          title: title,
           radius: radius,
           titleStyle: TextStyle(
             fontSize: fontSize,

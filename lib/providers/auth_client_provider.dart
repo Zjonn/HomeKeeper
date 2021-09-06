@@ -1,13 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_keeper/config/client.dart';
+import 'package:home_keeper/providers/connection_provider.dart';
 
-enum AuthClientProviderState {
-  Initialized,
-  NoConnectionWithBackend,
-  NoInternetConnection,
-  InProgress
-}
+enum AuthClientProviderState { Initialized, InProgress }
 
 class AuthClientProvider extends ChangeNotifier {
   late final ArtemisClientWithTimeout _client;
@@ -19,25 +15,18 @@ class AuthClientProvider extends ChangeNotifier {
 
   get client => _client;
 
-  AuthClientProvider(String apiUrl) {
-    _storage = FlutterSecureStorage();
-    _initialize(apiUrl);
+  AuthClientProvider(ConnectionProvider provider,
+      [this._storage = const FlutterSecureStorage()]) {
+    _initialize(provider);
   }
 
-  AuthClientProvider.withMocks(this._storage, this._client);
-
-  Future<void> _initialize(String apiUrl) async {
+  Future<void> _initialize(ConnectionProvider provider) async {
     String token = (await this._storage.read(key: "token"))!;
-    _client = ArtemisClientWithTimeout(apiUrl,
-        httpClient: HttpClientWithToken("JWT " + token),
-        onTimeout: handleClientTimeout);
+    final httpClient = HttpClientWithToken("JWT " + token);
+
+    _client = provider.createClient(httpClient: httpClient);
 
     _state = AuthClientProviderState.Initialized;
-    notifyListeners();
-  }
-
-  void handleClientTimeout() {
-    _state = AuthClientProviderState.NoConnectionWithBackend;
     notifyListeners();
   }
 }

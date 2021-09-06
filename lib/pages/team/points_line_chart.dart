@@ -62,7 +62,7 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+                    padding: const EdgeInsets.only(right: 16.0),
                     child: LineChart(
                       _userPointsChart(
                           teamProvider.currentTeamInfo.teamMembers, points),
@@ -82,6 +82,8 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
   }
 
   LineChartData _userPointsChart(List<TeamMember> teamMembers, Points points) {
+    final textStyle = Theme.of(context).textTheme;
+
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
@@ -96,11 +98,10 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           reservedSize: 22,
-          getTextStyles: (_, value) => const TextStyle(
-            color: Color(0xff72719b),
-            fontWeight: FontWeight.bold,
-            fontSize: 11,
-          ),
+          getTextStyles: (_, value) => TextStyle(
+              color: Color(0xff72719b),
+              fontWeight: FontWeight.bold,
+              fontSize: textStyle.caption!.fontSize),
           margin: 10,
           getTitles: (value) {
             return value.toInt() < points.pointsDescription.length
@@ -112,13 +113,13 @@ class _UsersPointsWeekLineChartState extends State<UsersPointsLineChart> {
         rightTitles: SideTitles(showTitles: false),
         leftTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (_, value) => const TextStyle(
+          getTextStyles: (_, value) => TextStyle(
             color: Color(0xff75729e),
             fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: textStyle.bodyText2!.fontSize,
           ),
           margin: 8,
-          reservedSize: 30,
+          reservedSize: 35,
         ),
       ),
       borderData: FlBorderData(

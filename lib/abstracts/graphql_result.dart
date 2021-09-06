@@ -12,7 +12,7 @@ class GraphqlError {
 
   @override
   String toString() {
-    return '${field ?? ""}${field == null ? "" : " "}${message}';
+    return 'Error: ${message}';
   }
 }
 

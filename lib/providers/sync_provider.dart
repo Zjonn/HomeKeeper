@@ -21,7 +21,7 @@ class SyncProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    isDisposed == true;
+    isDisposed = true;
     syncTimer.cancel();
     super.dispose();
   }

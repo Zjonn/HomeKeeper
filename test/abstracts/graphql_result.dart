@@ -30,12 +30,12 @@ void main() {
 
     test('ErrorWithMessageAndField', () {
       final err = GraphqlError('Message', field: 'Field');
-      expect(err.toString(), 'Field Message');
+      expect(err.toString(), 'Error: Message');
     });
 
     test('ErrorWithMessage', () {
       final err = GraphqlError('Message');
-      expect(err.toString(), 'Message');
+      expect(err.toString(), 'Error: Message');
     });
   });
 

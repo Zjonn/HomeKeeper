@@ -12,7 +12,8 @@ class TeamMember {
   TeamMember(this.id, this.username, this.color);
 
   TeamMember.fromResp(ListUserTeamsInfo$Query$TeamType$UserType resp)
-      : this(resp.id, resp.username, generateColor(resp));
+      : this(resp.id, resp.username,
+            generateColor('${resp.id}${resp.username}'));
 
   static Color generateColor<T>(final T) {
     final hash = md5.convert(utf8.encode(T.hashCode.toString())).toString();

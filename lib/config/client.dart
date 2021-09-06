@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:artemis/artemis.dart';
 import 'package:gql_exec/gql_exec.dart';
 import 'package:gql_http_link/gql_http_link.dart';
+import 'package:home_keeper/config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 
@@ -25,7 +26,7 @@ class ArtemisClientWithTimeout extends ArtemisClient {
 
   ArtemisClientWithTimeout(String url,
       {http.Client? httpClient,
-      this.timeout = const Duration(seconds: 3),
+      this.timeout = Constants.TIMEOUT,
       this.onTimeout})
       : super.fromLink(HttpLink(
           url,
@@ -37,12 +38,11 @@ class ArtemisClientWithTimeout extends ArtemisClient {
       GraphQLQuery<T, U> query,
       {Context context = const Context()}) {
     return super.execute<T, U>(query, context: context).timeout(timeout,
-        onTimeout: () {
+        onTimeout: () async {
       if (onTimeout != null) {
-        onTimeout!();
+        await onTimeout!();
       }
-      return GraphQLResponse(
-          errors: [GraphQLError(message: "No internet connection")]);
+      return GraphQLResponse(errors: [GraphQLError(message: "")]);
     });
   }
 }
