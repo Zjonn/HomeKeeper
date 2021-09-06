@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ class ConnectionProvider extends ChangeNotifier {
   static final String defaultApiURL = Constants.API_URL;
 
   final FlutterSecureStorage _storage;
+  late final http.Client _client;
 
   ConnectionProviderState _state = ConnectionProviderState.Connected;
 
@@ -38,7 +38,10 @@ class ConnectionProvider extends ChangeNotifier {
     }
   }
 
-  ConnectionProvider([this._storage = const FlutterSecureStorage()]) {
+  ConnectionProvider(
+      [this._storage = const FlutterSecureStorage(), http.Client? client]) {
+    _client = client == null ? http.Client() : client;
+
     _storage.read(key: 'api_url').then((value) {
       if (value?.isEmpty ?? true) {
         _storage.write(key: 'api_url', value: _apiURL);
@@ -59,23 +62,22 @@ class ConnectionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await InternetAddress.lookup('google.com').timeout(Constants.TIMEOUT);
-    } catch (e) {
-      print(e);
+      await _client
+          .get(Uri.parse('https://www.google.com/'))
+          .timeout(Constants.TIMEOUT);
+    } on TimeoutException {
       _state = ConnectionProviderState.NoInternetConnection;
-
       updatingState = false;
       notifyListeners();
       return;
-    }
+    } catch (e) {}
 
     try {
-      await http.post(Uri.parse(_apiURL)).timeout(Constants.TIMEOUT);
+      await _client.get(Uri.parse(_apiURL)).timeout(Constants.TIMEOUT);
       _state = ConnectionProviderState.Connected;
-    } catch (e) {
-      print(e);
+    } on TimeoutException {
       _state = ConnectionProviderState.NoBackendConnection;
-    }
+    } catch (e) {}
 
     updatingState = false;
     notifyListeners();
