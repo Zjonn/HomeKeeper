@@ -15,12 +15,10 @@ class AuthClientProvider extends ChangeNotifier {
 
   get client => _client;
 
-  AuthClientProvider(ConnectionProvider provider) {
-    _storage = FlutterSecureStorage();
+  AuthClientProvider(ConnectionProvider provider,
+      [this._storage = const FlutterSecureStorage()]) {
     _initialize(provider);
   }
-
-  AuthClientProvider.withMocks(this._storage, this._client);
 
   Future<void> _initialize(ConnectionProvider provider) async {
     String token = (await this._storage.read(key: "token"))!;
